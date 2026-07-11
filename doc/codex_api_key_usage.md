@@ -1,107 +1,134 @@
-# 用 Ark API 跑 Verify 实验
+# Ark API Batch Usage
 
-> Ark 等第三方 API 必须改走 Claude Code 配置后再启动；`ark` / `codex-ark-api` 入口已在
-> `scripts/verify_agent_copy_results.sh` 中禁用，避免误跑到 Codex。
-
-本仓库用 `scripts/verify_agent_copy_results.sh` 统一启动实验、去重并自动复制结果。Ark API 的配置名是：
-
-```bash
-codex-ark-api
-```
-
-别名：
-
-```bash
-ark
-```
-
-## 配置文件
-
-Ark API 配置放在：
+Ark DeepSeek/GLM API 由统一 profile 管理：
 
 ```text
-config/ark_api/ark.config.toml
-config/ark_api/agents_ark.json
-output/codex_ark_wrapper.sh
+config/ark_api/profiles.json
 ```
 
-`config/ark_api/ark.config.toml` 是本地私有文件，包含 API key，结构如下：
+profile 字段：
 
-```toml
-model = "ark-code-latest"
-model_provider = "ark"
-api_key = "<ARK_API_KEY>"
-
-[model_providers.ark]
-name = "Volcengine Ark Coding"
-base_url = "https://ark.cn-beijing.volces.com/api/coding/v3"
-env_key = "ARK_API_KEY"
+```json
+{
+  "agent": "claude",
+  "api_key": "...",
+  "base_url": "...",
+  "model": "..."
+}
 ```
 
-保持私有配置权限：
+## Config Names
 
-```bash
-chmod 600 config/ark_api/ark.config.toml
-```
-
-## 跑实验
-
-单线程跑一题：
-
-```bash
-tmux new-session -d -s verify_codex_ark_api_p005 \
-  "cd /home/yangfp/CAV/C/CAV && BATCH_LOG_SUFFIX=single_p005 ./scripts/verify_agent_copy_results.sh --jobs 1 codex-ark-api p005_intersperse"
-```
-
-也可以前台跑：
-
-```bash
-./scripts/verify_agent_copy_results.sh --jobs 1 codex-ark-api p005_intersperse
-```
-
-跑多题：
-
-```bash
-tmux new-session -d -s verify_codex_ark_api_batch \
-  "cd /home/yangfp/CAV/C/CAV && BATCH_LOG_SUFFIX=ark_batch ./scripts/verify_agent_copy_results.sh --jobs 1 codex-ark-api p005_intersperse p003_below_zero"
-```
-
-## 结果位置
-
-完成后自动归档到：
+Claude wrapper：
 
 ```text
-results/codex/ark-code-latest/api/
+ark-1-deepseek
+ark-1-glm
+ark-2-deepseek
+ark-2-glm
+ark-3-deepseek
+ark-3-glm
+ark-4-deepseek
+ark-4-glm
+ark-5-deepseek
+ark-5-glm
 ```
 
-运行中的 workspace 在：
+Codex wrapper：
 
 ```text
-output/verify_<timestamp>_<problem>
+codex-ark-1-deepseek
+codex-ark-1-glm
+codex-ark-2-deepseek
+codex-ark-2-glm
+codex-ark-3-deepseek
+codex-ark-3-glm
+codex-ark-4-deepseek
+codex-ark-4-glm
+codex-ark-5-deepseek
+codex-ark-5-glm
 ```
 
-复制成功后脚本会清理对应的 `output/`、`annotated/` 和 QCP mirror workspace。
-
-## 查看状态
-
-```bash
-tmux ls
-tmux attach -t verify_codex_ark_api_p005
-tail -f output/verify_batch_codex_ark_api_single_p005.out
-```
-
-确认模型：
-
-```bash
-ps -ef | rg 'ark-code-latest|codex_ark_wrapper|run_verify.py'
-```
-
-结果 metrics 里应看到：
+OpenCode wrapper：
 
 ```text
-Agent: codex
-Model: ark-code-latest
-Reasoning effort: api
+opencode-ark-1-deepseek
+opencode-ark-1-glm
+opencode-ark-2-deepseek
+opencode-ark-2-glm
+opencode-ark-3-deepseek
+opencode-ark-3-glm
+opencode-ark-4-deepseek
+opencode-ark-4-glm
+opencode-ark-5-deepseek
+opencode-ark-5-glm
 ```
 
-这里的 `api` 只是 results/metrics 的配置标签，不是 Ark 的真实 reasoning effort。
+## Verify
+
+```bash
+scripts/batch_safe_verify.sh codex-ark-2-deepseek p003_below_zero
+scripts/batch_safe_verify.sh opencode-ark-2-glm p034_unique
+scripts/batch_safe_verify.sh ark-1-deepseek p014_all_prefixes
+```
+
+## Proof
+
+```bash
+scripts/batch_safe_proof.sh codex-ark-2-deepseek p007_filter_by_substring
+scripts/batch_safe_proof.sh opencode-ark-4-glm p012_longest
+scripts/batch_safe_proof.sh ark-3-deepseek p028_concatenate
+```
+
+## Pipeline
+
+```bash
+scripts/batch_safe_pipeline.sh codex-ark-2-deepseek p014_all_prefixes
+scripts/batch_safe_pipeline.sh opencode-ark-2-glm p014_all_prefixes
+scripts/batch_safe_pipeline.sh ark-1-glm p029_filter_by_prefix
+```
+
+## Results
+
+Verify 结果：
+
+```text
+results/claude/<model>/api/
+results/codex/<model>/api/
+results/opencode/<model>/api/
+```
+
+Proof 结果：
+
+```text
+proof_results/claude/<model>/api/
+proof_results/codex/<model>/api/
+proof_results/opencode/<model>/api/
+```
+
+Pipeline 结果：
+
+```text
+pipeline_results/claude/<model>/api/
+pipeline_results/codex/<model>/api/
+pipeline_results/opencode/<model>/api/
+```
+
+`<model>` 当前主要是：
+
+```text
+deepseek-v4-pro
+glm-5.2
+```
+
+## OpenCode Artifacts
+
+OpenCode 每次运行都会使用该次 workspace 的隔离 XDG 目录。
+runner 会把 OpenCode run-local data/config/state/cache 产物复制到：
+
+```text
+<result>/logs/opencode_artifacts/
+```
+
+认证文件 `auth.json` 会在 wrapper 退出时删除；复制产物前也会删除并跳过
+`auth.json`。

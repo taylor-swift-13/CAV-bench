@@ -14,8 +14,12 @@ JOBS="${JOBS:-1}"
 CODEX_JOBS="${CODEX_JOBS:-$JOBS}"
 CLAUDE_JOBS="${CLAUDE_JOBS:-$JOBS}"
 KIMI_JOBS="${KIMI_JOBS:-$JOBS}"
+OPENCODE_JOBS="${OPENCODE_JOBS:-$JOBS}"
 FOREGROUND="${FOREGROUND:-1}"
 FORCE=0
+MODEL_OVERRIDE="${MODEL_OVERRIDE:-${ARK_MODEL:-${MODEL:-}}}"
+ARK_PROFILE_CONFIG="${ARK_PROFILE_CONFIG:-$ROOT/config/ark_api/profiles.json}"
+ARK_PROFILE_SELECTED="${ARK_PROFILE:-}"
 FAST_FAIL_SECONDS="${FAST_FAIL_SECONDS:-120}"
 QUOTA_SLEEP_SECONDS="${QUOTA_SLEEP_SECONDS:-18000}"
 MAX_FAST_RETRIES="${MAX_FAST_RETRIES:-1}"
@@ -45,6 +49,26 @@ Supported configs:
   codex-54-mini-medium
   codex-55-medium
   codex-55-xhigh
+  codex-ark-1-deepseek
+  codex-ark-1-glm
+  codex-ark-2-deepseek
+  codex-ark-2-glm
+  codex-ark-3-deepseek
+  codex-ark-3-glm
+  codex-ark-4-deepseek
+  codex-ark-4-glm
+  codex-ark-5-deepseek
+  codex-ark-5-glm
+  opencode-ark-1-deepseek
+  opencode-ark-1-glm
+  opencode-ark-2-deepseek
+  opencode-ark-2-glm
+  opencode-ark-3-deepseek
+  opencode-ark-3-glm
+  opencode-ark-4-deepseek
+  opencode-ark-4-glm
+  opencode-ark-5-deepseek
+  opencode-ark-5-glm
   claude-haiku-medium
   claude-opus-medium
   claude-sonnet-high
@@ -90,6 +114,11 @@ result_dir_for() {
 }
 
 build_run_configs() {
+  local ark_model="${MODEL_OVERRIDE:-}"
+  local ark_label="${ARK_PROFILE_SELECTED:-ark-profile}"
+  if [[ -n "$ARK_PROFILE_SELECTED" && -z "$ark_model" ]]; then
+    ark_model="$(python3 "$ROOT/scripts/ark_profile_env.py" --config "$ARK_PROFILE_CONFIG" --field model "$ARK_PROFILE_SELECTED")"
+  fi
   RUN_CONFIGS=(
     "claude-haiku-medium|claude|haiku|medium|$(result_dir_for "$RESULTS_ROOT" claude haiku medium)|output/proof_only_batch_claude_haiku_medium.out|$CLAUDE_JOBS|"
     "claude-opus-medium|claude|opus|medium|$(result_dir_for "$RESULTS_ROOT" claude opus medium)|output/proof_only_batch_claude_opus_medium.out|$CLAUDE_JOBS|"
@@ -102,16 +131,22 @@ build_run_configs() {
     "codex-54-medium|codex|gpt-5.4|medium|$(result_dir_for "$RESULTS_ROOT" codex gpt-5.4 medium)|output/proof_only_batch_codex_54_medium.out|$CODEX_JOBS|"
     "codex-55-medium|codex|gpt-5.5|medium|$(result_dir_for "$RESULTS_ROOT" codex gpt-5.5 medium)|output/proof_only_batch_codex_55_medium.out|$CODEX_JOBS|"
     "codex-55-xhigh|codex|gpt-5.5|xhigh|$(result_dir_for "$RESULTS_ROOT" codex gpt-5.5 xhigh)|output/proof_only_batch_codex_55_xhigh.out|$CODEX_JOBS|"
+    "codex-$ark_label|codex|$ark_model|api|$(result_dir_for "$RESULTS_ROOT" codex "$ark_model" api)|output/proof_only_batch_codex_${ark_label}.out|$CODEX_JOBS|"
+    "opencode-$ark_label|opencode|$ark_model|api|$(result_dir_for "$RESULTS_ROOT" opencode "$ark_model" api)|output/proof_only_batch_opencode_${ark_label}.out|$OPENCODE_JOBS|"
     "kimi-thinking|kimicode|kimi-code/kimi-for-coding|thinking|$(result_dir_for "$RESULTS_ROOT" kimicode kimi-code/kimi-for-coding thinking)|output/proof_only_batch_kimi_thinking.out|$KIMI_JOBS|"
   )
 }
 
 canonical_config() {
   case "$1" in
-    codex-ark|codex-ark-api)
-      echo "third-party API runs via Codex are disabled; add/use a Claude Code config instead" >&2
-      exit 2
+    codex-ark-*|opencode-ark-*)
+      printf '%s\n' "$1"
+      return
       ;;
+  esac
+  case "$1" in
+    codex-ark|codex-ark-api) printf '%s\n' "codex-ark-2-deepseek" ;;
+    opencode-ark|opencode-ark-api) printf '%s\n' "opencode-ark-2-deepseek" ;;
     high) printf '%s\n' "codex-54-high" ;;
     medium|codex) printf '%s\n' "codex-54-medium" ;;
     low) printf '%s\n' "codex-54-low" ;;
@@ -280,7 +315,7 @@ start_batch() {
     problem_lock_root="$lock_dir/problems"
     mkdir -p "$problem_lock_root"
 
-    export ROOT DATASET TIMEOUT ANNOTATED_ROOT
+    export ROOT DATASET TIMEOUT ANNOTATED_ROOT ARK_PROFILE_SELECTED ARK_PROFILE_CONFIG
     export agent model effort result_dir label problem_lock_root agent_config
     export -f cleanup_workspace_after_result_copy
     export -f copy_workspace_to_result_dir
@@ -322,12 +357,25 @@ start_batch() {
       if [[ -n "${agent_config:-}" ]]; then
         export CAV_AGENT_CONFIG="$agent_config"
       fi
+      extra_agent_args=()
+      if [[ -n "${ARK_PROFILE_SELECTED:-}" ]]; then
+        export ARK_PROFILE="$ARK_PROFILE_SELECTED"
+        export ARK_PROFILE_CONFIG="$ARK_PROFILE_CONFIG"
+        export ARK_MODEL="$model"
+        export OPENCODE_PROVIDER="${OPENCODE_PROVIDER:-ark}"
+        case "$agent" in
+          claude) extra_agent_args+=(--claude-bin "$ROOT/scripts/claude_ark_wrapper.sh") ;;
+          codex) extra_agent_args+=(--codex-bin "$ROOT/scripts/codex_ark_wrapper.sh") ;;
+          opencode) extra_agent_args+=(--opencode-bin "$ROOT/scripts/opencode_ark_wrapper.sh") ;;
+        esac
+      fi
       python3 scripts/run_proof.py "$c" \
         --function-name "$name" --workspace-name "$name" \
         --timestamp "$ts" \
         --agent "$agent" --model "$model" --reasoning-effort "$effort" \
         --timeout-seconds "$TIMEOUT" \
         --annotated-input-c "$annotated_c" \
+        "${extra_agent_args[@]}" \
         >> "$problem_log" 2>&1
       rc=$?
 
@@ -531,6 +579,7 @@ while [[ $# -gt 0 ]]; do
       CODEX_JOBS="$2"
       CLAUDE_JOBS="$2"
       KIMI_JOBS="$2"
+      OPENCODE_JOBS="$2"
       shift 2
       ;;
     --timeout)
@@ -588,6 +637,18 @@ fi
 
 requested="$(canonical_config "${POSITIONAL[0]}")"
 REQUESTED_NAMES=("${POSITIONAL[@]:1}")
+
+ark_requested="$requested"
+case "$requested" in
+  codex-ark-*|opencode-ark-*)
+    ark_requested="${ark_requested#codex-}"
+    ark_requested="${ark_requested#opencode-}"
+    ;;
+esac
+
+if python3 "$ROOT/scripts/ark_profile_env.py" --config "$ARK_PROFILE_CONFIG" --field model "$ark_requested" >/dev/null 2>&1; then
+  ARK_PROFILE_SELECTED="$ark_requested"
+fi
 
 case "$requested" in
   all)
