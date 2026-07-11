@@ -49,6 +49,8 @@ Configs:
   ark-3-glm
   ark-4-deepseek
   ark-4-glm
+  ark-5-deepseek
+  ark-5-glm
   codex-ark-1-deepseek
   codex-ark-1-glm
   codex-ark-2-deepseek
@@ -57,6 +59,8 @@ Configs:
   codex-ark-3-glm
   codex-ark-4-deepseek
   codex-ark-4-glm
+  codex-ark-5-deepseek
+  codex-ark-5-glm
   opencode-ark-1-deepseek
   opencode-ark-1-glm
   opencode-ark-2-deepseek
@@ -65,6 +69,8 @@ Configs:
   opencode-ark-3-glm
   opencode-ark-4-deepseek
   opencode-ark-4-glm
+  opencode-ark-5-deepseek
+  opencode-ark-5-glm
   codex-54-high
   codex-54-xhigh
   codex-54-medium
@@ -86,6 +92,8 @@ Aliases:
   glm-5.2 -> ark-2-glm
   key4-deepseek -> ark-4-deepseek
   key4-glm -> ark-4-glm
+  key5-deepseek -> ark-5-deepseek
+  key5-glm -> ark-5-glm
   high    -> codex-54-high
   xhigh   -> codex-54-xhigh
   medium  -> codex-54-medium
@@ -167,6 +175,8 @@ canonical_config() {
     key3-glm|third-glm|ark-third-glm|ark-3-glm) printf '%s\n' "ark-3-glm" ;;
     key4-deepseek|fourth-deepseek|ark-fourth-deepseek|ark-4-deepseek) printf '%s\n' "ark-4-deepseek" ;;
     key4-glm|fourth-glm|ark-fourth-glm|ark-4-glm) printf '%s\n' "ark-4-glm" ;;
+    key5-deepseek|fifth-deepseek|ark-fifth-deepseek|ark-5-deepseek) printf '%s\n' "ark-5-deepseek" ;;
+    key5-glm|fifth-glm|ark-fifth-glm|ark-5-glm) printf '%s\n' "ark-5-glm" ;;
     codex-ark|codex-ark-api) printf '%s\n' "codex-ark-2-deepseek" ;;
     opencode-ark|opencode-ark-api) printf '%s\n' "opencode-ark-2-deepseek" ;;
     opus-xhigh|claude-opus-xhigh) printf '%s\n' "claude-opus-xhigh" ;;
