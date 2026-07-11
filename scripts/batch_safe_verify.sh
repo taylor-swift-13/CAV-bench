@@ -13,6 +13,7 @@ JOBS="${JOBS:-1}"
 CODEX_JOBS="${CODEX_JOBS:-$JOBS}"
 CLAUDE_JOBS="${CLAUDE_JOBS:-$JOBS}"
 KIMI_JOBS="${KIMI_JOBS:-$JOBS}"
+OPENCODE_JOBS="${OPENCODE_JOBS:-$JOBS}"
 FOREGROUND="${FOREGROUND:-1}"
 FORCE=0
 MODEL_OVERRIDE="${MODEL_OVERRIDE:-${ARK_MODEL:-${MODEL:-}}}"
@@ -48,8 +49,24 @@ Configs:
   ark-3-glm
   ark-4-deepseek
   ark-4-glm
-  codex-ark-api       (disabled: third-party APIs must use Claude Code)
+  codex-ark-1-deepseek
+  codex-ark-1-glm
+  codex-ark-2-deepseek
+  codex-ark-2-glm
+  codex-ark-3-deepseek
+  codex-ark-3-glm
+  codex-ark-4-deepseek
+  codex-ark-4-glm
+  opencode-ark-1-deepseek
+  opencode-ark-1-glm
+  opencode-ark-2-deepseek
+  opencode-ark-2-glm
+  opencode-ark-3-deepseek
+  opencode-ark-3-glm
+  opencode-ark-4-deepseek
+  opencode-ark-4-glm
   codex-54-high
+  codex-54-xhigh
   codex-54-medium
   codex-54-low
   codex-54-mini-medium
@@ -57,6 +74,7 @@ Configs:
   codex-55-xhigh
   claude-haiku-medium
   claude-opus-medium
+  claude-opus-xhigh
   claude-sonnet-high
   claude-sonnet-low
   claude-sonnet-medium
@@ -69,6 +87,7 @@ Aliases:
   key4-deepseek -> ark-4-deepseek
   key4-glm -> ark-4-glm
   high    -> codex-54-high
+  xhigh   -> codex-54-xhigh
   medium  -> codex-54-medium
   low     -> codex-54-low
   mini    -> codex-54-mini-medium
@@ -112,12 +131,16 @@ build_run_configs() {
   RUN_CONFIGS=(
     "claude-haiku-medium|claude|haiku|medium|$(result_dir_for "$RESULTS_ROOT" claude haiku medium)|output/verify_batch_claude_haiku_medium.out|$CLAUDE_JOBS|"
     "claude-opus-medium|claude|opus|medium|$(result_dir_for "$RESULTS_ROOT" claude opus medium)|output/verify_batch_claude_opus_medium.out|$CLAUDE_JOBS|"
+    "claude-opus-xhigh|claude|opus|xhigh|$(result_dir_for "$RESULTS_ROOT" claude opus xhigh)|output/verify_batch_claude_opus_xhigh.out|$CLAUDE_JOBS|"
     "claude-sonnet-high|claude|sonnet|high|$(result_dir_for "$RESULTS_ROOT" claude sonnet high)|output/verify_batch_claude_sonnet_high.out|$CLAUDE_JOBS|"
     "claude-sonnet-low|claude|sonnet|low|$(result_dir_for "$RESULTS_ROOT" claude sonnet low)|output/verify_batch_claude_sonnet_low.out|$CLAUDE_JOBS|"
     "claude-sonnet-medium|claude|sonnet|medium|$(result_dir_for "$RESULTS_ROOT" claude sonnet medium)|output/verify_batch_claude_sonnet_medium.out|$CLAUDE_JOBS|"
     "$ark_label|claude|$ark_model|api|$(result_dir_for "$RESULTS_ROOT" claude "$ark_model" api)|output/verify_batch_${ark_label}.out|$CLAUDE_JOBS|"
+    "codex-$ark_label|codex|$ark_model|api|$(result_dir_for "$RESULTS_ROOT" codex "$ark_model" api)|output/verify_batch_codex_${ark_label}.out|$CODEX_JOBS|"
+    "opencode-$ark_label|opencode|$ark_model|api|$(result_dir_for "$RESULTS_ROOT" opencode "$ark_model" api)|output/verify_batch_opencode_${ark_label}.out|$OPENCODE_JOBS|"
     "codex-54-mini-medium|codex|gpt-5.4-mini|medium|$(result_dir_for "$RESULTS_ROOT" codex gpt-5.4-mini medium)|output/verify_batch_codex_54_mini_medium.out|$CODEX_JOBS|"
     "codex-54-high|codex|gpt-5.4|high|$(result_dir_for "$RESULTS_ROOT" codex gpt-5.4 high)|output/verify_batch_codex_54_high.out|$CODEX_JOBS|"
+    "codex-54-xhigh|codex|gpt-5.4|xhigh|$(result_dir_for "$RESULTS_ROOT" codex gpt-5.4 xhigh)|output/verify_batch_codex_54_xhigh.out|$CODEX_JOBS|"
     "codex-54-low|codex|gpt-5.4|low|$(result_dir_for "$RESULTS_ROOT" codex gpt-5.4 low)|output/verify_batch_codex_54_low.out|$CODEX_JOBS|"
     "codex-54-medium|codex|gpt-5.4|medium|$(result_dir_for "$RESULTS_ROOT" codex gpt-5.4 medium)|output/verify_batch_codex_54_medium.out|$CODEX_JOBS|"
     "codex-55-medium|codex|gpt-5.5|medium|$(result_dir_for "$RESULTS_ROOT" codex gpt-5.5 medium)|output/verify_batch_codex_55_medium.out|$CODEX_JOBS|"
@@ -127,6 +150,12 @@ build_run_configs() {
 }
 
 canonical_config() {
+  case "$1" in
+    codex-ark-*|opencode-ark-*)
+      printf '%s\n' "$1"
+      return
+      ;;
+  esac
   case "$1" in
     ark|ark-api|old-ark|claude-ark-api) printf '%s\n' "ark-1-deepseek" ;;
     claude-ark-old-api|old-deepseek|deepseek-old|ark-old-deepseek|claude-ark-old-deepseek-api|ark-1-deepseek) printf '%s\n' "ark-1-deepseek" ;;
@@ -138,11 +167,11 @@ canonical_config() {
     key3-glm|third-glm|ark-third-glm|ark-3-glm) printf '%s\n' "ark-3-glm" ;;
     key4-deepseek|fourth-deepseek|ark-fourth-deepseek|ark-4-deepseek) printf '%s\n' "ark-4-deepseek" ;;
     key4-glm|fourth-glm|ark-fourth-glm|ark-4-glm) printf '%s\n' "ark-4-glm" ;;
-    codex-ark|codex-ark-api)
-      echo "third-party API runs via Codex are disabled; add/use a Claude Code config instead" >&2
-      exit 2
-      ;;
+    codex-ark|codex-ark-api) printf '%s\n' "codex-ark-2-deepseek" ;;
+    opencode-ark|opencode-ark-api) printf '%s\n' "opencode-ark-2-deepseek" ;;
+    opus-xhigh|claude-opus-xhigh) printf '%s\n' "claude-opus-xhigh" ;;
     high) printf '%s\n' "codex-54-high" ;;
+    xhigh) printf '%s\n' "codex-54-xhigh" ;;
     medium|codex) printf '%s\n' "codex-54-medium" ;;
     low) printf '%s\n' "codex-54-low" ;;
     mini|codex-mini) printf '%s\n' "codex-54-mini-medium" ;;
@@ -355,7 +384,12 @@ start_batch() {
         export ARK_PROFILE="$ARK_PROFILE_SELECTED"
         export ARK_PROFILE_CONFIG="$ARK_PROFILE_CONFIG"
         export ARK_MODEL="$model"
-        extra_agent_args+=(--claude-bin "$ROOT/scripts/claude_ark_wrapper.sh")
+        export OPENCODE_PROVIDER="${OPENCODE_PROVIDER:-ark}"
+        case "$agent" in
+          claude) extra_agent_args+=(--claude-bin "$ROOT/scripts/claude_ark_wrapper.sh") ;;
+          codex) extra_agent_args+=(--codex-bin "$ROOT/scripts/codex_ark_wrapper.sh") ;;
+          opencode) extra_agent_args+=(--opencode-bin "$ROOT/scripts/opencode_ark_wrapper.sh") ;;
+        esac
       fi
       python3 scripts/run_verify.py "$c" \
         --function-name "$name" --workspace-name "$name" \
@@ -621,6 +655,7 @@ while [[ $# -gt 0 ]]; do
       CODEX_JOBS="$2"
       CLAUDE_JOBS="$2"
       KIMI_JOBS="$2"
+      OPENCODE_JOBS="$2"
       shift 2
       ;;
     --timeout)
@@ -685,8 +720,16 @@ original_config="${POSITIONAL[0]}"
 requested="$(canonical_config "$original_config")"
 REQUESTED_NAMES=("${POSITIONAL[@]:1}")
 
-if python3 "$ROOT/scripts/ark_profile_env.py" --config "$ARK_PROFILE_CONFIG" --field model "$requested" >/dev/null 2>&1; then
-  ARK_PROFILE_SELECTED="$requested"
+ark_requested="$requested"
+case "$requested" in
+  codex-ark-*|opencode-ark-*)
+    ark_requested="${ark_requested#codex-}"
+    ark_requested="${ark_requested#opencode-}"
+    ;;
+esac
+
+if python3 "$ROOT/scripts/ark_profile_env.py" --config "$ARK_PROFILE_CONFIG" --field model "$ark_requested" >/dev/null 2>&1; then
+  ARK_PROFILE_SELECTED="$ark_requested"
 fi
 
 case "$requested" in

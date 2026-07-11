@@ -119,7 +119,7 @@ def _timeline_row(epoch: float, line_no: int, raw_line: str) -> str:
 def run_agent_with_timeline(
     cmd: list[str],
     *,
-    prompt: str,
+    prompt: str | None,
     stdout_jsonl: Path,
     stdout_timeline: Path,
     stderr_log: Path,
@@ -147,6 +147,10 @@ def run_agent_with_timeline(
 
         def write_prompt() -> None:
             try:
+                if prompt is None:
+                    if proc.stdin is not None:
+                        proc.stdin.close()
+                    return
                 assert proc.stdin is not None
                 proc.stdin.write(prompt)
                 proc.stdin.close()
@@ -343,6 +347,8 @@ def _qcp_final_check_commands(
     ]
     for source in original_v_dependency_closure(input_path, input_v_path):
         commands.append(f"cd SeparationLogic && coqc {sl_coq_args} examples/CAV/{workspace}/deps/{source.name}")
+    for source in local_strategy_v_sources(input_path.parent):
+        commands.append(f"cd SeparationLogic && coqc {sl_coq_args} examples/CAV/{workspace}/{source.name}")
     commands.extend(
         [
             f"cd SeparationLogic && coqc {sl_coq_args} examples/CAV/{workspace}/{function_name}_goal.v",
@@ -628,6 +634,12 @@ def stage_qcp_mirror_for_agent(
     shutil.copy2(annotated_c_path, qcp_annotated)
     _copy_header_deps(input_path.parent, qcp_input_dir)
     stage_original_v_deps(input_path, input_v_path, qcp_deps_dir)
+    _copy_strategy_v_deps(
+        input_path.parent,
+        qcp_examples_dir,
+        workspace_logic_path=f"SimpleC.EE.CAV.{workspace_name}",
+        case_module=input_path.stem,
+    )
     write_qcp_agent_audit_script(
         workspace_path=workspace_path,
         input_path=input_path,
@@ -699,6 +711,8 @@ def write_qcp_agent_audit_script(
     ]]
     for source in original_v_dependency_closure(input_path, input_v_path):
         commands.append(["bash", "-lc", _shell_join(["cd", "SeparationLogic"]) + " && " + _shell_join(["coqc", *coq_args, f"examples/CAV/{workspace}/deps/{source.name}"])])
+    for source in local_strategy_v_sources(input_path.parent):
+        commands.append(["bash", "-lc", _shell_join(["cd", "SeparationLogic"]) + " && " + _shell_join(["coqc", *coq_args, f"examples/CAV/{workspace}/{source.name}"])])
     for suffix in ("goal", "proof_auto", "proof_manual", "goal_check"):
         commands.append(["bash", "-lc", _shell_join(["cd", "SeparationLogic"]) + " && " + _shell_join(["coqc", *coq_args, f"examples/CAV/{workspace}/{function_name}_{suffix}.v"])])
 
@@ -801,7 +815,7 @@ def update_issues_on_failure(issues_path: Path, stage: str, exit_code: int, stde
     else:
         existing = "# Execution Issues\n\n"
     block = (
-        "## External Codex Failure\n\n"
+        "## External Agent Failure\n\n"
         f"- Stage: `{stage}`\n"
         f"- Exit code: `{exit_code}`\n"
         f"- Stderr log: `{stderr_log}`\n"
@@ -1196,6 +1210,52 @@ def _copy_header_deps(source_dir: Path, target_dir: Path) -> list[str]:
         target = target_dir / source.name
         shutil.copy2(source, target)
         copied.append(f"staged input header: {target} <- {source}")
+    for source in sorted(source_dir.glob("*.strategies")):
+        target = target_dir / source.name
+        shutil.copy2(source, target)
+        copied.append(f"staged input strategies: {target} <- {source}")
+    return copied
+
+
+def local_strategy_v_sources(*source_dirs: Path, include_checks: bool = False) -> list[Path]:
+    seen: set[str] = set()
+    sources: list[Path] = []
+    suffixes = ("_strategy_goal.v", "_strategy_proof.v")
+    if include_checks:
+        suffixes = suffixes + ("_strategy_goal_check.v",)
+    for source_dir in source_dirs:
+        for suffix in suffixes:
+            for source in sorted(source_dir.glob(f"*{suffix}")):
+                if source.name in seen:
+                    continue
+                seen.add(source.name)
+                sources.append(source)
+    return sources
+
+
+def _rewrite_local_strategy_v(text: str, workspace_logic_path: str, case_module: str) -> str:
+    text = re.sub(
+        r"Require\s+Import\s+(?:SimpleC\.EE\.)?coins_[0-9]+\s*\.",
+        f"Require Import {case_module}.",
+        text,
+    )
+    text = re.sub(
+        r"From\s+SimpleC\.EE(?:\.[A-Za-z0-9_]+)*\s+Require\s+Import\s+([A-Za-z0-9_ ]*strategy[A-Za-z0-9_ ]*)\s*\.",
+        f"From {workspace_logic_path} Require Import \\1.",
+        text,
+    )
+    return text
+
+
+def _copy_strategy_v_deps(source_dir: Path, target_dir: Path, *, workspace_logic_path: str, case_module: str) -> list[str]:
+    target_dir.mkdir(parents=True, exist_ok=True)
+    copied: list[str] = []
+    for source in local_strategy_v_sources(source_dir, include_checks=True):
+        target = target_dir / source.name
+        text = source.read_text(encoding="utf-8", errors="replace")
+        target.write_text(_rewrite_local_strategy_v(text, workspace_logic_path, case_module), encoding="utf-8")
+        shutil.copystat(source, target)
+        copied.append(f"staged local strategy Coq: {target} <- {source}")
     return copied
 
 
@@ -1309,6 +1369,14 @@ def compile_generated_via_qcp_mirror(
         logs.append(f"staged annotated C: {qcp_annotated} <- {annotated_c_path}")
         logs.extend(_copy_header_deps(input_path.parent, qcp_input_dir))
         logs.extend(stage_original_v_deps(input_path, input_v_path, qcp_deps_dir))
+        logs.extend(
+            _copy_strategy_v_deps(
+                input_path.parent,
+                qcp_examples_dir,
+                workspace_logic_path=f"SimpleC.EE.CAV.{workspace_name}",
+                case_module=input_path.stem,
+            )
+        )
         logic_path = f"SimpleC.EE.CAV.{workspace_name}"
         qcp_manual_path = qcp_examples_dir / manual_path.name
         standard_names = standard_generated_v_names(function_name)
@@ -1578,10 +1646,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--dry-run", action="store_true", help="Prepare workspace and prompt, but do not invoke the agent.")
     parser.add_argument("--config", default=None, help="Path to agents.json config.")
-    parser.add_argument("--agent", choices=["codex", "claude", "kimicode"], default=None)
+    parser.add_argument("--agent", choices=["codex", "claude", "kimicode", "opencode"], default=None)
     parser.add_argument("--codex-bin", default=None, help="Codex CLI binary.")
     parser.add_argument("--claude-bin", default=None, help="Claude CLI binary.")
     parser.add_argument("--kimicode-bin", default=None, help="Kimi Code CLI binary.")
+    parser.add_argument("--opencode-bin", default=None, help="OpenCode CLI binary.")
     parser.add_argument("--timeout-seconds", type=int, default=5400, help="Kill the external agent run if it exceeds this wall-clock timeout.")
     parser.add_argument("--restart-context-file", default=None, help="File whose content (e.g. audit check feedback) is injected into the round-1 prompt on a re-run.")
     return parser
@@ -1604,6 +1673,7 @@ def main() -> int:
     codex_bin = args.codex_bin or cfg.bin("codex", "codex")
     claude_bin = args.claude_bin or cfg.bin("claude", "claude")
     kimicode_bin = args.kimicode_bin or cfg.bin("kimicode", "kimi")
+    opencode_bin = args.opencode_bin or cfg.bin("opencode", "opencode")
 
     input_path = Path(args.input_c)
     if not input_path.is_absolute():
@@ -1644,7 +1714,7 @@ def main() -> int:
     emit_log(f"model={model}")
     logs_dir = workspace_path / "logs"
     qcp_agent_logs_dir = QCP_CAV_EXAMPLES_ROOT / workspace_path.name / "logs"
-    agent_env = build_agent_env(qcp_agent_logs_dir)
+    agent_env = build_agent_env(logs_dir if agent == "opencode" else qcp_agent_logs_dir)
     reasoning_effort_supported = (
         codex_supports_reasoning_effort(codex_bin, QCP_ROOT, agent_env)
         if agent == "codex"
@@ -1802,7 +1872,10 @@ def main() -> int:
                 cmd = [
                     claude_bin,
                     "--print",
-                    "--bare",
+                    # not --bare: bare mode refuses OAuth/keychain auth, so subscription
+                    # logins fail; empty --setting-sources keeps hooks/plugins/settings out.
+                    "--setting-sources",
+                    "",
                     "--no-session-persistence",
                     "--permission-mode",
                     "bypassPermissions",
@@ -1861,6 +1934,40 @@ def main() -> int:
                 if stdout_jsonl.exists():
                     ensure_parent(qcp_last_message_path)
                     qcp_last_message_path.write_text(stdout_jsonl.read_text(encoding="utf-8", errors="replace"), encoding="utf-8")
+            elif agent == "opencode":
+                opencode_model = model
+                opencode_provider = os.environ.get("OPENCODE_PROVIDER")
+                if opencode_model and "/" not in opencode_model and opencode_provider:
+                    opencode_model = f"{opencode_provider}/{opencode_model}"
+                cmd = [
+                    opencode_bin,
+                    "run",
+                    "--format",
+                    "json",
+                    "--agent",
+                    "build",
+                ]
+                if opencode_model:
+                    cmd.extend(["--model", opencode_model])
+                if reasoning_effort and reasoning_effort not in {"api", "none", "default"}:
+                    cmd.extend(["--variant", reasoning_effort])
+                cmd.append(prompt)
+                proc_returncode = run_agent_with_timeline(
+                    cmd,
+                    prompt=None,
+                    stdout_jsonl=stdout_jsonl,
+                    stdout_timeline=stdout_timeline,
+                    stderr_log=stderr_log,
+                    cwd=QCP_ROOT,
+                    timeout=round_timeout,
+                    env=agent_env,
+                )
+                last_message = agent_metrics.extract_opencode_last_message(stdout_jsonl)
+                ensure_parent(qcp_last_message_path)
+                if last_message is not None:
+                    qcp_last_message_path.write_text(last_message, encoding="utf-8")
+                elif stdout_jsonl.exists():
+                    qcp_last_message_path.write_text(stdout_jsonl.read_text(encoding="utf-8", errors="replace"), encoding="utf-8")
             else:
                 cmd = [
                     codex_bin,
@@ -1910,11 +2017,34 @@ def main() -> int:
                 )
             except Exception as exc:
                 emit_log(f"kimicode_usage_capture_error={exc}")
+        if agent == "opencode":
+            try:
+                removed_opencode = agent_metrics.cleanup_opencode_heavy_artifacts(
+                    logs_dir=workspace_path / "logs",
+                    data_home=agent_env.get("XDG_DATA_HOME"),
+                    config_home=agent_env.get("XDG_CONFIG_HOME"),
+                    state_home=agent_env.get("XDG_STATE_HOME"),
+                    cache_home=agent_env.get("XDG_CACHE_HOME"),
+                )
+                emit_log(f"opencode_runtime_artifacts_removed={len(removed_opencode)}")
+            except Exception as exc:
+                emit_log(f"opencode_runtime_cleanup_error={exc}")
 
         usage_total = agent_metrics.add_usage(usage_total, agent_metrics.parse_usage(agent, stdout_jsonl))
         if qcp_last_message_path.exists():
             ensure_parent(last_message_path)
             shutil.copy2(qcp_last_message_path, last_message_path)
+        if not last_message_path.exists():
+            last_message = None
+            if agent == "claude":
+                last_message = agent_metrics.extract_claude_last_message(stdout_jsonl)
+            elif agent == "opencode":
+                last_message = agent_metrics.extract_opencode_last_message(stdout_jsonl)
+            if last_message is None and stdout_jsonl.exists():
+                last_message = stdout_jsonl.read_text(encoding="utf-8", errors="replace")
+            if last_message is not None:
+                ensure_parent(last_message_path)
+                last_message_path.write_text(last_message, encoding="utf-8")
 
         deps_spec_issues = check_qcp_deps_specs_unchanged(workspace_path, input_path, input_v_path)
         if deps_spec_issues:
