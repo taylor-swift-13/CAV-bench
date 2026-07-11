@@ -369,10 +369,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--model", default=None)
     parser.add_argument("--reasoning-effort", default=None)
     parser.add_argument("--config", default=None)
-    parser.add_argument("--agent", choices=["codex", "claude", "kimicode"], default=None)
+    parser.add_argument("--agent", choices=["codex", "claude", "kimicode", "opencode"], default=None)
     parser.add_argument("--codex-bin", default=None)
     parser.add_argument("--claude-bin", default=None)
     parser.add_argument("--kimicode-bin", default=None)
+    parser.add_argument("--opencode-bin", default=None)
     parser.add_argument("--timeout-seconds", type=int, default=5400)
     parser.add_argument("--restart-context-file", default=None)
     parser.add_argument("--dry-run", action="store_true")
@@ -394,6 +395,7 @@ def main() -> int:
     codex_bin = args.codex_bin or cfg.bin("codex", "codex")
     claude_bin = args.claude_bin or cfg.bin("claude", "claude")
     kimicode_bin = args.kimicode_bin or cfg.bin("kimicode", "kimi")
+    opencode_bin = args.opencode_bin or cfg.bin("opencode", "opencode")
 
     input_path = Path(args.input_c)
     if not input_path.is_absolute():
@@ -429,7 +431,7 @@ def main() -> int:
     qcp_stage = stage_qcp_mirror_for_proof(workspace_path, input_path, input_v_path, annotated_input_path, annotated_c_path, function_name)
     logs_dir = workspace_path / "logs"
     qcp_agent_logs_dir = rv.QCP_CAV_EXAMPLES_ROOT / workspace_path.name / "logs"
-    agent_env = rv.build_agent_env(qcp_agent_logs_dir)
+    agent_env = rv.build_agent_env(logs_dir if agent == "opencode" else qcp_agent_logs_dir)
     reasoning_effort_supported = rv.codex_supports_reasoning_effort(codex_bin, rv.QCP_ROOT, agent_env) if agent == "codex" else False
     claude_effort_supported = agent_config.claude_supports_flag(claude_bin, rv.QCP_ROOT, agent_env, "--effort") if agent == "claude" else False
 
@@ -471,7 +473,9 @@ def main() -> int:
     try:
         if agent == "claude":
             cmd = [
-                claude_bin, "--print", "--bare", "--no-session-persistence",
+                # not --bare: bare mode refuses OAuth/keychain auth, so subscription
+                # logins fail; empty --setting-sources keeps hooks/plugins/settings out.
+                claude_bin, "--print", "--setting-sources", "", "--no-session-persistence",
                 "--permission-mode", "bypassPermissions", "--add-dir", str(rv.REPO_ROOT),
                 str(rv.QCP_ROOT), "--output-format", "stream-json", "--verbose",
             ]
@@ -493,6 +497,24 @@ def main() -> int:
             if stdout_jsonl.exists():
                 ensure_parent(qcp_last_message_path)
                 qcp_last_message_path.write_text(stdout_jsonl.read_text(encoding="utf-8", errors="replace"), encoding="utf-8")
+        elif agent == "opencode":
+            opencode_model = model
+            opencode_provider = os.environ.get("OPENCODE_PROVIDER")
+            if opencode_model and "/" not in opencode_model and opencode_provider:
+                opencode_model = f"{opencode_provider}/{opencode_model}"
+            cmd = [opencode_bin, "run", "--format", "json", "--agent", "build"]
+            if opencode_model:
+                cmd.extend(["--model", opencode_model])
+            if reasoning_effort and reasoning_effort not in {"api", "none", "default"}:
+                cmd.extend(["--variant", reasoning_effort])
+            cmd.append(prompt)
+            proc_returncode = rv.run_agent_with_timeline(cmd, prompt=None, stdout_jsonl=stdout_jsonl, stdout_timeline=stdout_timeline, stderr_log=stderr_log, cwd=rv.QCP_ROOT, timeout=round_timeout, env=agent_env)
+            last_message = agent_metrics.extract_opencode_last_message(stdout_jsonl)
+            ensure_parent(qcp_last_message_path)
+            if last_message is not None:
+                qcp_last_message_path.write_text(last_message, encoding="utf-8")
+            elif stdout_jsonl.exists():
+                qcp_last_message_path.write_text(stdout_jsonl.read_text(encoding="utf-8", errors="replace"), encoding="utf-8")
         else:
             cmd = [codex_bin, "exec", "--json", "--skip-git-repo-check", "--sandbox", "workspace-write", "--ephemeral", "-C", str(rv.QCP_ROOT), "-o", rv.qcp_rel(qcp_last_message_path)]
             if model:
@@ -509,6 +531,18 @@ def main() -> int:
         emit_log(f"agent_exec_timeout detail={failure_detail}")
 
     rv.filter_stderr_in_place(stderr_log)
+    if agent == "opencode":
+        try:
+            removed_opencode = agent_metrics.cleanup_opencode_heavy_artifacts(
+                logs_dir=workspace_path / "logs",
+                data_home=agent_env.get("XDG_DATA_HOME"),
+                config_home=agent_env.get("XDG_CONFIG_HOME"),
+                state_home=agent_env.get("XDG_STATE_HOME"),
+                cache_home=agent_env.get("XDG_CACHE_HOME"),
+            )
+            emit_log(f"opencode_runtime_artifacts_removed={len(removed_opencode)}")
+        except Exception as exc:
+            emit_log(f"opencode_runtime_cleanup_error={exc}")
     usage_total = agent_metrics.add_usage(usage_total, agent_metrics.parse_usage(agent, stdout_jsonl))
     if qcp_last_message_path.exists():
         ensure_parent(last_message_path)

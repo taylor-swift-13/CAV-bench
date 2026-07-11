@@ -119,7 +119,7 @@ def _timeline_row(epoch: float, line_no: int, raw_line: str) -> str:
 def run_agent_with_timeline(
     cmd: list[str],
     *,
-    prompt: str,
+    prompt: str | None,
     stdout_jsonl: Path,
     stdout_timeline: Path,
     stderr_log: Path,
@@ -144,9 +144,14 @@ def run_agent_with_timeline(
             bufsize=1,
         )
         writer_error: list[BaseException] = []
+        stdout_line_no = 0
 
         def write_prompt() -> None:
             try:
+                if prompt is None:
+                    if proc.stdin is not None:
+                        proc.stdin.close()
+                    return
                 assert proc.stdin is not None
                 proc.stdin.write(prompt)
                 proc.stdin.close()
@@ -154,14 +159,14 @@ def run_agent_with_timeline(
                 writer_error.append(exc)
 
         def read_stdout() -> None:
+            nonlocal stdout_line_no
             assert proc.stdout is not None
-            line_no = 0
             for line in proc.stdout:
-                line_no += 1
+                stdout_line_no += 1
                 epoch = time.time()
                 out_f.write(line)
                 out_f.flush()
-                timeline_f.write(_timeline_row(epoch, line_no, line) + "\n")
+                timeline_f.write(_timeline_row(epoch, stdout_line_no, line) + "\n")
                 timeline_f.flush()
 
         writer = threading.Thread(target=write_prompt, daemon=True)
@@ -175,6 +180,16 @@ def run_agent_with_timeline(
             proc.wait()
             reader.join(timeout=5)
             writer.join(timeout=5)
+            epoch = time.time()
+            timeout_event = {
+                "type": "runner_timeout",
+                "timeout_seconds": timeout,
+                "message": f"agent process timed out after {timeout} seconds",
+            }
+            out_f.write(json.dumps(timeout_event, ensure_ascii=False) + "\n")
+            out_f.flush()
+            timeline_f.write(_timeline_row(epoch, stdout_line_no + 1, json.dumps(timeout_event)) + "\n")
+            timeline_f.flush()
             raise
         reader.join(timeout=5)
         writer.join(timeout=5)
@@ -796,7 +811,7 @@ def update_issues_on_failure(issues_path: Path, stage: str, exit_code: int, stde
     else:
         existing = "# Execution Issues\n\n"
     block = (
-        "## External Codex Failure\n\n"
+        "## External Agent Failure\n\n"
         f"- Stage: `{stage}`\n"
         f"- Exit code: `{exit_code}`\n"
         f"- Stderr log: `{stderr_log}`\n"
@@ -1567,10 +1582,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--dry-run", action="store_true", help="Prepare workspace and prompt, but do not invoke the agent.")
     parser.add_argument("--config", default=None, help="Path to agents.json config.")
-    parser.add_argument("--agent", choices=["codex", "claude", "kimicode"], default=None)
+    parser.add_argument("--agent", choices=["codex", "claude", "kimicode", "opencode"], default=None)
     parser.add_argument("--codex-bin", default=None, help="Codex CLI binary.")
     parser.add_argument("--claude-bin", default=None, help="Claude CLI binary.")
     parser.add_argument("--kimicode-bin", default=None, help="Kimi Code CLI binary.")
+    parser.add_argument("--opencode-bin", default=None, help="OpenCode CLI binary.")
     parser.add_argument("--timeout-seconds", type=int, default=5400, help="Kill the external agent run if it exceeds this wall-clock timeout.")
     parser.add_argument("--restart-context-file", default=None, help="File whose content (e.g. audit check feedback) is injected into the round-1 prompt on a re-run.")
     return parser
@@ -1593,6 +1609,7 @@ def main() -> int:
     codex_bin = args.codex_bin or cfg.bin("codex", "codex")
     claude_bin = args.claude_bin or cfg.bin("claude", "claude")
     kimicode_bin = args.kimicode_bin or cfg.bin("kimicode", "kimi")
+    opencode_bin = args.opencode_bin or cfg.bin("opencode", "opencode")
 
     input_path = Path(args.input_c)
     if not input_path.is_absolute():
@@ -1633,7 +1650,7 @@ def main() -> int:
     emit_log(f"model={model}")
     logs_dir = workspace_path / "logs"
     qcp_agent_logs_dir = QCP_CAV_EXAMPLES_ROOT / workspace_path.name / "logs"
-    agent_env = build_agent_env(qcp_agent_logs_dir)
+    agent_env = build_agent_env(logs_dir if agent == "opencode" else qcp_agent_logs_dir)
     reasoning_effort_supported = (
         codex_supports_reasoning_effort(codex_bin, QCP_ROOT, agent_env)
         if agent == "codex"
@@ -1791,7 +1808,10 @@ def main() -> int:
                 cmd = [
                     claude_bin,
                     "--print",
-                    "--bare",
+                    # not --bare: bare mode refuses OAuth/keychain auth, so subscription
+                    # logins fail; empty --setting-sources keeps hooks/plugins/settings out.
+                    "--setting-sources",
+                    "",
                     "--no-session-persistence",
                     "--permission-mode",
                     "bypassPermissions",
@@ -1850,6 +1870,40 @@ def main() -> int:
                 if stdout_jsonl.exists():
                     ensure_parent(qcp_last_message_path)
                     qcp_last_message_path.write_text(stdout_jsonl.read_text(encoding="utf-8", errors="replace"), encoding="utf-8")
+            elif agent == "opencode":
+                opencode_model = model
+                opencode_provider = os.environ.get("OPENCODE_PROVIDER")
+                if opencode_model and "/" not in opencode_model and opencode_provider:
+                    opencode_model = f"{opencode_provider}/{opencode_model}"
+                cmd = [
+                    opencode_bin,
+                    "run",
+                    "--format",
+                    "json",
+                    "--agent",
+                    "build",
+                ]
+                if opencode_model:
+                    cmd.extend(["--model", opencode_model])
+                if reasoning_effort and reasoning_effort not in {"api", "none", "default"}:
+                    cmd.extend(["--variant", reasoning_effort])
+                cmd.append(prompt)
+                proc_returncode = run_agent_with_timeline(
+                    cmd,
+                    prompt=None,
+                    stdout_jsonl=stdout_jsonl,
+                    stdout_timeline=stdout_timeline,
+                    stderr_log=stderr_log,
+                    cwd=QCP_ROOT,
+                    timeout=round_timeout,
+                    env=agent_env,
+                )
+                last_message = agent_metrics.extract_opencode_last_message(stdout_jsonl)
+                ensure_parent(qcp_last_message_path)
+                if last_message is not None:
+                    qcp_last_message_path.write_text(last_message, encoding="utf-8")
+                elif stdout_jsonl.exists():
+                    qcp_last_message_path.write_text(stdout_jsonl.read_text(encoding="utf-8", errors="replace"), encoding="utf-8")
             else:
                 cmd = [
                     codex_bin,
@@ -1899,11 +1953,34 @@ def main() -> int:
                 )
             except Exception as exc:
                 emit_log(f"kimicode_usage_capture_error={exc}")
+        if agent == "opencode":
+            try:
+                removed_opencode = agent_metrics.cleanup_opencode_heavy_artifacts(
+                    logs_dir=workspace_path / "logs",
+                    data_home=agent_env.get("XDG_DATA_HOME"),
+                    config_home=agent_env.get("XDG_CONFIG_HOME"),
+                    state_home=agent_env.get("XDG_STATE_HOME"),
+                    cache_home=agent_env.get("XDG_CACHE_HOME"),
+                )
+                emit_log(f"opencode_runtime_artifacts_removed={len(removed_opencode)}")
+            except Exception as exc:
+                emit_log(f"opencode_runtime_cleanup_error={exc}")
 
         usage_total = agent_metrics.add_usage(usage_total, agent_metrics.parse_usage(agent, stdout_jsonl))
         if qcp_last_message_path.exists():
             ensure_parent(last_message_path)
             shutil.copy2(qcp_last_message_path, last_message_path)
+        if not last_message_path.exists():
+            last_message = None
+            if agent == "claude":
+                last_message = agent_metrics.extract_claude_last_message(stdout_jsonl)
+            elif agent == "opencode":
+                last_message = agent_metrics.extract_opencode_last_message(stdout_jsonl)
+            if last_message is None and stdout_jsonl.exists():
+                last_message = stdout_jsonl.read_text(encoding="utf-8", errors="replace")
+            if last_message is not None:
+                ensure_parent(last_message_path)
+                last_message_path.write_text(last_message, encoding="utf-8")
 
         deps_spec_issues = check_qcp_deps_specs_unchanged(workspace_path, input_path, input_v_path)
         if deps_spec_issues:
