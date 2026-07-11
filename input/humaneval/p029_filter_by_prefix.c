@@ -61,7 +61,7 @@ StrArray *filter_by_prefix(char** strings, int strings_size, char* prefix)
       PtrArray::undef_seg(data, output_size, strings_size)
 */
 {
-    int plen = (int)strlen(prefix);
+    int plen = (int)strlen(prefix) ;
     StrArray *out = malloc_str_array_struct();
     out->size = 0;
     out->data = malloc_char_ptr_array(strings_size);
@@ -69,20 +69,19 @@ StrArray *filter_by_prefix(char** strings, int strings_size, char* prefix)
     int output_size = 0;
     int cmp = 0;
     char *cur = 0;
-    
+
     for (int i=0;i<strings_size;i++) {
-        
+
         cur = strings[i];
-        
-        cmp = strncmp(cur, prefix, plen);
+
+        cmp = strncmp(cur, prefix, plen) ;
         if (cmp == 0) {
-            
+
             data[output_size] = cur;
             output_size = output_size + 1;
-            
+
         } else {
-            
-            
+
         }
     }
     out->size = output_size;

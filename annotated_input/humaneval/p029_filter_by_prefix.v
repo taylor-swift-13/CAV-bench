@@ -44,7 +44,6 @@ Definition problem_29_spec (input : list string) (substring : string) (output : 
         - input 中所有满足前缀条件的元素都在 output 中 (规约第三条)
   *)
   (forall s, In s output <-> (In s input /\ String.prefix substring s = true)).
-
 Require Import Coq.ZArith.ZArith.
 Require Import Coq.Lists.List.
 Require Import Coq.Strings.String.

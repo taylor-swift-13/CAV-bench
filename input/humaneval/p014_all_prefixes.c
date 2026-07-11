@@ -60,24 +60,24 @@ StrArray *all_prefixes(char* str)
       prefix_rows_heap_14(output_ptrs, output_rows)
 */
 {
-    int n = (int)strlen(str);
+    int n = (int)strlen(str) ;
     StrArray *out = malloc_str_array_struct();
     out->size = n;
     out->data = malloc_char_ptr_array(n);
     char **data = out->data;
     char *cur = 0;
-    
+
     for (int i=0;i<n;i++)
     {
         cur = malloc_char_array(i + 2);
-        
-        memcpy(cur, str, i + 1);
-        
+
+        memcpy(cur, str, i + 1) ;
+
         cur[i+1] = '\0';
-        
+
         data[i] = cur;
-        
+
     }
-    
+
     return out;
 }

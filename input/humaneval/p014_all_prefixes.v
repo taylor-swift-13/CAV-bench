@@ -27,7 +27,6 @@ Definition problem_14_spec (input : string)(output : list string) : Prop :=
    forall i, i < String.length input ->
      String.length (nth i output "0") = i + 1 /\
      prefix (nth i output "0") input = true).
-
 Require Import Coq.ZArith.ZArith.
 Require Import Coq.Lists.List.
 Require Import Coq.Strings.String.

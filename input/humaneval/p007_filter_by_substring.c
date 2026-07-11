@@ -67,20 +67,19 @@ StrArray *filter_by_substring(char** strings, int strings_size, char* substring)
     int output_size = 0;
     char *cur = 0;
     char *hit = 0;
-    
+
     for (int i=0;i<strings_size;i++) {
-        
+
         cur = strings[i];
-        
-        hit = strstr(cur, substring);
+
+        hit = strstr(cur, substring) ;
         if (hit != 0) {
-            
+
             data[output_size] = cur;
             output_size = output_size + 1;
-            
+
         } else {
-            
-            
+
         }
     }
     out->size = output_size;

@@ -52,7 +52,6 @@ Definition problem_158_spec (words : list string) (result : string) : Prop :=
     let c_res := count_unique_chars result in
     let c_w := count_unique_chars w in
     c_res > c_w \/ (c_res = c_w /\ string_le result w).
-
 Require Import Coq.ZArith.ZArith.
 Require Import Coq.Lists.List.
 Require Import Coq.Arith.PeanoNat.

@@ -6,13 +6,12 @@ Require Import Coq.Lists.List.
 Require Import Coq.Classes.RelationClasses.
 Require Import Coq.Classes.Morphisms.
 Require Import Coq.micromega.Psatz.
-Require Import Lia.
 Require Import Coq.Sorting.Permutation.
 From AUXLib Require Import int_auto Axioms Feq Idents ListLib VMap.
 Require Import SetsClass.SetsClass. Import SetsNotation.
 From SimpleC.SL Require Import Mem SeparationLogic.
-From SimpleC.EE Require Import p007_filter_by_substring_goal.
-From SimpleC.EE Require Import p007_filter_by_substring_proof_auto.
+From SimpleC.EE.CAV.ground_truth_p007_filter_by_substring Require Import p007_filter_by_substring_goal.
+From SimpleC.EE.CAV.ground_truth_p007_filter_by_substring Require Import p007_filter_by_substring_proof_auto.
 Require Import Logic.LogicGenerator.demo932.Interface.
 Local Open Scope Z_scope.
 Local Open Scope sets.
@@ -22,42 +21,6 @@ Import naive_C_Rules.
 Require Import SimpleC.StdLib.string_lib.
 Require Import p007_filter_by_substring.
 Local Open Scope sac.
-Local Open Scope bool_scope.
-Local Open Scope list_scope.
-
-Lemma rows_well_formed_7_row : forall rows n k,
-  rows_well_formed_7 rows n ->
-  0 <= k < n ->
-  let row := Znth k rows nil in
-  let payload := row_payload_z_7 row in
-  row = c_string payload /\
-  valid_string payload /\
-  string_length payload < INT_MAX /\
-  Zlength row = string_length payload + 1.
-Proof.
-  intros rows n k [Hlen Hwf] Hk row payload.
-  specialize (Hwf k Hk).
-  destruct Hwf as [Hrow [Hvalid Hlt]].
-  split; [exact Hrow|].
-  split; [exact Hvalid|].
-  split; [exact Hlt|].
-  subst row payload.
-  rewrite Hrow at 1.
-  unfold c_string, string_length.
-  rewrite Zlength_app, Zlength_cons, Zlength_nil.
-  lia.
-Qed.
-
-Lemma filter_substring_state_7_initial : forall rows substring,
-  filter_substring_state_7 rows substring 0 nil.
-Proof.
-  intros rows substring.
-  unfold filter_substring_state_7, filter_substring_prefix_7.
-  split; [rewrite Zlength_correct; lia|].
-  reflexivity.
-Qed.
-
-Local Close Scope bool_scope.
 
 Ltac c7_row_facts Hwf :=
   let Hrow := fresh "Hrow" in
@@ -84,19 +47,110 @@ Proof.
 Qed.
 
 Lemma proof_of_filter_by_substring_entail_wit_2 : filter_by_substring_entail_wit_2.
-Proof. Admitted.
+Proof.
+  constructor.
+  - pre_process_default.
+    c7_row_facts PreH10.
+    sep_apply_l_atomic (CharPtrArray2.full_split_to_missing_i strings_pre i strings_size_pre rows).
+    + dump_pre_spatial. lia.
+    + Intros row_ptr.
+      Exists row_ptr output_ptrs_2 output_rows_2.
+      unfold StorePtrAsElement.storeA.
+      rewrite sizeof_ptr.
+      change (CharPtrArray2.ElemArray.full row_ptr (Zlength (Znth i rows nil)) (Znth i rows nil))
+        with (CharArray.full row_ptr (Zlength (Znth i rows nil)) (Znth i rows nil)).
+      unfold store_string.
+      rewrite H.
+      repeat rewrite row_payload_c_string_7.
+      repeat rewrite c_string_Zlength_7.
+      entailer!.
+Qed.
 
 Lemma proof_of_filter_by_substring_entail_wit_4 : filter_by_substring_entail_wit_4.
-Proof. Admitted.
+Proof.
+  constructor.
+  - pre_process_default.
+    c7_row_facts PreH13.
+    Exists output_ptrs_2 output_rows_2.
+    unfold store_string.
+    rewrite H.
+    repeat rewrite row_payload_c_string_7.
+    repeat rewrite c_string_Zlength_7.
+    entailer!.
+    repeat rewrite row_payload_c_string_7.
+    eapply strstr_result_contains_match_7 with (ret := retval) (base := row_ptr); eauto;
+      repeat rewrite row_payload_c_string_7; eauto.
+Qed.
 
 Lemma proof_of_filter_by_substring_entail_wit_5 : filter_by_substring_entail_wit_5.
-Proof. Admitted.
+Proof.
+  constructor.
+  - pre_process_default.
+    Exists (app output_ptrs_2 (row_ptr :: nil))
+           (app output_rows_2 (Znth i rows nil :: nil)).
+    rewrite sizeof_ptr.
+    pose proof (CharPtrArray2.missing_i_merge_to_full
+      strings_pre i strings_size_pre row_ptr rows (Znth i rows nil)) as Hmerge.
+    unfold StorePtrAsElement.storeA in Hmerge.
+    change (CharPtrArray2.ElemArray.full row_ptr (Zlength (Znth i rows nil)) (Znth i rows nil))
+      with (CharArray.full row_ptr (Zlength (Znth i rows nil)) (Znth i rows nil)) in Hmerge.
+    sep_apply Hmerge; try lia.
+    rewrite replace_Znth_Znth by lia.
+    unfold store_string.
+    entailer!.
+    -- eapply filter_substring_prefix_7_step_add; eauto.
+       destruct PreH12 as [Hrows_len _].
+       rewrite Hrows_len.
+       lia.
+    -- rewrite Zlength_app_cons. lia.
+    -- rewrite Zlength_app_cons. lia.
+Qed.
 
 Lemma proof_of_filter_by_substring_entail_wit_6 : filter_by_substring_entail_wit_6.
-Proof. Admitted.
+Proof.
+  constructor.
+  - pre_process_default.
+    c7_row_facts PreH13.
+    Exists output_ptrs_2 output_rows_2.
+    unfold store_string.
+    rewrite H.
+    repeat rewrite row_payload_c_string_7.
+    repeat rewrite c_string_Zlength_7.
+    entailer!.
+    repeat rewrite row_payload_c_string_7.
+    eapply strstr_result_no_match_7 with (ret := retval) (base := row_ptr); eauto;
+      repeat rewrite row_payload_c_string_7; eauto.
+Qed.
 
 Lemma proof_of_filter_by_substring_entail_wit_7 : filter_by_substring_entail_wit_7.
-Proof. Admitted.
+Proof.
+  constructor.
+  - pre_process_default.
+    Exists output_ptrs_2 output_rows_2.
+    rewrite sizeof_ptr.
+    pose proof (CharPtrArray2.missing_i_merge_to_full
+      strings_pre i strings_size_pre row_ptr rows (Znth i rows nil)) as Hmerge.
+    unfold StorePtrAsElement.storeA in Hmerge.
+    change (CharPtrArray2.ElemArray.full row_ptr (Zlength (Znth i rows nil)) (Znth i rows nil))
+      with (CharArray.full row_ptr (Zlength (Znth i rows nil)) (Znth i rows nil)) in Hmerge.
+    sep_apply Hmerge; try lia.
+    rewrite replace_Znth_Znth by lia.
+    entailer!.
+    eapply filter_substring_prefix_7_step_skip; eauto.
+    destruct PreH10 as [Hrows_len _].
+    rewrite Hrows_len.
+    lia.
+Qed.
 
 Lemma proof_of_filter_by_substring_return_wit_1 : filter_by_substring_return_wit_1.
-Proof. Admitted.
+Proof.
+  constructor.
+  - pre_process_default.
+    Exists data_2 output_ptrs_2 output_rows_2 output_size_2.
+    entailer!.
+    eapply problem_7_spec_z_of_filter_state.
+    replace i with strings_size_pre in PreH14 by lia.
+    destruct PreH10 as [Hrows_len _].
+    rewrite Hrows_len.
+    exact PreH14.
+Qed.

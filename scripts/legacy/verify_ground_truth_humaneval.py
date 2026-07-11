@@ -14,22 +14,27 @@ import argparse
 import json
 import os
 import re
+import shlex
 import shutil
 import subprocess
 import sys
 import time
 
 
-REPO = Path("/home/yangfp/CAV/C/CAV")
+REPO = Path(__file__).resolve().parents[2]
 GROUND_TRUTH = REPO / "ground_truth"
 INPUT = REPO / "input" / "humaneval"
-QCP_ROOT = Path(os.environ.get("QCP_ROOT", "/home/yangfp/CAV/C/CAV/QualifiedCProgramming"))
+QCP_ROOT = Path(os.environ.get("QCP_ROOT", str(REPO / "QualifiedCProgramming")))
 QCP_INPUT_ROOT = QCP_ROOT / "QCP_examples" / "CAV"
 QCP_COQ_ROOT = QCP_ROOT / "SeparationLogic" / "examples" / "CAV"
 STRATEGY_SOURCE_PATH = os.environ.get("QCP_STRATEGY_SOURCE_PATH", "QCP_examples/QCP_demos_LLM/")
 STRATEGY_COQ_PATH = os.environ.get("QCP_STRATEGY_COQ_PATH", "SimpleC.EE.QCP_demos_LLM")
 STDLIB_SOURCE_PATH = os.environ.get("QCP_STDLIB_SOURCE_PATH", "QCP_examples/stdlib/")
 STDLIB_COQ_PATH = os.environ.get("QCP_STDLIB_COQ_PATH", "SimpleC.StdLib")
+COQC_COMMAND = shlex.split(os.environ.get("COQC", "coqc"))
+SYMEXEC_COMMAND = shlex.split(os.environ.get(
+    "SYMEXEC", str(QCP_ROOT / "linux-binary" / "symexec")
+))
 
 LOCAL_REQ_RE = re.compile(r"^\s*Require\s+(?:Import|Export)\s+([A-Za-z0-9_ ]+)\s*\.", re.M)
 LOCAL_FROM_REQ_RE = re.compile(r"^\s*From\s+[A-Za-z0-9_.]+\s+Require\s+(?:Import|Export)\s+([A-Za-z0-9_ ]+)\s*\.", re.M)
@@ -115,16 +120,8 @@ def run(cmd: list[str], *, cwd: Path, timeout: int, log: list[str]) -> int:
 
 def copy_headers(target: Path) -> None:
     target.mkdir(parents=True, exist_ok=True)
-    for name in (
-        "verification_stdlib.h",
-        "verification_list.h",
-        "int_array_def.h",
-        "long_array_def.h",
-        "char_array_def.h",
-    ):
-        source = INPUT / name
-        if source.exists():
-            shutil.copy2(source, target / name)
+    for source in sorted(INPUT.glob("*.h")):
+        shutil.copy2(source, target / source.name)
 
 
 def stage_case(case_dir: Path, workspace: str) -> tuple[Path, Path]:
@@ -281,13 +278,11 @@ def verify_case(case_dir: Path, *, timeout: int, keep: bool) -> dict:
         "log": str(case_dir / "verify_ground_truth.log"),
     }
 
-    clean_coq_artifacts(QCP_COQ_ROOT)
-    remove_deps_dirs(QCP_COQ_ROOT)
     qcp_input, qcp_coq = stage_case(case_dir, workspace)
     clean_coq_artifacts(qcp_coq)
 
     symexec = [
-        str(QCP_ROOT / "linux-binary" / "symexec"),
+        *SYMEXEC_COMMAND,
         f"--goal-file=SeparationLogic/examples/CAV/{workspace}/{stem}_goal.v",
         f"--proof-auto-file=SeparationLogic/examples/CAV/{workspace}/{stem}_proof_auto.v",
         f"--proof-manual-file=SeparationLogic/examples/CAV/{workspace}/{stem}_proof_manual.v",
@@ -306,31 +301,38 @@ def verify_case(case_dir: Path, *, timeout: int, keep: bool) -> dict:
     rc = run(symexec, cwd=QCP_ROOT, timeout=timeout, log=log)
     if rc != 0:
         result["stage"] = "symexec"
+        log.append("[FAIL] symexec")
         (case_dir / "verify_ground_truth.log").write_text("\n".join(log) + "\n", encoding="utf-8")
         return result
+    log.append("symexec replay succeeded")
 
     migrated_manual = case_dir / f"{stem}_proof_manual.v"
     shutil.copy2(migrated_manual, qcp_coq / migrated_manual.name)
 
     case_args = coq_common_args(workspace)
     for support in support_dep_order(qcp_coq, stem):
-        rc = run(["coqc", *case_args, support.name], cwd=qcp_coq, timeout=timeout, log=log)
+        rc = run([*COQC_COMMAND, *case_args, support.name], cwd=qcp_coq, timeout=timeout, log=log)
         if rc != 0:
             result["stage"] = f"support:{support.name}"
+            log.append(f"[FAIL] support:{support.name}")
             (case_dir / "verify_ground_truth.log").write_text("\n".join(log) + "\n", encoding="utf-8")
             return result
+    log.append("[OK] support")
 
     for suffix in ("goal", "proof_auto", "proof_manual", "goal_check"):
         name = f"{stem}_{suffix}.v"
-        rc = run(["coqc", *case_args, name], cwd=qcp_coq, timeout=timeout, log=log)
+        rc = run([*COQC_COMMAND, *case_args, name], cwd=qcp_coq, timeout=timeout, log=log)
         if rc != 0:
             result["stage"] = suffix
+            log.append(f"[FAIL] {suffix}")
             (case_dir / "verify_ground_truth.log").write_text("\n".join(log) + "\n", encoding="utf-8")
             return result
+        log.append(f"[OK] {suffix}")
 
     manual_text = (qcp_coq / f"{stem}_proof_manual.v").read_text(encoding="utf-8", errors="replace")
     if OBLIGATION_RE.search(manual_text):
         result["stage"] = "proof_manual_obligation_marker"
+        log.append("[FAIL] proof_manual_obligation_marker")
         (case_dir / "verify_ground_truth.log").write_text("\n".join(log) + "\n", encoding="utf-8")
         return result
 

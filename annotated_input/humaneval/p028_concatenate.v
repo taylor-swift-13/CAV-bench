@@ -16,7 +16,6 @@ Definition problem_28_pre (input : list string) : Prop := True.
 
 Definition problem_28_spec (input : list string) (output : string) : Prop :=
   String.concat "" input = output.
-
 Require Import Coq.ZArith.ZArith.
 Require Import Coq.Lists.List.
 Require Import Coq.Strings.String.

@@ -38,7 +38,6 @@ Definition problem_7_pre : Prop:= True.
 
 Definition problem_7_spec (input output : list string) (sub : string) : Prop :=
   output = filter_by_substring_impl input sub.
-
 Require Import Coq.ZArith.ZArith.
 Require Import Coq.Lists.List.
 Require Import Coq.Strings.String.
@@ -51,9 +50,9 @@ Require Import SimpleC.StdLib.string_lib.
 Import ListNotations.
 
 Local Open Scope Z_scope.
-Local Open Scope string_scope.
-Local Open Scope list_scope.
 
+(* Case-local compatibility with the source proof; DLC intentionally keeps the
+   benchmark's pinned string library unchanged. *)
 Definition substring_at (str sub : list Z) (i : Z) : Prop :=
   0 <= i <= string_length str /\
   i + string_length sub <= string_length str /\
@@ -68,6 +67,8 @@ Definition strstr_result (str sub : list Z) (ret s : Z) : Prop :=
       ret <> 0) \/
   ((forall k, 0 <= k <= string_length str -> ~ substring_at str sub k) /\
    ret = 0).
+Local Open Scope string_scope.
+Local Open Scope list_scope.
 
 Definition ascii_of_z_7 (z : Z) : ascii :=
   ascii_of_nat (Z.to_nat z).

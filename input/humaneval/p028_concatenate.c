@@ -49,30 +49,30 @@ char* concatenate(char** strings, int strings_size)
     int len0 = 0;
     int len = 0;
     char *cur = 0;
-    
+
     for (int i=0;i<strings_size;i++) {
-        
+
         cur = strings[i];
-        
-        len0 = (int)strlen(cur);
-        
+
+        len0 = (int)strlen(cur) ;
+
         total += len0;
-        
+
     }
     out = malloc_char_array(total);
-    
+
     for (int i=0;i<strings_size;i++) {
-        
+
         cur = strings[i];
-        
-        len = (int)strlen(cur);
-        
-        memcpy(out + k, cur, len);
+
+        len = (int)strlen(cur) ;
+
+        memcpy(out + k, cur, len) ;
         k += len;
-        
+
     }
-    
+
     out[k] = '\0';
-    
+
     return out;
 }

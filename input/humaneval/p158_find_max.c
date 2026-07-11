@@ -70,35 +70,33 @@ char* find_max(char** words, int words_size)
     ch = 0;
 
     k = 0;
-    
+
     while (k < 128) {
         seen[k] = 0;
         k = k + 1;
     }
 
     i = 0;
-    
+
     while (i < words_size) {
-        
+
         k = 0;
-        
+
         while (k < 128) {
             seen[k] = 0;
             k = k + 1;
         }
 
-        
         cur = words[i];
 
-        
-        len = (int)strlen(cur);
+        len = (int)strlen(cur) ;
         unique = 0;
         j = 0;
         ch = 0;
-        
+
         while (j < len) {
             ch = cur[j];
-            
+
             if (seen[ch] == 0) {
                 seen[ch] = 1;
                 unique = unique + 1;
@@ -112,22 +110,23 @@ char* find_max(char** words, int words_size)
             best_idx = i;
         } else {
             if (unique == maxu && i != best_idx) {
-                
+
                 max = words[best_idx];
-                
-                cmp = strcmp(cur, max);
-                
+
+                cmp = strcmp(cur, max)
+                  ;
+
                 if (cmp < 0) {
                     max = cur;
                     best_idx = i;
                 }
             }
         }
-        
+
         i = i + 1;
     }
-    
+
     max = words[best_idx];
-    
+
     return max;
 }

@@ -64,21 +64,21 @@ StrArray *total_match(char** lst1, int lst1_size, char** lst2, int lst2_size)
     int num2 = 0;
     int len = 0;
     char *cur = 0;
-    
+
     for (int i=0;i<lst1_size;i++) {
-        
+
         cur = lst1[i];
-        len = (int)strlen(cur);
+        len = (int)strlen(cur) ;
         num1 += len;
-        
+
     }
-    
+
     for (int i=0;i<lst2_size;i++) {
-        
+
         cur = lst2[i];
-        len = (int)strlen(cur);
+        len = (int)strlen(cur) ;
         num2 += len;
-        
+
     }
     StrArray *out = malloc_str_array_struct();
     if (num1 > num2) {
