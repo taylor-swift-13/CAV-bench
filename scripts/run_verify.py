@@ -36,12 +36,12 @@ DEFAULT_MODEL = "gpt-5.4"
 DEFAULT_CLAUDE_MODEL = "sonnet"
 DEFAULT_REASONING_EFFORT = "medium"
 QCP_SKILL_PATHS = (
-    ".agents/skills/verification-orchestrator/SKILL.md",
-    ".agents/skills/annotation-filling/SKILL.md",
-    ".agents/skills/annotation-checking/SKILL.md",
-    ".agents/skills/vc-checking/SKILL.md",
-    ".agents/skills/vc-proving/SKILL.md",
-    ".agents/skills/final-check/SKILL.md",
+    "QualifiedCProgramming/.agents/skills/verification-orchestrator/SKILL.md",
+    "QualifiedCProgramming/.agents/skills/annotation-filling/SKILL.md",
+    "QualifiedCProgramming/.agents/skills/annotation-checking/SKILL.md",
+    "QualifiedCProgramming/.agents/skills/vc-checking/SKILL.md",
+    "QualifiedCProgramming/.agents/skills/group-worker-proving/SKILL.md",
+    "QualifiedCProgramming/.agents/skills/final-check/SKILL.md",
 )
 
 # Agent-facing rules live in skills/verify/SKILL.md (see §4.0 read/write
@@ -276,13 +276,13 @@ def _qcp_skill_list() -> str:
         *[f"- `{path}`" for path in QCP_SKILL_PATHS],
         "",
         "Also read the relevant QCP docs:",
-        "- `.agents/skills/annotation-checking/docs/spec-quality-checklist.md` — spec-quality criteria and external predicate definition requirements.",
-        "- `.agents/skills/annotation-filling/docs/annotation-rules.md` — annotation syntax and placement rules.",
-        "- `.agents/skills/annotation-filling/docs/predicate-first-annotation.md` — mathematical predicates instead of algorithm mirrors.",
-        "- `.agents/skills/annotation-filling/docs/common-annotation-errors.md` — common symexec/annotation failure patterns.",
-        "- `.agents/skills/vc-proving/docs/` — proof tactics and separation-logic proof patterns.",
-        "- `.agents/skills/final-check/` — final compile/check workflow.",
-        "Use `verification-orchestrator` as the orchestration entry point. Use `annotation-filling` and `annotation-checking` for annotation/symexec. Use `vc-checking` and `vc-proving` for manual VC diagnosis/proofs. Use `final-check` to validate the current case before completion.",
+        "- `QualifiedCProgramming/.agents/skills/annotation-checking/docs/spec-quality-checklist.md` — spec-quality criteria and external predicate definition requirements.",
+        "- `QualifiedCProgramming/.agents/skills/annotation-filling/docs/annotation-guide.md` — annotation syntax and placement rules.",
+        "- `QualifiedCProgramming/.agents/skills/annotation-filling/docs/pure-proposition-predicates.md` — mathematical predicates instead of algorithm mirrors.",
+        "- `QualifiedCProgramming/.agents/skills/annotation-filling/docs/array-string-guide.md` — built-in array/string predicate support and required side conditions.",
+        "- `QualifiedCProgramming/.agents/skills/group-worker-proving/docs/` — proof tactics and separation-logic proof patterns.",
+        "- `QualifiedCProgramming/.agents/skills/final-check/` — final compile/check workflow.",
+        "Use `verification-orchestrator` as the orchestration entry point. Use `annotation-filling` and `annotation-checking` for annotation/symexec. Use `vc-checking` and `group-worker-proving` for manual VC diagnosis/proofs. Use `final-check` to validate the current case before completion.",
     ]
     return "\n".join(lines)
 
@@ -391,7 +391,7 @@ def build_prompt(
     restart_context: str | None = None,
 ) -> str:
     lines = [
-        "Use the repo-level CAV verify skill plus QCP official workflow rules. First read the repo-level CAV skill files and the full read-only QCP `.agents/skills/` list below; then use this prompt and the current QCP mirror for case-specific paths and audit requirements.",
+        "Use the repo-level CAV verify skill plus QCP official workflow rules. First read the repo-level CAV skill files and the full read-only QCP `QualifiedCProgramming/.agents/skills/` list below; then use this prompt and the current QCP mirror for case-specific paths and audit requirements.",
         "",
         _repo_skill_list(skill_path),
         "",
@@ -399,12 +399,12 @@ def build_prompt(
         "",
         "Persistence requirement: default the contract to correct. If annotation, symexec, proof, or final-check fails while you are working, do not exit; keep editing annotation/proof and rerun the relevant QCP check. Writing issues.md or metrics.md is not permission to stop. The only exception is a confirmed contract_program_mismatch_blocker: the Contract and original program semantics conflict and the case must return to Contract/user decision.",
         "",
-        "Compile boundary: use the QCP final-check sequence summarized here and cross-check it against read-only QCP `.agents/skills/` docs: symexec, then dependency-ordered coqc for original deps, goal, proof_auto, proof_manual, and goal_check. The current case is already staged in the current workspace's QCP mirror under QualifiedCProgramming. Do all annotation, symexec, proof, and coqc work there. Do not compile under output/coq/generated, do not parallelize a dependency-ordered QCP final-check sequence, and never copy .vo/.glob/.aux files back to output.",
+        "Compile boundary: use the QCP final-check sequence summarized here and cross-check it against read-only QCP `QualifiedCProgramming/.agents/skills/` docs: symexec, then dependency-ordered coqc for original deps, goal, proof_auto, proof_manual, and goal_check. The current case is already staged in the current workspace's QCP mirror under QualifiedCProgramming. Do all annotation, symexec, proof, and coqc work there. Do not compile under output/coq/generated, do not parallelize a dependency-ordered QCP final-check sequence, and never copy .vo/.glob/.aux files back to output.",
         "Runner artifact boundary: do not write output/, annotated/, repo-level logs, or staged bare spec deps yourself. Write only issues.md and metrics.md under the active QCP logs directory; do not put probe files, proof backups, or temporary Coq files under logs. Use a `.tmp/` directory inside the active QCP Coq directory for temporary probes/backups. The runner collects the current QCP annotated C, QCP logs, and final target .v artifacts from the QCP mirror after the agent exits.",
         "",
-        "Repository read/write boundary: after reading this prompt, the repo-level CAV skill files listed above, and the read-only QCP `.agents/skills/` docs, write only the active QCP annotated C, active QCP Coq directory, and issues.md/metrics.md in active QCP logs. The active QCP deps directory is read-only. Do not read or write output/, annotated/, scripts/, input/, QCP source files outside `.agents/skills/`, unrelated QCP mirror workspaces, git history, or agent stdout logs. The only repo-level files you may read are the listed `../skills/...` files.",
+        "Repository read/write boundary: after reading this prompt, the repo-level CAV skill files listed above, and the read-only QCP `QualifiedCProgramming/.agents/skills/` docs, write only the active QCP annotated C, active QCP Coq directory, and issues.md/metrics.md in active QCP logs. The active QCP deps directory is read-only. Do not read or write output/, annotated/, scripts/, input/, QCP source files outside `QualifiedCProgramming/.agents/skills/`, unrelated QCP mirror workspaces, git history, or agent stdout logs. The only repo-level files you may read are the listed `../skills/...` files.",
         "",
-        "Read boundary: the current QCP mirror directories listed in Inputs are in scope, along with the listed repo-level CAV skill files, QCP `.agents/skills/`, `tutorial/`, `QCP_examples/{Applications_human,LLM_bench,QCP_demos_human,QCP_demos_LLM,stdlib}/`, `SeparationLogic/stdlib/`, and `SeparationLogic/examples/{Applications_human,LLM_bench,QCP_demos_human,QCP_demos_LLM}/` for required related examples. The output workspace is runner-owned and must not be read by the agent.",
+        "Read boundary: the current QCP mirror directories listed in Inputs are in scope, along with the listed repo-level CAV skill files, `QualifiedCProgramming/.agents/skills/`, `QualifiedCProgramming/tutorial/`, `QualifiedCProgramming/QCP_examples/{Applications_human,LLM_bench,QCP_demos_human,QCP_demos_LLM,stdlib}/`, `QualifiedCProgramming/SeparationLogic/stdlib/`, and `QualifiedCProgramming/SeparationLogic/examples/{Applications_human,LLM_bench,QCP_demos_human,QCP_demos_LLM}/` for required related examples. The output workspace is runner-owned and must not be read by the agent.",
         "",
         "Symexec rerun rule: work in the QCP mirror. If you rerun symexec after annotation changes, preserve the previous target .v files inside the current QCP mirror for reference before regenerating, then manually reuse old proof structure where witness statements still match.",
         "",
@@ -429,7 +429,7 @@ def build_proof_only_prompt(
     restart_context: str | None = None,
 ) -> str:
     lines = [
-        "Use the repo-level CAV verify skill plus QCP official workflow rules. First read the repo-level CAV skill files and the full read-only QCP `.agents/skills/` list below, even in proof-only mode; then use this prompt and the current QCP mirror for case-specific paths and audit requirements.",
+        "Use the repo-level CAV verify skill plus QCP official workflow rules. First read the repo-level CAV skill files and the full read-only QCP `QualifiedCProgramming/.agents/skills/` list below, even in proof-only mode; then use this prompt and the current QCP mirror for case-specific paths and audit requirements.",
         "",
         _repo_skill_list(skill_path, proof_only=True),
         "",
@@ -437,12 +437,12 @@ def build_proof_only_prompt(
         "",
         "Persistence requirement: proof-only mode must keep proving while proof_manual.v can still be edited. If proof or final-check fails while you are working, do not exit; keep editing proof_manual.v and rerun the relevant QCP check. Writing issues.md or metrics.md is not permission to stop. The only exception is a confirmed contract_program_mismatch_blocker: the Contract and original program semantics conflict and the case must return to Contract/user decision.",
         "",
-        "Compile boundary: use the QCP final-check sequence summarized here and cross-check it against read-only QCP `.agents/skills/` docs: dependency-ordered coqc for original deps, goal, proof_auto, proof_manual, and goal_check. The current case is already staged in the current workspace's QCP mirror under QualifiedCProgramming. Do all proof and coqc work there. Do not compile under output/coq/generated, do not parallelize a dependency-ordered QCP final-check sequence, and never copy .vo/.glob/.aux files back to output.",
+        "Compile boundary: use the QCP final-check sequence summarized here and cross-check it against read-only QCP `QualifiedCProgramming/.agents/skills/` docs: dependency-ordered coqc for original deps, goal, proof_auto, proof_manual, and goal_check. The current case is already staged in the current workspace's QCP mirror under QualifiedCProgramming. Do all proof and coqc work there. Do not compile under output/coq/generated, do not parallelize a dependency-ordered QCP final-check sequence, and never copy .vo/.glob/.aux files back to output.",
         "Runner artifact boundary: do not write output/, annotated/, repo-level logs, or staged bare spec deps yourself. Write only issues.md and metrics.md under the active QCP logs directory; do not put probe files, proof backups, or temporary Coq files under logs. Use a `.tmp/` directory inside the active QCP Coq directory for temporary probes/backups. The runner collects the current QCP annotated C, QCP logs, and final target .v artifacts from the QCP mirror after the agent exits.",
         "",
-        "Repository read/write boundary: after reading this prompt, the repo-level CAV skill files listed above, and the read-only QCP `.agents/skills/` docs, write only the active QCP annotated C, active QCP Coq directory, and issues.md/metrics.md in active QCP logs. The active QCP deps directory is read-only. Do not read or write output/, annotated/, scripts/, input/, QCP source files outside `.agents/skills/`, unrelated QCP mirror workspaces, git history, or agent stdout logs. The only repo-level files you may read are the listed `../skills/...` files.",
+        "Repository read/write boundary: after reading this prompt, the repo-level CAV skill files listed above, and the read-only QCP `QualifiedCProgramming/.agents/skills/` docs, write only the active QCP annotated C, active QCP Coq directory, and issues.md/metrics.md in active QCP logs. The active QCP deps directory is read-only. Do not read or write output/, annotated/, scripts/, input/, QCP source files outside `QualifiedCProgramming/.agents/skills/`, unrelated QCP mirror workspaces, git history, or agent stdout logs. The only repo-level files you may read are the listed `../skills/...` files.",
         "",
-        "Read boundary: the current QCP mirror directories listed in Inputs are in scope, along with the listed repo-level CAV skill files, QCP `.agents/skills/`, `tutorial/`, `QCP_examples/{Applications_human,LLM_bench,QCP_demos_human,QCP_demos_LLM,stdlib}/`, `SeparationLogic/stdlib/`, and `SeparationLogic/examples/{Applications_human,LLM_bench,QCP_demos_human,QCP_demos_LLM}/` for required related examples. The output workspace is runner-owned and must not be read by the agent.",
+        "Read boundary: the current QCP mirror directories listed in Inputs are in scope, along with the listed repo-level CAV skill files, `QualifiedCProgramming/.agents/skills/`, `QualifiedCProgramming/tutorial/`, `QualifiedCProgramming/QCP_examples/{Applications_human,LLM_bench,QCP_demos_human,QCP_demos_LLM,stdlib}/`, `QualifiedCProgramming/SeparationLogic/stdlib/`, and `QualifiedCProgramming/SeparationLogic/examples/{Applications_human,LLM_bench,QCP_demos_human,QCP_demos_LLM}/` for required related examples. The output workspace is runner-owned and must not be read by the agent.",
         "",
         "Do not rerun symexec in proof-only mode. If a prior generated snapshot exists under coq/last, it is read-only reference material for proof structure.",
         "",

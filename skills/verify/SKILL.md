@@ -45,13 +45,12 @@ Runner prompt 提供当前 case 的 QCP mirror 路径、QCP final-check 摘要�
   - CAV 历史同型 workspace 只能作为补充参考，不能替代上述官方示例源。
 - QCP skill 文档路径只作为可选参考，不要求启动时读取；annotation 语法、symexec 报错、proof tactic、final-check 细节不确定时，只读取一个最相关的小文件或章节：
   - orchestration：`QualifiedCProgramming/.agents/skills/verification-orchestrator/SKILL.md`
-  - annotation + symexec：`QualifiedCProgramming/.agents/skills/annotation-and-symbolic-execution/SKILL.md`
   - annotation filling：`QualifiedCProgramming/.agents/skills/annotation-filling/SKILL.md`
   - annotation checking：`QualifiedCProgramming/.agents/skills/annotation-checking/SKILL.md`
   - VC checking：`QualifiedCProgramming/.agents/skills/vc-checking/SKILL.md`
-  - VC proving：`QualifiedCProgramming/.agents/skills/vc-proving/SKILL.md`
+  - group proof：`QualifiedCProgramming/.agents/skills/group-worker-proving/SKILL.md`
   - final check：`QualifiedCProgramming/.agents/skills/final-check/SKILL.md`
-  - 常用细节文档：`QualifiedCProgramming/.agents/skills/annotation-filling/docs/annotation-rules.md`、`QualifiedCProgramming/.agents/skills/annotation-filling/docs/predicate-first-annotation.md`、`QualifiedCProgramming/.agents/skills/annotation-filling/docs/common-annotation-errors.md`、`QualifiedCProgramming/.agents/skills/vc-proving/docs/refinement-proof-tactics.md`、`QualifiedCProgramming/.agents/skills/vc-proving/docs/separation-logic-whole-proof-tactics.md`、`QualifiedCProgramming/.agents/skills/final-check/docs/coq-compilation.md`
+  - 常用细节文档：`QualifiedCProgramming/.agents/skills/annotation-filling/docs/annotation-guide.md`、`QualifiedCProgramming/.agents/skills/annotation-filling/docs/pure-proposition-predicates.md`、`QualifiedCProgramming/.agents/skills/annotation-filling/docs/array-string-guide.md`、`QualifiedCProgramming/.agents/skills/group-worker-proving/docs/refinement-proof-tactics.md`、`QualifiedCProgramming/.agents/skills/group-worker-proving/docs/separation-logic-whole-proof-tactics.md`、`QualifiedCProgramming/.agents/skills/final-check/docs/final-check-guide.md`
 - 示例检索必须围绕当前失败点和题型关键词；实际读取的示例路径要记录到 `logs/issues.md` 或 `logs/metrics.md`。
 - 按 runner prompt 给出的 QCP 阶段摘要推进 annotation、symexec、proof、final-check。
 - 以 runner prompt 给出的命令和 QCP final-check 顺序作为端到端编排入口。
