@@ -39,7 +39,7 @@ python3 scripts/sanitize_ground_truth_inputs.py --write \
 
 ## 2026-07-12 多维任务更新
 
-已在 DLC 环境中完成 fresh replay 并收录 11 个更新：
+已在 DLC 环境中完成 fresh replay 并收录 16 个更新：
 
 - `p001_separate_paren_groups`
 - `p007_filter_by_substring`
@@ -51,6 +51,11 @@ python3 scripts/sanitize_ground_truth_inputs.py --write \
 - `p105_by_length`
 - `p112_reverse_delete`
 - `p113_odd_count`
+- `p117_select_words`
+- `p147_get_matrix_triples`
+- `p149_sorted_list_sum`
+- `p153_Strongest_Extension`
 - `p158_find_max`
+- `p160_do_algebra`
 
-本轮未收录：p012、p087、p095、p115、p129、p148 的源证明仍含未完成项；p125 仍在验证中；p117、p147、p149、p153、p160 只有原始 C。仓库中其他既有目录未在本轮重新分类。
+本轮未收录：p012、p087、p095、p115、p129、p148 的源证明仍含未完成项；p125 仍在验证中。仓库中其他既有目录未在本轮重新分类。

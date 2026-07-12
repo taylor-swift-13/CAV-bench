@@ -1,0 +1,6 @@
+From SimpleC.EE.CAV.ground_truth_p147_get_matrix_triples Require Import p147_get_matrix_triples_goal p147_get_matrix_triples_proof_auto p147_get_matrix_triples_proof_manual.
+
+Module VC_Correctness : VC_Correct.
+  Include p147_get_matrix_triples_proof_auto.
+  Include p147_get_matrix_triples_proof_manual.
+End VC_Correctness.

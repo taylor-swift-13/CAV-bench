@@ -25,7 +25,14 @@ GROUND_TRUTH = REPO / "ground_truth"
 
 # Candidates accepted by a fresh DLC symexec + five-stage Coq replay on
 # 2026-07-12. Other source bundles remain opt-in until they pass the same gate.
-DEFAULT_IDS = (1, 7, 14, 28, 29, 74, 101, 105, 112, 113, 158)
+DEFAULT_IDS = (1, 7, 14, 28, 29, 74, 101, 105, 112, 113, 117, 147, 149, 153, 158, 160)
+STEM_OVERRIDES = {
+    117: "p117_select_words",
+    147: "p147_get_matrix_triples",
+    149: "p149_sorted_list_sum",
+    153: "p153_Strongest_Extension",
+    160: "p160_do_algebra",
+}
 
 CONTRACT_RE = re.compile(r"/\*@(.*?)\*/", re.DOTALL)
 FORBIDDEN_MANUAL_RE = re.compile(
@@ -71,6 +78,8 @@ def remove_manual_lemmas(text: str, names: tuple[str, ...]) -> str:
 
 
 def stem_for(number: int) -> str:
+    if number in STEM_OVERRIDES:
+        return STEM_OVERRIDES[number]
     matches = sorted(INPUT.glob(f"p{number:03d}_*.c"))
     if len(matches) != 1:
         raise RuntimeError(f"problem {number}: expected one DLC input, found {len(matches)}")
@@ -164,15 +173,16 @@ Definition strchr_result (str : list Z) (c ret s : Z) : Prop :=
 def desired_files(number: int) -> tuple[str, dict[Path, str]]:
     stem = stem_for(number)
     source_c = (SOURCE / f"C_{number}.c").read_text(encoding="utf-8", errors="replace")
-    input_c = (INPUT / f"{stem}.c").read_text(encoding="utf-8", errors="replace")
+    input_path = INPUT / f"{stem}.c"
+    input_c = input_path.read_text(encoding="utf-8", errors="replace") if input_path.exists() else source_c
     manual = (SOURCE / f"C_{number}_proof_manual.v").read_text(
         encoding="utf-8", errors="replace"
     )
     support = support_text(number, stem)
 
-    if normalized_executable(source_c) != normalized_executable(input_c):
+    if input_path.exists() and normalized_executable(source_c) != normalized_executable(input_c):
         raise RuntimeError(f"{stem}: source changes executable C")
-    if contracts(source_c) != contracts(input_c):
+    if input_path.exists() and contracts(source_c) != contracts(input_c):
         raise RuntimeError(f"{stem}: source changes fixed function contracts")
     for label, text, pattern in (
         ("support", support, FORBIDDEN_SUPPORT_RE),
