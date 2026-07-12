@@ -111,7 +111,13 @@ def _scan_lines(
     return findings
 
 
-def scan_proof_file(text: str, file_label: str, *, flag_stubs: bool = True) -> list[dict[str, Any]]:
+def scan_proof_file(
+    text: str,
+    file_label: str,
+    *,
+    flag_stubs: bool = True,
+    allowed_local_modules: set[str] | None = None,
+) -> list[dict[str, Any]]:
     """Scan a manual proof file for stubs, axioms, and unusual imports."""
     findings: list[dict[str, Any]] = []
     if flag_stubs:
@@ -135,12 +141,14 @@ def scan_proof_file(text: str, file_label: str, *, flag_stubs: bool = True) -> l
         names = match.group(2)
         targets = [origin] if origin else names.split()
         for target in targets:
+            if target in (allowed_local_modules or set()):
+                continue
             if not any(target.startswith(prefix) or target == prefix.rstrip(".")
                        for prefix in ALLOWED_IMPORT_PREFIXES):
                 line = text[: match.start()].count("\n") + 1
                 findings.append({
                     "category": "forbidden_import",
-                    "severity": "warning",
+                    "severity": "error",
                     "file": file_label,
                     "line": line,
                     "snippet": match.group(0).strip()[:400],
@@ -152,10 +160,89 @@ def scan_proof_file(text: str, file_label: str, *, flag_stubs: bool = True) -> l
     return findings
 
 
+_C_MULTI_CHAR_TOKENS = tuple(sorted({
+    "<<=", ">>=", "...", "->", "++", "--", "<<", ">>", "<=", ">=",
+    "==", "!=", "&&", "||", "+=", "-=", "*=", "/=", "%=", "&=", "|=",
+    "^=", "##", "::",
+}, key=len, reverse=True))
+
+
+def _c_tokens_without_comments(text: str) -> list[str]:
+    """Lex C conservatively while dropping comments and layout.
+
+    Unlike a comment-stripping regex, this keeps comment-looking text inside
+    string and character literals and preserves token boundaries.  The audit
+    therefore cannot hide an executable edit by merging identifiers across
+    whitespace or by placing ``//``/``/*`` inside a literal.
+    """
+    tokens: list[str] = []
+    i = 0
+    n = len(text)
+    while i < n:
+        ch = text[i]
+        if ch.isspace():
+            i += 1
+            continue
+        if text.startswith("//", i):
+            newline = text.find("\n", i + 2)
+            i = n if newline < 0 else newline + 1
+            continue
+        if text.startswith("/*", i):
+            end = text.find("*/", i + 2)
+            if end < 0:
+                tokens.append("<unterminated-comment>")
+                break
+            i = end + 2
+            continue
+        if ch in {'"', "'"}:
+            quote = ch
+            start = i
+            i += 1
+            while i < n:
+                if text[i] == "\\":
+                    i += 2
+                    continue
+                if text[i] == quote:
+                    i += 1
+                    break
+                i += 1
+            else:
+                tokens.append("<unterminated-literal>")
+            tokens.append(text[start:i])
+            continue
+        if ch.isalpha() or ch == "_":
+            start = i
+            i += 1
+            while i < n and (text[i].isalnum() or text[i] == "_"):
+                i += 1
+            tokens.append(text[start:i])
+            continue
+        if ch.isdigit() or (ch == "." and i + 1 < n and text[i + 1].isdigit()):
+            start = i
+            i += 1
+            while i < n:
+                cur = text[i]
+                if cur.isalnum() or cur in "._":
+                    i += 1
+                    continue
+                if cur in "+-" and i > start and text[i - 1] in "eEpP":
+                    i += 1
+                    continue
+                break
+            tokens.append(text[start:i])
+            continue
+        matched = next((op for op in _C_MULTI_CHAR_TOKENS if text.startswith(op, i)), None)
+        if matched is not None:
+            tokens.append(matched)
+            i += len(matched)
+            continue
+        tokens.append(ch)
+        i += 1
+    return tokens
+
+
 def normalize_c_without_annotations(text: str) -> str:
-    text = re.sub(r"/\*.*?\*/", "", text, flags=re.DOTALL)
-    text = re.sub(r"//.*", "", text)
-    return re.sub(r"\s+", "", text)
+    return "\x1f".join(_c_tokens_without_comments(text))
 
 
 def infer_case_name(workspace: Path) -> str:
@@ -228,17 +315,22 @@ def normalized_generated_text(path: Path) -> str:
     return path.read_text(encoding="utf-8", errors="replace").replace("\r\n", "\n")
 
 
-def generated_manual_proof_files(workspace: Path) -> list[Path]:
-    """Return only target ``proof_manual.v`` files to audit for proof bypasses.
+def agent_writable_proof_files(workspace: Path) -> list[Path]:
+    """Return manual proofs and non-standard helper files written in the case.
 
-    The other target artifacts are owned by symexec/final-check freshness gates,
-    not by proof-bypass text scanning.
+    Symexec-owned goal/auto/check files legitimately declare obligation axioms
+    and are protected by the freshness check, so they are excluded.  Every
+    other collected Coq file can influence a manual proof and must be scanned.
     """
     gendir = generated_dir(workspace)
     if not gendir.exists():
         return []
-
-    return sorted(gendir.glob("*_proof_manual.v"))
+    files: list[Path] = []
+    for path in sorted(gendir.glob("*.v")):
+        if path.name.endswith(("_goal.v", "_proof_auto.v", "_goal_check.v")):
+            continue
+        files.append(path)
+    return files
 
 
 def normalize_qcp_finding(raw: dict[str, Any], *, case: str) -> dict[str, Any]:
@@ -390,9 +482,19 @@ def scan_proof_artifacts(workspace: Path, case: str) -> list[dict[str, Any]]:
             message=f"Missing unique target generated artifact for suffix {suffix}.",
         ))
 
-    for path in generated_manual_proof_files(workspace):
+    allowed_local_modules = {
+        path.stem for path in (workspace / "original").glob("*.v")
+    } | {
+        path.stem for path in gendir.glob("*.v")
+    }
+    for path in agent_writable_proof_files(workspace):
         text = path.read_text(encoding="utf-8", errors="replace")
-        for raw in scan_proof_file(text, path.name, flag_stubs=True):
+        for raw in scan_proof_file(
+            text,
+            path.name,
+            flag_stubs=True,
+            allowed_local_modules=allowed_local_modules,
+        ):
             normalized = normalize_qcp_finding(raw, case=case)
             normalized["file"] = str(path)
             findings.append(normalized)

@@ -20,8 +20,8 @@ from typing import Any, Iterable
 
 WORKSPACE_RE = re.compile(r"verify_\d{8}_\d+_[A-Za-z0-9_]+")
 
-READ_TOOLS = {"Read", "Grep", "Glob"}
-WRITE_TOOLS = {"Edit", "Write", "MultiEdit"}
+READ_TOOLS = {"read", "readfile", "grep", "glob", "search", "searchfiles", "list", "ls"}
+WRITE_TOOLS = {"edit", "write", "multiedit", "strreplacefile", "writefile"}
 READISH_BASH_RE = re.compile(
     r"\b(cat|head|tail|sed|less|more|nl|awk|grep|rg|find|ls|stat|wc|"
     r"diff|cmp|python3?|perl|sort|cp)\b"
@@ -90,15 +90,39 @@ def iter_tool_uses(transcript: Path):
             obj = json.loads(raw)
         except json.JSONDecodeError:
             continue
-        if obj.get("type") != "assistant":
-            continue
-        message = obj.get("message") or {}
-        for item in message.get("content") or []:
-            if not isinstance(item, dict) or item.get("type") != "tool_use":
-                continue
-            tool = item.get("name") or "<unknown>"
-            tool_input = item.get("input") or {}
-            yield line_no, tool, tool_input
+        # Claude stream-json.
+        if obj.get("type") == "assistant":
+            message = obj.get("message") or {}
+            for item in message.get("content") or []:
+                if not isinstance(item, dict) or item.get("type") != "tool_use":
+                    continue
+                yield line_no, item.get("name") or "<unknown>", item.get("input") or {}
+
+        # Codex JSONL.  Scan completed commands to avoid counting each command
+        # twice (item.started + item.completed).
+        if obj.get("type") == "item.completed":
+            item = obj.get("item") or {}
+            if item.get("type") == "command_execution":
+                yield line_no, "Bash", {"command": item.get("command") or ""}
+
+        # Kimi Code stream-json/OpenAI-style function calls.
+        if obj.get("role") == "assistant":
+            for call in obj.get("tool_calls") or []:
+                function = call.get("function") if isinstance(call, dict) else None
+                if not isinstance(function, dict):
+                    continue
+                raw_args = function.get("arguments") or {}
+                if isinstance(raw_args, str):
+                    try:
+                        raw_args = json.loads(raw_args)
+                    except json.JSONDecodeError:
+                        raw_args = {"arguments": raw_args}
+                yield line_no, function.get("name") or "<unknown>", raw_args
+
+        # OpenCode JSON events.
+        if obj.get("type") == "tool":
+            state = obj.get("state") or {}
+            yield line_no, obj.get("tool") or "<unknown>", state.get("input") or {}
 
 
 def tool_input_text(tool: str, tool_input: Any) -> str:
@@ -115,16 +139,34 @@ def tool_input_text(tool: str, tool_input: Any) -> str:
     return " ".join(pieces)
 
 
+def write_target_text(tool_input: Any) -> str:
+    """Return only path-like fields for non-shell write tools.
+
+    Scanning replacement/content payloads would flag a clean agent merely for
+    documenting a forbidden path in ``issues.md``.  The destination path is
+    what matters for a write-boundary violation.
+    """
+    if not isinstance(tool_input, dict):
+        return str(tool_input)
+    path_keys = {"path", "file_path", "filepath", "filePath", "target", "destination"}
+    return " ".join(
+        f"{key}={value}"
+        for key, value in tool_input.items()
+        if key in path_keys and isinstance(value, str)
+    )
+
+
 def is_read_like(tool: str, text: str) -> bool:
-    if tool in READ_TOOLS:
+    normalized = tool.lower()
+    if normalized in READ_TOOLS:
         return True
-    if tool == "Bash" and READISH_BASH_RE.search(text):
+    if normalized in {"bash", "shell"} and READISH_BASH_RE.search(text):
         return True
     return False
 
 
 def is_write_like(tool: str) -> bool:
-    return tool in WRITE_TOOLS
+    return tool.lower() in WRITE_TOOLS
 
 
 def short(text: str, limit: int = 700) -> str:
@@ -169,6 +211,8 @@ def scan_transcript(transcript: Path, *, strict_current_output: bool = False) ->
         write_like = is_write_like(tool)
         if not (read_like or write_like):
             continue
+        if write_like and not read_like:
+            text = write_target_text(tool_input)
 
         if GROUND_TRUTH_PATH_RE.search(text):
             add_finding(

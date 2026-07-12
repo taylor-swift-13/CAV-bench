@@ -16,6 +16,7 @@ import time
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import agent_config
 import agent_metrics
+import check_leakage
 import check_verify_audit
 
 
@@ -740,9 +741,61 @@ expected_executable = {expected_executable!r}
 expected_contracts = json.loads({json.dumps(expected_contracts)!r})
 
 def normalize_c_without_annotations(text):
-    text = re.sub(r"/\\*.*?\\*/", "", text, flags=re.DOTALL)
-    text = re.sub(r"//.*", "", text)
-    return re.sub(r"\\s+", "", text)
+    multi = ("<<=", ">>=", "...", "->", "++", "--", "<<", ">>", "<=", ">=", "==", "!=", "&&", "||", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "##", "::")
+    tokens = []
+    i = 0
+    while i < len(text):
+        ch = text[i]
+        if ch.isspace():
+            i += 1
+        elif text.startswith("//", i):
+            end = text.find("\\n", i + 2)
+            i = len(text) if end < 0 else end + 1
+        elif text.startswith("/*", i):
+            end = text.find("*/", i + 2)
+            if end < 0:
+                tokens.append("<unterminated-comment>")
+                break
+            i = end + 2
+        elif ch == '"' or ch == "'":
+            quote, start = ch, i
+            i += 1
+            while i < len(text):
+                if text[i] == "\\\\":
+                    i += 2
+                elif text[i] == quote:
+                    i += 1
+                    break
+                else:
+                    i += 1
+            tokens.append(text[start:i])
+        elif ch.isalpha() or ch == "_":
+            start = i
+            i += 1
+            while i < len(text) and (text[i].isalnum() or text[i] == "_"):
+                i += 1
+            tokens.append(text[start:i])
+        elif ch.isdigit() or (ch == "." and i + 1 < len(text) and text[i + 1].isdigit()):
+            start = i
+            i += 1
+            while i < len(text):
+                cur = text[i]
+                if cur.isalnum() or cur in "._":
+                    i += 1
+                elif cur in "+-" and i > start and text[i - 1] in "eEpP":
+                    i += 1
+                else:
+                    break
+            tokens.append(text[start:i])
+        else:
+            op = next((candidate for candidate in multi if text.startswith(candidate, i)), None)
+            if op is None:
+                tokens.append(ch)
+                i += 1
+            else:
+                tokens.append(op)
+                i += len(op)
+    return "\\x1f".join(tokens)
 
 def normalize(text):
     return re.sub(r"\\s+", " ", text).strip()
@@ -936,15 +989,29 @@ def verify_unified_cheating_audit_check(
     return True, f"verify_audit_success:{log_path}"
 
 
+def verify_transcript_leakage_check(workspace_path: Path) -> tuple[bool, str]:
+    """Reject answer-bearing or cross-run reads recorded in agent transcripts."""
+    transcripts = check_leakage.discover_transcripts([workspace_path])
+    findings = check_leakage.scan_paths([workspace_path])
+    summary = check_leakage.summarize(findings, len(transcripts))
+    log_path = workspace_path / "logs" / "leakage_audit.json"
+    log_path.write_text(json.dumps({
+        "summary": summary,
+        "findings": [check_leakage.asdict(item) for item in findings],
+    }, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    if not summary["clean"]:
+        categories = ",".join(summary["categories"])
+        return False, f"leakage_audit_failed:{log_path}:categories={categories}"
+    return True, f"leakage_audit_success:{log_path}"
+
+
 def file_sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def normalize_c_without_annotations(text: str) -> str:
-    """Remove comments/QCP annotations and whitespace to compare executable C."""
-    text = re.sub(r"/\*.*?\*/", "", text, flags=re.DOTALL)
-    text = re.sub(r"//.*", "", text)
-    return re.sub(r"\s+", "", text)
+    """Token-aware executable C normalization shared with the final audit."""
+    return check_verify_audit.normalize_c_without_annotations(text)
 
 
 def verify_audit_check(
@@ -956,6 +1023,10 @@ def verify_audit_check(
     annotated_c_path: Path,
 ) -> tuple[bool, str]:
     checks: list[tuple[bool, str]] = []
+
+    checks.append(verify_transcript_leakage_check(workspace_path))
+    if not checks[-1][0]:
+        return False, ";".join(detail for _, detail in checks)
 
     checks.append(verify_unified_cheating_audit_check(
         workspace_path=workspace_path,

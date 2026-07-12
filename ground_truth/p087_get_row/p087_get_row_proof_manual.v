@@ -662,12 +662,6 @@ Ltac c87_basic :=
   try entailer!;
   try lia; try nia.
 
-Lemma proof_of_get_row_safety_wit_3_split_goal_1 : get_row_safety_wit_3_split_goal_1.
-Proof. Abort.
-
-Lemma proof_of_get_row_safety_wit_3_split_goal_2 : get_row_safety_wit_3_split_goal_2.
-Proof. Abort.
-
 Lemma proof_of_get_row_safety_wit_3 : get_row_safety_wit_3.
 Proof.
   pre_process_default.
@@ -682,36 +676,15 @@ Proof.
   entailer!.
 Qed.
 
-Lemma proof_of_get_row_safety_wit_13_split_goal_1 : get_row_safety_wit_13_split_goal_1.
-Proof. Abort.
-
-Lemma proof_of_get_row_safety_wit_13_split_goal_2 : get_row_safety_wit_13_split_goal_2.
-Proof. Abort.
-
 Lemma proof_of_get_row_safety_wit_13 : get_row_safety_wit_13.
 Proof.
   c87_basic.
 Qed.
 
-Lemma proof_of_get_row_entail_wit_1_split_goal_1 : get_row_entail_wit_1_split_goal_1.
-Proof. Abort.
-
-Lemma proof_of_get_row_entail_wit_1_split_goal_2 : get_row_entail_wit_1_split_goal_2.
-Proof. Abort.
-
 Lemma proof_of_get_row_entail_wit_1 : get_row_entail_wit_1.
 Proof.
   c87_basic.
 Qed.
-
-Lemma proof_of_get_row_entail_wit_2_split_goal_1 : get_row_entail_wit_2_split_goal_1.
-Proof. Abort.
-
-Lemma proof_of_get_row_entail_wit_2_split_goal_2 : get_row_entail_wit_2_split_goal_2.
-Proof. Abort.
-
-Lemma proof_of_get_row_entail_wit_2_split_goal_3 : get_row_entail_wit_2_split_goal_3.
-Proof. Abort.
 
 Lemma proof_of_get_row_entail_wit_2 : get_row_entail_wit_2.
 Proof.
@@ -727,18 +700,6 @@ Proof.
   entailer!.
 Qed.
 
-Lemma proof_of_get_row_entail_wit_3_split_goal_1 : get_row_entail_wit_3_split_goal_1.
-Proof. Abort.
-
-Lemma proof_of_get_row_entail_wit_3_split_goal_2 : get_row_entail_wit_3_split_goal_2.
-Proof. Abort.
-
-Lemma proof_of_get_row_entail_wit_3_split_goal_3 : get_row_entail_wit_3_split_goal_3.
-Proof. Abort.
-
-Lemma proof_of_get_row_entail_wit_3_split_goal_4 : get_row_entail_wit_3_split_goal_4.
-Proof. Abort.
-
 Lemma proof_of_get_row_entail_wit_3 : get_row_entail_wit_3.
 Proof.
   pre_process_default.
@@ -749,18 +710,6 @@ Proof.
   unfold prefix_state_87; simpl.
   entailer!.
 Qed.
-
-Lemma proof_of_get_row_entail_wit_4_split_goal_1 : get_row_entail_wit_4_split_goal_1.
-Proof. Abort.
-
-Lemma proof_of_get_row_entail_wit_4_split_goal_2 : get_row_entail_wit_4_split_goal_2.
-Proof. Abort.
-
-Lemma proof_of_get_row_entail_wit_4_split_goal_3 : get_row_entail_wit_4_split_goal_3.
-Proof. Abort.
-
-Lemma proof_of_get_row_entail_wit_4_split_goal_spatial : get_row_entail_wit_4_split_goal_spatial.
-Proof. Abort.
 
 Lemma proof_of_get_row_entail_wit_4 : get_row_entail_wit_4.
 Proof.
@@ -792,12 +741,6 @@ Proof.
     exact H.
 Qed.
 
-Lemma proof_of_get_row_entail_wit_5_split_goal_1 : get_row_entail_wit_5_split_goal_1.
-Proof. Abort.
-
-Lemma proof_of_get_row_entail_wit_5_split_goal_2 : get_row_entail_wit_5_split_goal_2.
-Proof. Abort.
-
 Lemma proof_of_get_row_entail_wit_5 : get_row_entail_wit_5.
 Proof.
   pre_process_default.
@@ -805,15 +748,6 @@ Proof.
   pose proof (PreH21 i ltac:(lia)).
   entailer!.
 Qed.
-
-Lemma proof_of_get_row_entail_wit_6_split_goal_1 : get_row_entail_wit_6_split_goal_1.
-Proof. Abort.
-
-Lemma proof_of_get_row_entail_wit_6_split_goal_2 : get_row_entail_wit_6_split_goal_2.
-Proof. Abort.
-
-Lemma proof_of_get_row_entail_wit_6_split_goal_3 : get_row_entail_wit_6_split_goal_3.
-Proof. Abort.
 
 Lemma proof_of_get_row_entail_wit_6 : get_row_entail_wit_6.
 Proof.
@@ -857,9 +791,6 @@ Proof.
   all: try lia; auto.
 Qed.
 
-Lemma proof_of_get_row_entail_wit_7_2_split_goal_1 : get_row_entail_wit_7_2_split_goal_1.
-Proof. Abort.
-
 Lemma proof_of_get_row_entail_wit_7_2 : get_row_entail_wit_7_2.
 Proof.
   pre_process_default.
@@ -871,15 +802,6 @@ Proof.
     PreH18).
   entailer!.
 Qed.
-
-Lemma proof_of_get_row_entail_wit_8_split_goal_1 : get_row_entail_wit_8_split_goal_1.
-Proof. Abort.
-
-Lemma proof_of_get_row_entail_wit_8_split_goal_2 : get_row_entail_wit_8_split_goal_2.
-Proof. Abort.
-
-Lemma proof_of_get_row_entail_wit_8_split_goal_spatial : get_row_entail_wit_8_split_goal_spatial.
-Proof. Abort.
 
 Lemma proof_of_get_row_entail_wit_8 : get_row_entail_wit_8.
 Proof.
@@ -901,9 +823,6 @@ Proof.
   all: try solve [eapply scan_state_87_done; eauto; rewrite PreH13; lia].
   all: try solve [eapply scan_state_87_done; eauto; lia].
 Qed.
-
-Lemma proof_of_get_row_entail_wit_9_split_goal_1 : get_row_entail_wit_9_split_goal_1.
-Proof. Abort.
 
 Lemma proof_of_get_row_entail_wit_9 : get_row_entail_wit_9.
 Proof.

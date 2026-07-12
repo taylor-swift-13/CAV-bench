@@ -1,0 +1,6 @@
+From SimpleC.EE.CAV.ground_truth_p013_greatest_common_divisor Require Import p013_greatest_common_divisor_goal p013_greatest_common_divisor_proof_auto p013_greatest_common_divisor_proof_manual.
+
+Module VC_Correctness : VC_Correct.
+  Include p013_greatest_common_divisor_proof_auto.
+  Include p013_greatest_common_divisor_proof_manual.
+End VC_Correctness.

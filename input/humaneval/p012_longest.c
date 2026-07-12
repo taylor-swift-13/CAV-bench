@@ -52,20 +52,20 @@ const char* longest(const char** strings, int strings_size)
     int best_idx = -1;
     int len = 0;
     const char* cur = 0;
-    
+
     for (int i=0;i<strings_size;i++)
     {
-        
+
         cur = strings[i];
-        
-        len = (int)strlen(cur);
-        
+
+        len = (int)strlen(cur) ;
+
         if (len > best) {
             best = len;
             best_idx = i;
         }
-        
+
     }
-    
+
     return strings[best_idx];
 }

@@ -27,6 +27,8 @@ Require Import Permutation.
 Import ListNotations. (* 启用列表的 [a; b; c] 写法 *)
 Open Scope Z_scope.
 
+
+
 (*
   辅助函数 (1):
   定义一个布尔函数，用于检查一个整数 `z` 是否在 1 到 9 之间（包含边界）。

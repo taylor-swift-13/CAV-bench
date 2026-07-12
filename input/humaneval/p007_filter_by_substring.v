@@ -15,6 +15,7 @@ Import ListNotations.
 
 Open Scope string_scope.
 
+
 (* 判断 s 是否包含子串 sub *)
 Fixpoint contains_substring (s sub : string) : bool :=
   match s with
@@ -50,6 +51,7 @@ Require Import SimpleC.StdLib.string_lib.
 Import ListNotations.
 
 Local Open Scope Z_scope.
+
 
 (* Case-local compatibility with the source proof; DLC intentionally keeps the
    benchmark's pinned string library unchanged. *)

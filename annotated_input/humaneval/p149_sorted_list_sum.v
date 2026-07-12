@@ -18,6 +18,7 @@ Require Import Coq.Lists.List Coq.Strings.Ascii Coq.Strings.String Coq.Arith.Pea
 Require Import Coq.Sorting.Permutation Coq.Sorting.Sorted Coq.Structures.OrderedTypeEx.
 Import ListNotations.
 
+
 Definition lex_le (s1 s2 : string) : Prop :=
   String_as_OT.lt s1 s2 \/ s1 = s2.
 

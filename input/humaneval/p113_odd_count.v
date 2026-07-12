@@ -13,6 +13,7 @@ Require Import Coq.Strings.String Coq.Lists.List Coq.Strings.Ascii.
 Require Import Coq.NArith.NArith Coq.Numbers.DecimalString.
 Import ListNotations.
 
+
 Definition is_odd_digit (c : ascii) : bool :=
   match c with "1"%char|"3"%char|"5"%char|"7"%char|"9"%char => true | _ => false end.
 

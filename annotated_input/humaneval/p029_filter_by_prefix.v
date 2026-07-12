@@ -27,6 +27,7 @@ Fixpoint is_subsequence {A : Type} (l1 l2 : list A) : Prop :=
       (x = y /\ is_subsequence xs ys) \/ is_subsequence l1 ys
   end.
 
+
 (* Pre: no additional constraints for `filter_by_prefix` by default *)
 Definition problem_29_pre (input : list string) : Prop := True.
 

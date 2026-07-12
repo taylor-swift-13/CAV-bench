@@ -207,9 +207,61 @@ expected_executable = {expected_executable!r}
 expected_contracts = json.loads({json.dumps(expected_contracts)!r})
 
 def normalize_c_without_annotations(text):
-    text = re.sub(r"/\\*.*?\\*/", "", text, flags=re.DOTALL)
-    text = re.sub(r"//.*", "", text)
-    return re.sub(r"\\s+", "", text)
+    multi = ("<<=", ">>=", "...", "->", "++", "--", "<<", ">>", "<=", ">=", "==", "!=", "&&", "||", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "##", "::")
+    tokens = []
+    i = 0
+    while i < len(text):
+        ch = text[i]
+        if ch.isspace():
+            i += 1
+        elif text.startswith("//", i):
+            end = text.find("\\n", i + 2)
+            i = len(text) if end < 0 else end + 1
+        elif text.startswith("/*", i):
+            end = text.find("*/", i + 2)
+            if end < 0:
+                tokens.append("<unterminated-comment>")
+                break
+            i = end + 2
+        elif ch == '"' or ch == "'":
+            quote, start = ch, i
+            i += 1
+            while i < len(text):
+                if text[i] == "\\\\":
+                    i += 2
+                elif text[i] == quote:
+                    i += 1
+                    break
+                else:
+                    i += 1
+            tokens.append(text[start:i])
+        elif ch.isalpha() or ch == "_":
+            start = i
+            i += 1
+            while i < len(text) and (text[i].isalnum() or text[i] == "_"):
+                i += 1
+            tokens.append(text[start:i])
+        elif ch.isdigit() or (ch == "." and i + 1 < len(text) and text[i + 1].isdigit()):
+            start = i
+            i += 1
+            while i < len(text):
+                cur = text[i]
+                if cur.isalnum() or cur in "._":
+                    i += 1
+                elif cur in "+-" and i > start and text[i - 1] in "eEpP":
+                    i += 1
+                else:
+                    break
+            tokens.append(text[start:i])
+        else:
+            op = next((candidate for candidate in multi if text.startswith(candidate, i)), None)
+            if op is None:
+                tokens.append(ch)
+                i += 1
+            else:
+                tokens.append(op)
+                i += len(op)
+    return "\\x1f".join(tokens)
 
 def normalize(text):
     return re.sub(r"\\s+", " ", text).strip()
@@ -334,6 +386,9 @@ def build_run_proof_prompt(
 
 
 def proof_audit_check(workspace_path: Path, function_name: str, input_path: Path, input_v_path: Path | None, annotated_c_path: Path) -> tuple[bool, str]:
+    leakage_ok, leakage_detail = rv.verify_transcript_leakage_check(workspace_path)
+    if not leakage_ok:
+        return False, leakage_detail
     unified_ok, unified_detail = rv.verify_unified_cheating_audit_check(
         workspace_path=workspace_path,
         input_path=input_path,

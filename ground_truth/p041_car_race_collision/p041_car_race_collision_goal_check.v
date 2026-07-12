@@ -1,0 +1,6 @@
+From SimpleC.EE.CAV.ground_truth_p041_car_race_collision Require Import p041_car_race_collision_goal p041_car_race_collision_proof_auto p041_car_race_collision_proof_manual.
+
+Module VC_Correctness : VC_Correct.
+  Include p041_car_race_collision_proof_auto.
+  Include p041_car_race_collision_proof_manual.
+End VC_Correctness.

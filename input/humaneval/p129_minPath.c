@@ -94,47 +94,42 @@ IntArray *minPath(int** grid, int n, int k)
     x = 0;
     y = 0;
 
-    
     for (int i = 0; i < n; i++) {
-        
-        
+
         for (int j = 0; j < n; j++) {
             if (grid[i][j] == 1) {
                 x = i;
                 y = j;
             }
         }
-        
+
     }
-    
 
     int min = n * n;
-    
+
     if (x > 0) {
-        
+
         if (grid[x - 1][y] < min) min = grid[x - 1][y];
-        
+
     }
     if (x < n - 1) {
-        
+
         if (grid[x + 1][y] < min) min = grid[x + 1][y];
-        
+
     }
     if (y > 0) {
-        
+
         if (grid[x][y - 1] < min) min = grid[x][y - 1];
-        
+
     }
     if (y < n - 1) {
-        
+
         if (grid[x][y + 1] < min) min = grid[x][y + 1];
-        
+
     }
 
-    
-
     int t = 0;
-    
+
     while (t < k) {
         if (t % 2 == 0) data[t] = 1;
         else data[t] = min;

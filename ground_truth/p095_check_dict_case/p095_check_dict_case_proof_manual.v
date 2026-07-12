@@ -858,33 +858,15 @@ Qed.
 
 Local Close Scope bool_scope.
 
-Lemma proof_of_check_dict_case_safety_wit_33_split_goal_1 : check_dict_case_safety_wit_33_split_goal_1.
-Proof. Abort.
-
-Lemma proof_of_check_dict_case_safety_wit_33_split_goal_2 : check_dict_case_safety_wit_33_split_goal_2.
-Proof. Abort.
-
 Lemma proof_of_check_dict_case_safety_wit_33 : check_dict_case_safety_wit_33.
 Proof.
   pre_process_default; unfold scan_state_z in *; try entailer!; try lia.
 Qed.
 
-Lemma proof_of_check_dict_case_safety_wit_34_split_goal_1 : check_dict_case_safety_wit_34_split_goal_1.
-Proof. Abort.
-
-Lemma proof_of_check_dict_case_safety_wit_34_split_goal_2 : check_dict_case_safety_wit_34_split_goal_2.
-Proof. Abort.
-
 Lemma proof_of_check_dict_case_safety_wit_34 : check_dict_case_safety_wit_34.
 Proof.
   pre_process_default; unfold scan_state_z in *; try entailer!; try lia.
 Qed.
-
-Lemma proof_of_check_dict_case_safety_wit_39_split_goal_1 : check_dict_case_safety_wit_39_split_goal_1.
-Proof. Abort.
-
-Lemma proof_of_check_dict_case_safety_wit_39_split_goal_2 : check_dict_case_safety_wit_39_split_goal_2.
-Proof. Abort.
 
 Lemma proof_of_check_dict_case_safety_wit_39 : check_dict_case_safety_wit_39.
 Proof.
@@ -894,12 +876,6 @@ Proof.
   lia.
 Qed.
 
-Lemma proof_of_check_dict_case_safety_wit_40_split_goal_1 : check_dict_case_safety_wit_40_split_goal_1.
-Proof. Abort.
-
-Lemma proof_of_check_dict_case_safety_wit_40_split_goal_2 : check_dict_case_safety_wit_40_split_goal_2.
-Proof. Abort.
-
 Lemma proof_of_check_dict_case_safety_wit_40 : check_dict_case_safety_wit_40.
 Proof.
   pre_process_default; unfold scan_state_z in *; try entailer!; try lia.
@@ -908,26 +884,17 @@ Proof.
   lia.
 Qed.
 
-Lemma proof_of_check_dict_case_entail_wit_1_split_goal_1 : check_dict_case_entail_wit_1_split_goal_1.
-Proof. Abort.
-
 Lemma proof_of_check_dict_case_entail_wit_1 : check_dict_case_entail_wit_1.
 Proof.
   pre_process_default; unfold scan_state_z, rows_well_formed_z in *; try entailer!; try cancel; try lia.
   eapply problem_95_spec_z_empty; eauto.
 Qed.
 
-Lemma proof_of_check_dict_case_entail_wit_2_split_goal_1 : check_dict_case_entail_wit_2_split_goal_1.
-Proof. Abort.
-
 Lemma proof_of_check_dict_case_entail_wit_2 : check_dict_case_entail_wit_2.
 Proof.
   pre_process_default; try entailer!; try cancel; try lia.
   apply scan_state_z_initial.
 Qed.
-
-Lemma proof_of_check_dict_case_entail_wit_3_split_goal_spatial : check_dict_case_entail_wit_3_split_goal_spatial.
-Proof. Abort.
 
 Lemma proof_of_check_dict_case_entail_wit_3 : check_dict_case_entail_wit_3.
 Proof.
@@ -944,9 +911,6 @@ Proof.
     entailer!.
 Qed.
 
-Lemma proof_of_check_dict_case_entail_wit_5_split_goal_1 : check_dict_case_entail_wit_5_split_goal_1.
-Proof. Abort.
-
 Lemma proof_of_check_dict_case_entail_wit_5 : check_dict_case_entail_wit_5.
 Proof.
   pre_process_default; try entailer!; try cancel; try lia.
@@ -954,12 +918,6 @@ Proof.
   specialize (Hrow k ltac:(lia)).
   lia.
 Qed.
-
-Lemma proof_of_check_dict_case_entail_wit_6_1_split_goal_1 : check_dict_case_entail_wit_6_1_split_goal_1.
-Proof. Abort.
-
-Lemma proof_of_check_dict_case_entail_wit_6_1_split_goal_2 : check_dict_case_entail_wit_6_1_split_goal_2.
-Proof. Abort.
 
 Lemma proof_of_check_dict_case_entail_wit_6_1 : check_dict_case_entail_wit_6_1.
 Proof.
@@ -969,12 +927,6 @@ Proof.
   - eapply payload_index_from_nonzero in PreH17; eauto; unfold payload_index_z in *; lia.
 Qed.
 
-Lemma proof_of_check_dict_case_entail_wit_6_2_split_goal_1 : check_dict_case_entail_wit_6_2_split_goal_1.
-Proof. Abort.
-
-Lemma proof_of_check_dict_case_entail_wit_6_2_split_goal_2 : check_dict_case_entail_wit_6_2_split_goal_2.
-Proof. Abort.
-
 Lemma proof_of_check_dict_case_entail_wit_6_2 : check_dict_case_entail_wit_6_2.
 Proof.
   pre_process_default; try entailer!; try cancel; try lia.
@@ -982,24 +934,6 @@ Proof.
     unfold upper_char_z; lia.
   - eapply payload_index_from_nonzero in PreH15; eauto; unfold payload_index_z in *; lia.
 Qed.
-
-Lemma proof_of_check_dict_case_entail_wit_7_split_goal_1 : check_dict_case_entail_wit_7_split_goal_1.
-Proof. Abort.
-
-Lemma proof_of_check_dict_case_entail_wit_7_split_goal_2 : check_dict_case_entail_wit_7_split_goal_2.
-Proof. Abort.
-
-Lemma proof_of_check_dict_case_entail_wit_7_split_goal_3 : check_dict_case_entail_wit_7_split_goal_3.
-Proof. Abort.
-
-Lemma proof_of_check_dict_case_entail_wit_7_split_goal_4 : check_dict_case_entail_wit_7_split_goal_4.
-Proof. Abort.
-
-Lemma proof_of_check_dict_case_entail_wit_7_split_goal_5 : check_dict_case_entail_wit_7_split_goal_5.
-Proof. Abort.
-
-Lemma proof_of_check_dict_case_entail_wit_7_split_goal_spatial : check_dict_case_entail_wit_7_split_goal_spatial.
-Proof. Abort.
 
 Lemma proof_of_check_dict_case_entail_wit_7 : check_dict_case_entail_wit_7.
 Proof.

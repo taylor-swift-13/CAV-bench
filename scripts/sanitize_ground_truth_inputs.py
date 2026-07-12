@@ -7,6 +7,14 @@ import json
 import re
 from pathlib import Path
 
+from split_ground_truth_v_proofs import (
+    ASSUMPTION_RE,
+    FORBIDDEN_RE,
+    command_code,
+    command_segments,
+    mask_comments,
+)
+
 
 REPO = Path(__file__).resolve().parents[1]
 GROUND_TRUTH = REPO / "ground_truth"
@@ -53,33 +61,30 @@ def public_c(full_text: str) -> str:
 
 
 def public_v(full_text: str) -> str:
-    output: list[str] = []
-    state = "copy"
-    for line in full_text.splitlines():
-        if state == "proof":
-            if PROOF_END_RE.search(line):
-                state = "copy"
-            continue
-        if state == "ltac":
-            if line.strip().endswith("."):
-                state = "copy"
-            continue
-        if PROOF_START_RE.match(line):
-            state = "proof"
-            if PROOF_END_RE.search(line):
-                state = "copy"
-            continue
-        if LTAC_START_RE.match(line):
-            state = "ltac"
-            if line.strip().endswith("."):
-                state = "copy"
-            continue
-        output.append(line)
-    if state != "copy":
-        raise RuntimeError(f"unterminated Coq {state} block")
-    text = "\n".join(output)
-    text = re.sub(r"\n{3,}", "\n\n", text)
-    return text.rstrip() + "\n"
+    """Validate and return the canonical definition-only companion spec.
+
+    Proof migration is deliberately handled by
+    ``split_ground_truth_v_proofs.py``.  Once migrated, all three companion
+    ``.v`` inputs must be byte-identical; silently stripping proof text here
+    would hide a ground-truth/input mismatch.
+    """
+    text = full_text.rstrip() + "\n"
+    masked = mask_comments(text)
+    if FORBIDDEN_RE.search(masked):
+        raise RuntimeError(
+            "companion .v still contains a proof command; run "
+            "scripts/split_ground_truth_v_proofs.py first"
+        )
+    assumptions = [
+        command_code(segment)
+        for segment in command_segments(text)
+        if ASSUMPTION_RE.match(command_code(segment))
+    ]
+    if assumptions and assumptions != ["Parameter LitMap : string -> addr."]:
+        raise RuntimeError(
+            f"companion .v contains unsupported assumption command(s): {assumptions}"
+        )
+    return text
 
 
 def main() -> int:
@@ -116,13 +121,7 @@ def main() -> int:
             raise RuntimeError(f"{stem}: sanitizing changes contracts")
         if re.search(r"/\*@\s*(?:Inv|Assert)\b|\bwhich\s+implies\b|/\*@[^*]*\bwhere\b", stripped_c):
             raise RuntimeError(f"{stem}: answer-bearing C annotation survived")
-        if re.search(
-            r"^\s*(?:(?:Local|Global|Polymorphic|Program)\s+)*"
-            r"(?:Lemma|Theorem|Corollary|Proposition|Fact|Remark|Example|Ltac)\b|"
-            r"\b(?:Qed|Admitted|Abort)\.",
-            stripped_v,
-            re.MULTILINE,
-        ):
+        if FORBIDDEN_RE.search(mask_comments(stripped_v)):
             raise RuntimeError(f"{stem}: proof command survived public V sanitization")
 
         desired = {

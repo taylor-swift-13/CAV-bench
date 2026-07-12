@@ -39,16 +39,14 @@ int check_dict_case(const char** keys, int dict_size)
 {
     int islower = 0, isupper = 0;
     if (dict_size == 0) {
-        
+
         return 0;
     }
-    
+
     for (int k = 0; k < dict_size; k++) {
-        
+
         const char* key = keys[k];
 
-        
-        
         for (int i = 0; key[i] != '\0'; i++) {
             if (key[i] < 65 || (key[i] > 90 && key[i] < 97) || key[i] > 122) {
                 return 0;
@@ -59,7 +57,7 @@ int check_dict_case(const char** keys, int dict_size)
                 return 0;
             }
         }
-        
+
     }
     return 1;
 }

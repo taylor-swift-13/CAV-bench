@@ -12,6 +12,108 @@ For example, if you are given "Slices" as the class and a list of the
 extensions: ['SErviNGSliCes', 'Cheese', 'StuFfed'] then you should
 return 'Slices.SErviNGSliCes' since 'SErviNGSliCes' is the strongest extension
 (its strength is -1).
+Example:
+for Strongest_Extension('my_class', ['AA', 'Be', 'CC']) == 'my_class.AA'
+""" *)
+(* 引入所需的库 *)
+Require Import Coq.Strings.Ascii.
+Require Import Coq.Strings.String.
+Require Import Coq.Lists.List.
+Require Import Coq.ZArith.ZArith.
+Require Import Bool.
+Import ListNotations.
+Open Scope bool_scope.
+
+(* 定义：检查一个字符是否为大写字母 *)
+Definition is_uppercase (c : ascii) : bool :=
+  ("A" <=? c)%char && (c <=? "Z")%char.
+
+(* 定义：检查一个字符是否为小写字母 *)
+Definition is_lowercase (c : ascii) : bool :=
+  ("a" <=? c)%char && (c <=? "z")%char.
+
+(* 辅助函数：计算列表中满足特定谓词的字符数量 *)
+Definition count_pred (p : ascii -> bool) (s : list ascii) : nat :=
+  length (filter p s).
+
+(* 定义：计算一个扩展名的“力量值” *)
+Definition strength (s : string) : Z :=
+  let l := list_ascii_of_string s in
+  Z.of_nat (count_pred is_uppercase l) - Z.of_nat (count_pred is_lowercase l).
+
+(*
+  谓词：is_strongest best exts
+  该谓词为真，当且仅当 'best' 是列表 'exts' 中的最强扩展。
+  这一定义蕴含了当力量值相同时，选择最先出现的扩展的规则。
+*)
+Definition is_strongest (best : string) (exts : list string) : Prop :=
+  (* 我们可以将列表 'exts' 在 'best' 第一次出现的位置拆分为 'prefix' 和 'post' *)
+  exists prefix post,
+    exts = prefix ++ best :: post /\
+    ~ In best prefix /\ (* 确保这是 'best' 第一次出现 *)
+    (
+      (* 'best' 的力量值必须严格大于它前面所有元素的力量值 *)
+      (forall e, In e prefix -> (strength e < strength best)%Z) /\
+      (* 'best' 的力量值必须大于或等于它后面所有元素的力量值 *)
+      (forall e, In e post -> (strength e <= strength best)%Z)
+    ).
+
+(* 扩展列表必须非空 *)
+Definition problem_153_pre (class_name : string) (extensions : list string) : Prop :=
+  extensions <> [].
+
+
+(*
+  程序规约：Spec class_name extensions res
+  它定义了输入 class_name 和 extensions 与输出 res 之间的关系。
+*)
+Definition problem_153_spec (class_name : string) (extensions : list string) (res : string) : Prop :=
+  match extensions with
+  | [] => False (* 对于空的扩展列表，行为是未定义的，因此规约为假 *)
+  | _ :: _ => (* 对于非空的扩展列表 *)
+      (* 必须存在一个最强的扩展名 'strongest_ext' *)
+      exists strongest_ext,
+        is_strongest strongest_ext extensions /\
+        (* 并且输出 'res' 是 class_name, '.', 和 strongest_ext 的拼接 *)
+        res = (class_name ++ "." ++ strongest_ext)%string
+  end.
+Require Import Coq.ZArith.ZArith.
+Require Import Coq.Lists.List.
+Require Import Coq.Strings.String.
+Require Import Coq.Strings.Ascii.
+Require Import Lia.
+From AUXLib Require Import ListLib.
+From SimpleC.SL Require Import Mem SeparationLogic.
+Require Import SimpleC.StdLib.string_lib.
+
+Import ListNotations.
+Import naive_C_Rules.
+
+Local Open Scope Z_scope.
+Local Open Scope string_scope.
+Local Open Scope list_scope.
+Local Open Scope sac.
+
+Definition ascii_of_z_153 (z : Z) : ascii :=
+  ascii_of_nat (Z.to_nat z).
+
+Fixpoint string_of_list_z_153 (l : list Z) : string :=
+  match l with
+  | [] => EmptyString
+  | c :: rest => String (ascii_of_z_153 c) (string_of_list_z_153 rest)
+  end.
+
+Definition row_payload_z_153 (row : list Z) : list Z :=
+  firstn (Z.to_nat (Zlength row - 1)) row.
+
+Definition row_string_z_153 (row : list Z) : string :=
+  string_of_list_z_153 (row_payload_z_153 row).
+
+Definition rows_to_strings_z_153 (rows : list (list Z)) : list string :=
+  map row_string_z_153 rows.
+
+Definition row_len_z_153 (row : list Z) : Z :=
+  string_lib.string_length (row_payload_z_153 row).
 
 Definition problem_153_pre_z (class_l : list Z) (rows : list (list Z)) : Prop :=
   problem_153_pre (string_of_list_z_153 class_l) (rows_to_strings_z_153 rows).

@@ -13,6 +13,8 @@ select_words("Uncle sam", 3) ==> ["Uncle"] *)
 Require Import Coq.Strings.Ascii Coq.Strings.String Coq.Lists.List Coq.Arith.Arith Coq.Bool.Bool.
 Import ListNotations.
 
+
+
 Definition is_vowel (c : ascii) : bool :=
   match c with
   | "a"%char => true | "e"%char => true | "i"%char => true | "o"%char => true | "u"%char => true

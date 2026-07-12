@@ -221,17 +221,11 @@ Qed.
 
 Local Close Scope bool_scope.
 
-Lemma proof_of_longest_entail_wit_1_split_goal_1 : longest_entail_wit_1_split_goal_1.
-Proof. Abort.
-
 Lemma proof_of_longest_entail_wit_1 : longest_entail_wit_1.
 Proof.
   pre_process_default; try entailer!; try cancel; try lia.
   apply longest_prefix_z_12_initial.
 Qed.
-
-Lemma proof_of_longest_entail_wit_2_split_goal_spatial : longest_entail_wit_2_split_goal_spatial.
-Proof. Abort.
 
 Lemma proof_of_longest_entail_wit_2 : longest_entail_wit_2.
 Proof.
@@ -247,18 +241,6 @@ Proof.
       with (CharArray.full row_ptr (Zlength (Znth i rows nil)) (Znth i rows nil)).
     entailer!.
 Qed.
-
-Lemma proof_of_longest_entail_wit_3_split_goal_1 : longest_entail_wit_3_split_goal_1.
-Proof. Abort.
-
-Lemma proof_of_longest_entail_wit_3_split_goal_2 : longest_entail_wit_3_split_goal_2.
-Proof. Abort.
-
-Lemma proof_of_longest_entail_wit_3_split_goal_3 : longest_entail_wit_3_split_goal_3.
-Proof. Abort.
-
-Lemma proof_of_longest_entail_wit_3_split_goal_spatial : longest_entail_wit_3_split_goal_spatial.
-Proof. Abort.
 
 Lemma proof_of_longest_entail_wit_3 : longest_entail_wit_3.
 Proof.
@@ -276,15 +258,6 @@ Proof.
   ].
   all: try solve [exact Hlen | exact Hlt | exact Hvalid].
 Qed.
-
-Lemma proof_of_longest_entail_wit_4_split_goal_1 : longest_entail_wit_4_split_goal_1.
-Proof. Abort.
-
-Lemma proof_of_longest_entail_wit_4_split_goal_2 : longest_entail_wit_4_split_goal_2.
-Proof. Abort.
-
-Lemma proof_of_longest_entail_wit_4_split_goal_spatial : longest_entail_wit_4_split_goal_spatial.
-Proof. Abort.
 
 Lemma proof_of_longest_entail_wit_4 : longest_entail_wit_4.
 Proof.
@@ -306,12 +279,6 @@ Proof.
     entailer!
   ].
 Qed.
-
-Lemma proof_of_longest_entail_wit_5_1_split_goal_1 : longest_entail_wit_5_1_split_goal_1.
-Proof. Abort.
-
-Lemma proof_of_longest_entail_wit_5_1_split_goal_spatial : longest_entail_wit_5_1_split_goal_spatial.
-Proof. Abort.
 
 Lemma proof_of_longest_entail_wit_5_1 : longest_entail_wit_5_1.
 Proof.
@@ -337,12 +304,6 @@ Proof.
     entailer!
   ].
 Qed.
-
-Lemma proof_of_longest_entail_wit_5_2_split_goal_1 : longest_entail_wit_5_2_split_goal_1.
-Proof. Abort.
-
-Lemma proof_of_longest_entail_wit_5_2_split_goal_spatial : longest_entail_wit_5_2_split_goal_spatial.
-Proof. Abort.
 
 Lemma proof_of_longest_entail_wit_5_2 : longest_entail_wit_5_2.
 Proof.

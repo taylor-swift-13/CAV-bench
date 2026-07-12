@@ -10,6 +10,8 @@ Require Import Coq.Strings.String.
 Require Import Coq.Lists.List.
 Import ListNotations.
 
+
+
 Definition is_delimiter (c : ascii) : bool :=
   match c with
   | ","%char | " "%char => true | _ => false end.

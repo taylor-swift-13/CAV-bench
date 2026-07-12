@@ -77,7 +77,7 @@ IntArray *get_row(int** lst, int* row_sizes, int rows, int x)
 */
 {
   int total = 0;
-  
+
   for (int i = 0; i < rows; i++) {
     total += row_sizes[i];
   }
@@ -89,20 +89,18 @@ IntArray *get_row(int** lst, int* row_sizes, int rows, int x)
   int output_size = 0;
   int out_len = 0;
 
-  
   for (int i = 0; i < rows; i++) {
-    
-    
+
     for (int j = row_sizes[i] - 1; j >= 0; j -= 1) {
       if (lst[i][j] == x) {
-        
+
         data[out_len] = i;
         data[out_len + 1] = j;
         out_len += 2;
         output_size += 1;
       }
     }
-    
+
   }
   out->size = output_size;
   return out;
