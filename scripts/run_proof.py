@@ -125,6 +125,7 @@ def stage_qcp_mirror_for_proof(
         workspace_path=workspace_path,
         input_path=input_path,
         input_v_path=input_v_path,
+        annotated_input_path=annotated_input_path,
         annotated_c_path=annotated_c_path,
         function_name=function_name,
     )
@@ -145,6 +146,7 @@ def write_qcp_proof_audit_script(
     workspace_path: Path,
     input_path: Path,
     input_v_path: Path | None,
+    annotated_input_path: Path,
     annotated_c_path: Path,
     function_name: str,
 ) -> Path:
@@ -161,6 +163,7 @@ def write_qcp_proof_audit_script(
 
     coq_args = [
         "-Q", deps_rel, "",
+        "-R", "flocq/src", "Flocq",
         "-R", "SeparationLogic", "SimpleC.SL",
         "-R", "unifysl", "Logic",
         "-R", "sets", "SetsClass",
@@ -173,6 +176,12 @@ def write_qcp_proof_audit_script(
         "-R", "fixedpoints", "FP",
         "-R", "MonadLib", "MonadLib",
         "-R", "listlib", "ListLib",
+        "-R", "MaxMinLib", "MaxMinLib",
+        "-R", "GraphLib", "GraphLib",
+        "-R", "SumLib", "SumLib",
+        "-R", "tracelib", "TraceLib",
+        "-R", "coq-record-update/src", "RecordUpdate",
+        "-Q", "algorithms", "Algorithms",
     ]
 
     commands: list[list[str]] = []
@@ -305,6 +314,7 @@ def build_run_proof_prompt(
     input_v_path: Path | None,
     function_name: str,
     workspace_path: Path,
+    annotated_input_path: Path,
     annotated_c_path: Path,
     restart_context: str | None = None,
 ) -> str:
@@ -325,6 +335,7 @@ def build_run_proof_prompt(
     )
     coq_args = (
         f"-Q {deps_rel} '' "
+        "-R flocq/src Flocq "
         "-R SeparationLogic SimpleC.SL "
         "-R unifysl Logic "
         "-R sets SetsClass "
@@ -336,7 +347,13 @@ def build_run_proof_prompt(
         "-R Common SimpleC.Common "
         "-R fixedpoints FP "
         "-R MonadLib MonadLib "
-        "-R listlib ListLib"
+        "-R listlib ListLib "
+        "-R MaxMinLib MaxMinLib "
+        "-R GraphLib GraphLib "
+        "-R SumLib SumLib "
+        "-R tracelib TraceLib "
+        "-R coq-record-update/src RecordUpdate "
+        "-Q algorithms Algorithms"
     )
     deps_commands = [
         f"cd SeparationLogic && coqc {coq_args} examples/CAV/{workspace}/deps/{source.name}"
@@ -539,7 +556,7 @@ def main() -> int:
         rc_path = Path(args.restart_context_file)
         if rc_path.exists():
             restart_context = rc_path.read_text(encoding="utf-8", errors="replace")
-    prompt = build_run_proof_prompt(skill_path, input_path, input_v_path, function_name, workspace_path, annotated_c_path, restart_context)
+    prompt = build_run_proof_prompt(skill_path, input_path, input_v_path, function_name, workspace_path, annotated_input_path, annotated_c_path, restart_context)
     ensure_parent(prompt_path)
     prompt_path.write_text(prompt, encoding="utf-8")
     if args.dry_run:

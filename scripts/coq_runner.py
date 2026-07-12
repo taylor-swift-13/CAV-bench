@@ -25,6 +25,7 @@ QCP_SL_DIR = REPO_ROOT / "QualifiedCProgramming" / "SeparationLogic"
 
 # Base load-path, relative to QCP_SL_DIR.
 BASE_LOAD_PATH: list[tuple[str, str]] = [
+    ("flocq/src", "Flocq"),
     ("SeparationLogic", "SimpleC.SL"),
     ("unifysl", "Logic"),
     ("sets", "SetsClass"),
@@ -37,6 +38,11 @@ BASE_LOAD_PATH: list[tuple[str, str]] = [
     ("fixedpoints", "FP"),
     ("MonadLib", "MonadLib"),
     ("listlib", "ListLib"),
+    ("MaxMinLib", "MaxMinLib"),
+    ("GraphLib", "GraphLib"),
+    ("SumLib", "SumLib"),
+    ("tracelib", "TraceLib"),
+    ("coq-record-update/src", "RecordUpdate"),
 ]
 
 

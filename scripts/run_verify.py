@@ -330,6 +330,7 @@ def _qcp_final_check_commands(
     deps_rel = f"examples/CAV/{workspace}/deps"
     sl_coq_args = (
         f"-Q {deps_rel} '' "
+        "-R flocq/src Flocq "
         "-R SeparationLogic SimpleC.SL "
         "-R unifysl Logic "
         "-R sets SetsClass "
@@ -341,7 +342,13 @@ def _qcp_final_check_commands(
         "-R Common SimpleC.Common "
         "-R fixedpoints FP "
         "-R MonadLib MonadLib "
-        "-R listlib ListLib"
+        "-R listlib ListLib "
+        "-R MaxMinLib MaxMinLib "
+        "-R GraphLib GraphLib "
+        "-R SumLib SumLib "
+        "-R tracelib TraceLib "
+        "-R coq-record-update/src RecordUpdate "
+        "-Q algorithms Algorithms"
     )
     commands = [
         f"linux-binary/symexec --goal-file={coq_dir_rel}/{function_name}_goal.v --proof-auto-file={coq_dir_rel}/{function_name}_proof_auto.v --proof-manual-file={coq_dir_rel}/{function_name}_proof_manual.v --coq-logic-path=SimpleC.EE.CAV.{workspace} -IQCP_examples/stdlib/ -slp QCP_examples/stdlib/ SimpleC.StdLib -IQCP_examples/QCP_demos_LLM/ -slp QCP_examples/QCP_demos_LLM/ SimpleC.EE.QCP_demos_LLM --input-file={qcp_c_rel} --no-exec-info",
@@ -684,6 +691,7 @@ def write_qcp_agent_audit_script(
 
     coq_args = [
         "-Q", deps_rel, "",
+        "-R", "flocq/src", "Flocq",
         "-R", "SeparationLogic", "SimpleC.SL",
         "-R", "unifysl", "Logic",
         "-R", "sets", "SetsClass",
@@ -696,6 +704,12 @@ def write_qcp_agent_audit_script(
         "-R", "fixedpoints", "FP",
         "-R", "MonadLib", "MonadLib",
         "-R", "listlib", "ListLib",
+        "-R", "MaxMinLib", "MaxMinLib",
+        "-R", "GraphLib", "GraphLib",
+        "-R", "SumLib", "SumLib",
+        "-R", "tracelib", "TraceLib",
+        "-R", "coq-record-update/src", "RecordUpdate",
+        "-Q", "algorithms", "Algorithms",
     ]
     commands: list[list[str]] = [[
         "linux-binary/symexec",
