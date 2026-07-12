@@ -160,9 +160,29 @@ def is_read_like(tool: str, text: str) -> bool:
     normalized = tool.lower()
     if normalized in READ_TOOLS:
         return True
+    if normalized in {"bash", "shell"} and is_compile_artifact_cleanup(text):
+        return False
     if normalized in {"bash", "shell"} and READISH_BASH_RE.search(text):
         return True
     return False
+
+
+def is_compile_artifact_cleanup(text: str) -> bool:
+    """Ignore cross-workspace deletion of Coq build products only.
+
+    Concurrent Coq jobs can leave duplicate ``.vo/.glob/.aux`` files on a
+    shared load path.  Removing those products reads no answer-bearing source
+    and should not be classified as leakage.
+    """
+    lowered = text.lower()
+    if ".unlink()" not in lowered:
+        return False
+    explicit_ext = any(ext in lowered for ext in (".vo", ".glob", ".vok", ".vos", ".aux"))
+    generated_ext_loop = all(f"'{ext}'" in lowered for ext in ("vo", "glob", "vok", "vos", "aux"))
+    if not (explicit_ext or generated_ext_loop):
+        return False
+    forbidden = ("read_text", "read_bytes", "open(", " cat ", " head ", " tail ", " sed ", " grep ", " rg ", " cp ")
+    return not any(marker in lowered for marker in forbidden)
 
 
 def is_write_like(tool: str) -> bool:
