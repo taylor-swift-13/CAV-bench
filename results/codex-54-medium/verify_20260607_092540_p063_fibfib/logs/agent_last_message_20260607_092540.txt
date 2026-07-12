@@ -1,5 +1,0 @@
-Annotated [verify_20260607_092540_p063_fibfib.c](/home/yangfp/CAV/C/CAV/annotated/verify_20260607_092540_p063_fibfib.c) with the loop invariant, generated the Coq files, and completed the manual proofs in [p063_fibfib_proof_manual.v](/home/yangfp/CAV/C/CAV/output/verify_20260607_092540_p063_fibfib/coq/generated/p063_fibfib_proof_manual.v). The key proof work was a small helper chain for the `fibfib` recurrence plus the loop-step/range/return witnesses.
-
-I also compiled `original/p063_fibfib.v`, `goal`, `proof_auto`, `proof_manual`, and `goal_check` successfully under the explicit QCP `-R/-Q` load-paths, removed the generated non-`.v` artifacts, and wrote [issues.md](/home/yangfp/CAV/C/CAV/output/verify_20260607_092540_p063_fibfib/logs/issues.md) and [metrics.md](/home/yangfp/CAV/C/CAV/output/verify_20260607_092540_p063_fibfib/logs/metrics.md).
-
-Final Result: Success

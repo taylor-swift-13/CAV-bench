@@ -1,1 +1,0 @@
-../p048_is_palindrome_proof_auto.v

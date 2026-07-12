@@ -1,8 +1,0 @@
-Updated the loop annotation in [verify_20260608_125304_p135_can_arrange.c](/home/yangfp/CAV/C/CAV/annotated/verify_20260608_125304_p135_can_arrange.c) with a prefix invariant, generated fresh VC files, and completed the manual proofs in [p135_can_arrange_proof_manual.v](/home/yangfp/CAV/C/CAV/output/verify_20260608_125304_p135_can_arrange/coq/generated/p135_can_arrange_proof_manual.v). The final generated artifacts are in [coq/generated](/home/yangfp/CAV/C/CAV/output/verify_20260608_125304_p135_can_arrange/coq/generated), and the workspace snapshot/logs were updated in [annotated](/home/yangfp/CAV/C/CAV/output/verify_20260608_125304_p135_can_arrange/annotated), [issues.md](/home/yangfp/CAV/C/CAV/output/verify_20260608_125304_p135_can_arrange/logs/issues.md), and [metrics.md](/home/yangfp/CAV/C/CAV/output/verify_20260608_125304_p135_can_arrange/logs/metrics.md).
-
-Verified gates:
-- Symexec on the latest annotated C passed.
-- QCP mirror coqc sequence passed through `original deps -> goal -> proof_auto -> proof_manual -> goal_check`.
-- Final `proof_manual.v` has no `Admitted`, `admit`, `Abort`, or added `Axiom`.
-
-Final Result: Success

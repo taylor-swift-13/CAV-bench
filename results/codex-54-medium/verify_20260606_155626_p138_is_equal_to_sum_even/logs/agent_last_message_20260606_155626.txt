@@ -1,5 +1,0 @@
-Verification completed for [p138_is_equal_to_sum_even_proof_manual.v](/home/yangfp/CAV/C/CAV/output/verify_20260606_155626_p138_is_equal_to_sum_even/coq/generated/p138_is_equal_to_sum_even_proof_manual.v). I proved the three return witnesses, reran the required compile chain successfully (`goal`, `proof_auto`, `proof_manual`, `goal_check`), and left the generated Coq directory cleaned down to `.v` files only.
-
-I also recorded the actual issues and outcomes in [issues.md](/home/yangfp/CAV/C/CAV/output/verify_20260606_155626_p138_is_equal_to_sum_even/logs/issues.md) and [metrics.md](/home/yangfp/CAV/C/CAV/output/verify_20260606_155626_p138_is_equal_to_sum_even/logs/metrics.md). The annotated C contract and implementation were not changed beyond verification artifacts already in scope.
-
-Final Result: Success

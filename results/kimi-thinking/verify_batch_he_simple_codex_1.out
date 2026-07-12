@@ -1,3 +1,0 @@
-verify batch [humaneval]  agent=codex model=gpt-5.4 effort=medium jobs=1  count=14  logs=output/verify_batch_20260607_004022
-[rc=0] p008_sum_product
-[rc=124] p010_make_palindrome

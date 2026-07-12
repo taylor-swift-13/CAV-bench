@@ -1,5 +1,0 @@
-## 2026-06-06
-
-- `coq/generated/p138_is_equal_to_sum_even_proof_manual.v`, lemmas `proof_of_p138_is_equal_to_sum_even_return_wit_{1,2,3}`: initial proof attempt failed at `Intros_p` because `pre_process` had already reduced the entailment to `emp |-- ...` and moved pure assumptions into the Coq context. Fixed by switching to `pre_process.` followed by `entailer!.`
-- `coq/generated/p138_is_equal_to_sum_even_proof_manual.v`, lemma `proof_of_p138_is_equal_to_sum_even_return_wit_3`: arithmetic witness proof initially used `Z.mod` lemmas and failed because QCP prints `%` here as `Z.rem`, not `Z.mod`. Fixed by using `Z.rem_divide` to extract even divisibility and then constructing witnesses `2,2,2,2*(t-3)`.
-- `coq/generated/p138_is_equal_to_sum_even_goal_check.v`: first compile attempt failed with `Cannot find a physical path bound to logical path p138_is_equal_to_sum_even_proof_manual...` because `goal_check` was compiled in parallel with `proof_manual`. Fixed by recompiling `goal_check` after `proof_manual.vo` existed.

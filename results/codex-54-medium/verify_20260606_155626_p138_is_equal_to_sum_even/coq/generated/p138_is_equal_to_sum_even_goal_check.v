@@ -1,6 +1,0 @@
-From SimpleC.EE.CAV.verify_20260606_155626_p138_is_equal_to_sum_even Require Import p138_is_equal_to_sum_even_goal p138_is_equal_to_sum_even_proof_auto p138_is_equal_to_sum_even_proof_manual.
-
-Module VC_Correctness : VC_Correct.
-  Include p138_is_equal_to_sum_even_proof_auto.
-  Include p138_is_equal_to_sum_even_proof_manual.
-End VC_Correctness.

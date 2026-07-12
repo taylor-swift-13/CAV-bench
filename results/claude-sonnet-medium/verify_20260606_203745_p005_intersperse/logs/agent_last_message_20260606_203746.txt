@@ -1,3 +1,0 @@
-All 4 Coq files compile cleanly, artifacts are cleaned, and logs are written.
-
-**Final Result: Success**

@@ -1,5 +1,0 @@
-Final Result: Success
-
-更新了 [verify_20260608_185604_p073_smallest_change.c](/home/yangfp/CAV/C/CAV/QualifiedCProgramming/QCP_examples/CAV/verify_20260608_185604_p073_smallest_change/verify_20260608_185604_p073_smallest_change.c) 的 loop invariant，关键是把资源和长度固定到 `@pre`，并把不变式收紧为 `2 * i <= arr_size@pre`。随后在 [p073_smallest_change_proof_manual.v](/home/yangfp/CAV/C/CAV/QualifiedCProgramming/SeparationLogic/examples/CAV/verify_20260608_185604_p073_smallest_change/p073_smallest_change_proof_manual.v) 完成了 5 个 manual obligations 的证明。
-
-正式检查已通过：`symexec`、`coqc` 的 `deps/goal/proof_auto/proof_manual/goal_check` 全部成功，`bash SeparationLogic/examples/CAV/verify_20260608_185604_p073_smallest_change/run_audit.sh` 返回 `0`。日志已写入 [issues.md](/home/yangfp/CAV/C/CAV/QualifiedCProgramming/SeparationLogic/examples/CAV/verify_20260608_185604_p073_smallest_change/logs/issues.md) 和 [metrics.md](/home/yangfp/CAV/C/CAV/QualifiedCProgramming/SeparationLogic/examples/CAV/verify_20260608_185604_p073_smallest_change/logs/metrics.md)，并清理了本轮 `.tmp`/`.aux` 临时产物。

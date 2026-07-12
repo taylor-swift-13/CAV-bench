@@ -1,7 +1,0 @@
-Progress stopped at a real proof-generation blocker, not a recoverable local typo.
-
-I updated [verify_20260608_17010424551_p073_smallest_change.c](/home/yangfp/CAV/C/CAV/QualifiedCProgramming/QCP_examples/CAV/verify_20260608_17010424551_p073_smallest_change/verify_20260608_17010424551_p073_smallest_change.c) with a loop invariant that makes `symexec` succeed, and I regenerated the current `.v` artifacts in [SeparationLogic/examples/CAV/verify_20260608_17010424551_p073_smallest_change](/home/yangfp/CAV/C/CAV/QualifiedCProgramming/SeparationLogic/examples/CAV/verify_20260608_17010424551_p073_smallest_change). I also backed up prior generated files under that directory’s `.tmp/`.
-
-The remaining blocker is in the generated manual obligations in [p073_smallest_change_proof_manual.v](/home/yangfp/CAV/C/CAV/QualifiedCProgramming/SeparationLogic/examples/CAV/verify_20260608_17010424551_p073_smallest_change/p073_smallest_change_proof_manual.v). I isolated that `safety_wit_17` is repairable using `store_array_rec_Zlength`, but the generated `return_wit_1` / `return_wit_2` obligations quantify `arr_pre` and require concluding `IntArray.full arr_pre arr_size_pre lv` while their antecedent only gives `IntArray.full arr arr_size lv` and no relation between `arr_pre` and `arr`. That is structurally unprovable as generated, so this is no longer just a local proof-edit issue inside the current witness script.
-
-I did not write `issues.md` / `metrics.md` because the case is not complete. Current status is not `Success`.

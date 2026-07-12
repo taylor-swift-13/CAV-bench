@@ -1,5 +1,0 @@
-Verification is not complete.
-
-`symexec` now passes on [verify_20260607_104058_p066_digitSum.c](/home/yangfp/CAV/C/CAV/annotated/verify_20260607_104058_p066_digitSum.c), and I stabilized the generation settings so the strategy imports line up with `SimpleC.EE.QCP_demos_LLM`. The remaining blocker is local Coq compilation of the workspace copy [p066_digitSum.v](/home/yangfp/CAV/C/CAV/output/verify_20260607_104058_p066_digitSum/coq/generated/p066_digitSum.v): the helper lemma `firstn_Znth_decomp` is still failing, so I could not proceed to discharge the six `Admitted` proofs in [p066_digitSum_proof_manual.v](/home/yangfp/CAV/C/CAV/output/verify_20260607_104058_p066_digitSum/coq/generated/p066_digitSum_proof_manual.v).
-
-I recorded the concrete blocker and next step in [issues.md](/home/yangfp/CAV/C/CAV/output/verify_20260607_104058_p066_digitSum/logs/issues.md) and the run status in [metrics.md](/home/yangfp/CAV/C/CAV/output/verify_20260607_104058_p066_digitSum/logs/metrics.md).

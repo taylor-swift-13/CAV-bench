@@ -1,7 +1,0 @@
-Verification stopped at a genuine workspace-local blocker, not a repairable proof script issue.
-
-I confirmed `p046_fib4_goal.v` and `p046_fib4_proof_auto.v` compile in the correct workspace-relative mode, and I repaired the earlier `Cannot find witness` attempt in [p046_fib4_proof_manual.v](/home/yangfp/CAV/C/CAV/output/verify_20260606_201036_p046_fib4/coq/generated/p046_fib4_proof_manual.v). The remaining failure is `proof_of_p046_fib4_entail_wit_1`: the generated VC requires
-`&( "next") # Int |->_ |-- EX next_v, &( "next") # Int |-> next_v`,
-but the local library only provides the one-way lemma from concrete `store_int` to `undef_store_int`, not the converse. That means the VC asks for a concrete value for an uninitialized local `next`, which is not derivable from the modeled heap state.
-
-Within the allowed boundary, there is no further proof-only repair. Removing `next` from the invariant makes symexec reject the assertion because the live program variable disappears, and initializing `next` would change the executable implementation. I recorded the precise failure and evidence in [issues.md](/home/yangfp/CAV/C/CAV/output/verify_20260606_201036_p046_fib4/logs/issues.md) and updated [metrics.md](/home/yangfp/CAV/C/CAV/output/verify_20260606_201036_p046_fib4/logs/metrics.md).

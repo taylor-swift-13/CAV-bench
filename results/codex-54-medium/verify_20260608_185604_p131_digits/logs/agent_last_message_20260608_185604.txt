@@ -1,5 +1,0 @@
-`Final Result: Incomplete`
-
-Symexec now passes, and the serial audit gets through `deps/p131_digits.v`, `p131_digits_goal.v`, and `p131_digits_proof_auto.v`. I strengthened the loop invariant in [verify_20260608_185604_p131_digits.c](/home/yangfp/CAV/C/CAV/QualifiedCProgramming/QCP_examples/CAV/verify_20260608_185604_p131_digits/verify_20260608_185604_p131_digits.c) and populated [p131_digits_proof_manual.v](/home/yangfp/CAV/C/CAV/QualifiedCProgramming/SeparationLogic/examples/CAV/verify_20260608_185604_p131_digits/p131_digits_proof_manual.v), but the audit still fails because the manual Coq proof is incomplete.
-
-The blocker is not a confirmed contract/program mismatch. It is a proof-level issue from the staged spec’s fuel-based `digits_state`: the remaining loop-step obligations require a fuel-insensitivity argument for `tail_odd_prod_fuel`. I recorded the current state in [issues.md](/home/yangfp/CAV/C/CAV/QualifiedCProgramming/SeparationLogic/examples/CAV/verify_20260608_185604_p131_digits/logs/issues.md) and [metrics.md](/home/yangfp/CAV/C/CAV/QualifiedCProgramming/SeparationLogic/examples/CAV/verify_20260608_185604_p131_digits/logs/metrics.md).

@@ -1,5 +1,0 @@
-Updated [verify_20260606_190115_p052_below_threshold.c](/home/yangfp/CAV/C/CAV/annotated/verify_20260606_190115_p052_below_threshold.c:1) with the processed-prefix loop invariant, ran `python3 scripts/symexec_keep_proofs.py --name p052_below_threshold --stamp 20260606_190115`, and completed the remaining witness proofs in [p052_below_threshold_proof_manual.v](/home/yangfp/CAV/C/CAV/output/verify_20260606_190115_p052_below_threshold/coq/generated/p052_below_threshold_proof_manual.v:1).
-
-I then compiled the full Coq chain successfully: `input/humaneval/p052_below_threshold.v`, `goal.v`, `proof_auto.v`, `proof_manual.v`, and `goal_check.v`. Required logs were written to [issues.md](/home/yangfp/CAV/C/CAV/output/verify_20260606_190115_p052_below_threshold/logs/issues.md:1) and [metrics.md](/home/yangfp/CAV/C/CAV/output/verify_20260606_190115_p052_below_threshold/logs/metrics.md:1), and generated non-`.v` artifacts were cleaned from the workspace and input-side build outputs.
-
-Final Result: Success

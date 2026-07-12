@@ -1,5 +1,0 @@
-Work is still in progress in the verify workspace.
-
-I fixed the contract drift in the annotated C, restored the required `string_bridge` import, preserved/reused the existing symexec artifacts under `coq/last`, and advanced `coq/generated/p010_make_palindrome_proof_manual.v` substantially. `proof_manual.v` now compiles through `proof_of_p010_make_palindrome_entail_wit_8`; the current frontier is `proof_of_p010_make_palindrome_entail_wit_9`, where `coqc` is still reporting an incomplete proof.
-
-The latest state is in [p010_make_palindrome_proof_manual.v](/home/yangfp/CAV/C/CAV/output/verify_20260607_013317_p010_make_palindrome/coq/generated/p010_make_palindrome_proof_manual.v), and the active annotated source remains [verify_20260607_013317_p010_make_palindrome.c](/home/yangfp/CAV/C/CAV/annotated/verify_20260607_013317_p010_make_palindrome.c). I did not mark this as a fail; the remaining blocker is still a concrete, repairable witness proof in the current workspace.

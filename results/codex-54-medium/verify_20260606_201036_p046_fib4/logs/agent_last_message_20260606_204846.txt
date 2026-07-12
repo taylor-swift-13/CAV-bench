@@ -1,9 +1,0 @@
-I pushed this as far as the current verify boundary allows.
-
-The original 120s `coqc` timeout was repaired: I rewrote [p046_fib4_proof_manual.v](/home/yangfp/CAV/C/CAV/output/verify_20260606_201036_p046_fib4/coq/generated/p046_fib4_proof_manual.v) to replace the giant `fib4_unfold` case split with a direct recurrence proof, and that exposed concrete proof bugs in safety witnesses 14/15/16, which I fixed. The remaining blocker is not a tactic issue anymore.
-
-The blocker is the loop invariant in [verify_20260606_201036_p046_fib4.c](/home/yangfp/CAV/C/CAV/annotated/verify_20260606_201036_p046_fib4.c): `exists next_v, next == next_v && ...`. That forces a generated VC requiring `&( "next") # Int |->_ |-- EX next_v, &( "next") # Int |-> next_v`, which is too strong for an uninitialized local. I tried the obvious annotation repair by removing the `next` value binding, but `symexec_keep_proofs.py` then failed with `cannot find the program variable next ... in assertion`, so within the current “annotation/proof only, no implementation change” boundary, this is blocked.
-
-I recorded the full state and next-step detail in [issues.md](/home/yangfp/CAV/C/CAV/output/verify_20260606_201036_p046_fib4/logs/issues.md) and updated [metrics.md](/home/yangfp/CAV/C/CAV/output/verify_20260606_201036_p046_fib4/logs/metrics.md). The concrete next move would require either:
-1. allowing an executable edit such as initializing `next` before the loop, or
-2. a QCP-supported invariant pattern for live uninitialized locals that mentions `next` without forcing a concrete `store_int` witness.

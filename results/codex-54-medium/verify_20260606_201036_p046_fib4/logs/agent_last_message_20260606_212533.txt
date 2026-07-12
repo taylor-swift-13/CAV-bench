@@ -1,5 +1,0 @@
-I repaired the annotation-side blocker in [verify_20260606_201036_p046_fib4.c](/home/yangfp/CAV/C/CAV/annotated/verify_20260606_201036_p046_fib4.c): the loop invariant now uses `undef_data_at(&next, int)` at `i == 4` and `store(&next, next_v)` afterward. `symexec_keep_proofs.py` accepted that change and regenerated healthier VCs, so the original impossible `next |->_ |- EX next_v, next |-> next_v` obligation is gone.
-
-I did not finish the Coq repair before timeout. The remaining failure is in [p046_fib4_proof_manual.v](/home/yangfp/CAV/C/CAV/output/verify_20260606_201036_p046_fib4/coq/generated/p046_fib4_proof_manual.v) inside `proof_of_p046_fib4_entail_wit_1`: the proof script for the new right-disjunct still mishandles quoted pure assertions like `“ 0 = fib4 0 ”`. I recorded the current state and next-step evidence in [issues.md](/home/yangfp/CAV/C/CAV/output/verify_20260606_201036_p046_fib4/logs/issues.md) and [metrics.md](/home/yangfp/CAV/C/CAV/output/verify_20260606_201036_p046_fib4/logs/metrics.md).
-
-Final Result: Fail

@@ -1,3 +1,0 @@
-verify batch [humaneval]  agent=claude model=sonnet effort=medium jobs=1  count=14  logs=output/verify_batch_20260607_004022
-[rc=124] p044_change_base
-[rc=124] p050_decode_shift

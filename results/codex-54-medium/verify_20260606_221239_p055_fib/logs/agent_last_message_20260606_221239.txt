@@ -1,7 +1,0 @@
-Verification completed for `p055_fib`.
-
-The annotated loop invariant in [verify_20260606_221239_p055_fib.c](/home/yangfp/CAV/C/CAV/annotated/verify_20260606_221239_p055_fib.c:1) now symexecs cleanly, and the manual obligations in [p055_fib_proof_manual.v](/home/yangfp/CAV/C/CAV/output/verify_20260606_221239_p055_fib/coq/generated/p055_fib_proof_manual.v:1) are fully proved without placeholders. I also compiled `p055_fib.v`, `p055_fib_goal.v`, `p055_fib_proof_auto.v`, `p055_fib_proof_manual.v`, and `p055_fib_goal_check.v`, then removed the generated `.vo/.glob/.vok/.vos/.aux` artifacts as required.
-
-The run logs are in [issues.md](/home/yangfp/CAV/C/CAV/output/verify_20260606_221239_p055_fib/logs/issues.md:1) and [metrics.md](/home/yangfp/CAV/C/CAV/output/verify_20260606_221239_p055_fib/logs/metrics.md:1).
-
-Final Result: Success

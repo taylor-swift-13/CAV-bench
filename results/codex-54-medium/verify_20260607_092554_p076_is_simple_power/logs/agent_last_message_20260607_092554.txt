@@ -1,5 +1,0 @@
-Updated [verify_20260607_092554_p076_is_simple_power.c](/home/yangfp/CAV/C/CAV/annotated/verify_20260607_092554_p076_is_simple_power.c) to carry the loop state cleanly through the multiply step, regenerated the VC into [coq/generated](/home/yangfp/CAV/C/CAV/output/verify_20260607_092554_p076_is_simple_power/coq/generated), and completed the missing manual witnesses in [p076_is_simple_power_proof_manual.v](/home/yangfp/CAV/C/CAV/output/verify_20260607_092554_p076_is_simple_power/coq/generated/p076_is_simple_power_proof_manual.v). The proof side needed one real annotation repair loop plus explicit `sp_inv`-based return proofs for the `return 0` cases.
-
-I recompiled `p076_is_simple_power.v`, `goal.v`, `proof_auto.v`, `proof_manual.v`, and `goal_check.v` successfully, then removed the current-case `.vo/.glob/.vok/.vos/.aux` artifacts as required. The run notes are in [issues.md](/home/yangfp/CAV/C/CAV/output/verify_20260607_092554_p076_is_simple_power/logs/issues.md) and the final status snapshot is in [metrics.md](/home/yangfp/CAV/C/CAV/output/verify_20260607_092554_p076_is_simple_power/logs/metrics.md).
-
-Final Result: Success

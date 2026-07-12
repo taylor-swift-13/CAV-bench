@@ -1,5 +1,0 @@
-Updated [`verify_20260607_094255_p126_is_sorted.c`](/home/yangfp/CAV/C/CAV/annotated/verify_20260607_094255_p126_is_sorted.c) so the strengthened verification annotations remain in place while the stripped executable body matches the input exactly. I refreshed symexec against that annotation state, kept the generated `goal/proof_auto/goal_check` files aligned with fresh symexec output, and preserved the manual proof in [`p126_is_sorted_proof_manual.v`](/home/yangfp/CAV/C/CAV/output/verify_20260607_094255_p126_is_sorted/coq/generated/p126_is_sorted_proof_manual.v) with the canonical `SimpleC.EE.CAV...` import.
-
-I reran the full Coq compile sequence for `p126_is_sorted.v`, `goal.v`, `proof_auto.v`, `proof_manual.v`, and `goal_check.v`, verified the freshness-checked files match fresh symexec, updated [`issues.md`](/home/yangfp/CAV/C/CAV/output/verify_20260607_094255_p126_is_sorted/logs/issues.md) and [`metrics.md`](/home/yangfp/CAV/C/CAV/output/verify_20260607_094255_p126_is_sorted/logs/metrics.md), and cleaned all generated Coq compile artifacts under the workspace and target input/original locations.
-
-Final Result: Success

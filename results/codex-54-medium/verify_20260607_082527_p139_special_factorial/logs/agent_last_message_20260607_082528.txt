@@ -1,5 +1,0 @@
-Updated the loop invariant in [verify_20260607_082527_p139_special_factorial.c](/home/yangfp/CAV/C/CAV/annotated/verify_20260607_082527_p139_special_factorial.c) to use the correct post-iteration bounds, reran symexec with the previous generated files preserved under `coq/last/`, and completed the manual witness proofs in [p139_special_factorial_proof_manual.v](/home/yangfp/CAV/C/CAV/output/verify_20260607_082527_p139_special_factorial/coq/generated/p139_special_factorial_proof_manual.v). The full compile chain passed for `p139_special_factorial.v`, `goal.v`, `proof_auto.v`, `proof_manual.v`, and `goal_check.v`.
-
-I also recorded the actual blockers and resolutions in [issues.md](/home/yangfp/CAV/C/CAV/output/verify_20260607_082527_p139_special_factorial/logs/issues.md) and the run summary in [metrics.md](/home/yangfp/CAV/C/CAV/output/verify_20260607_082527_p139_special_factorial/logs/metrics.md), then removed all generated `.vo/.glob/.vok/.vos/.aux` artifacts from both the workspace `coq/` tree and `input/humaneval/`.
-
-Final Result: Success

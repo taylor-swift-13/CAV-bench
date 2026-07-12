@@ -1,5 +1,0 @@
-I reduced the annotated loop state in [verify_20260607_033329_p011_string_xor.c](/home/yangfp/CAV/C/CAV/annotated/verify_20260607_033329_p011_string_xor.c) and got symexec refreshing cleanly again with the current workspace command. The refreshed `goal.v` is smaller than before: it no longer carries the `a@pre`/`b@pre` bridge facts through the loop, and the live pointer variables in the loop witnesses are simplified.
-
-The remaining blocker is in manual Coq proof construction, not symexec. `coqc -time` still stalls in `proof_of_p011_string_xor_entail_wit_1_1` right after `right; exists l`, with `split_pure_spatial` being the expensive step even on the reduced witness shape. I recorded that exact state and the repaired symexec path in [issues.md](/home/yangfp/CAV/C/CAV/output/verify_20260607_033329_p011_string_xor/logs/issues.md) and [continue.md](/home/yangfp/CAV/C/CAV/output/verify_20260607_033329_p011_string_xor/logs/continue.md).
-
-I did not reach a passing `proof_manual.v` or final `goal_check.v` in this run.

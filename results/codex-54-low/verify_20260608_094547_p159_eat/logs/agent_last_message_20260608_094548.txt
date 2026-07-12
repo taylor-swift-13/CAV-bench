@@ -1,7 +1,0 @@
-Verification completed for `p159_eat`.
-
-I populated the current case mirror, reran symexec successfully, fixed the case-local strategy import collision in the current mirror, and proved the remaining manual obligations in [p159_eat_proof_manual.v](/home/yangfp/CAV/C/CAV/QualifiedCProgramming/SeparationLogic/examples/CAV/verify_20260608_094547_p159_eat/p159_eat_proof_manual.v). The official compile chain passed in order: original spec, `goal`, `proof_auto`, `proof_manual`, `goal_check`.
-
-Final `.v` artifacts are staged in [coq/generated](/home/yangfp/CAV/C/CAV/output/verify_20260608_094547_p159_eat/coq/generated), and the required logs are in [issues.md](/home/yangfp/CAV/C/CAV/output/verify_20260608_094547_p159_eat/logs/issues.md) and [metrics.md](/home/yangfp/CAV/C/CAV/output/verify_20260608_094547_p159_eat/logs/metrics.md). I also removed case-local Coq intermediate files from the mirror directories.
-
-Final Result: Success

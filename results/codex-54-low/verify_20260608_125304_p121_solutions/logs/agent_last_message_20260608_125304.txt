@@ -1,5 +1,0 @@
-Verification is not complete.
-
-I updated the loop invariant in [verify_20260608_125304_p121_solutions.c](/home/yangfp/CAV/C/CAV/annotated/verify_20260608_125304_p121_solutions.c) to carry the loop summary and immutable context, built the current QCP mirror under `QualifiedCProgramming/.../verify_20260608_125304_p121_solutions`, mirrored the required array strategy files, and got `symexec` succeeding on the latest annotated C.
-
-The current blocker is in [p121_solutions_proof_manual.v](/home/yangfp/CAV/C/CAV/QualifiedCProgramming/SeparationLogic/examples/CAV/verify_20260608_125304_p121_solutions/p121_solutions_proof_manual.v): `coqc` still fails on `proof_of_p121_solutions_safety_wit_3` with `Cannot find witness` while discharging the pure arithmetic subgoal after `pre_process`/`split_pures`. I confirmed this is not a contract/spec contradiction; it is a local proof/entailment issue exposed by QCP’s tactic behavior. I also preserved prior generated files under `output/verify_20260608_125304_p121_solutions/coq/last/` before each symexec rerun, per the workflow.

@@ -1,5 +1,0 @@
-I did not get this verify attempt to a passing state.
-
-The workspace is still blocked in [`p011_string_xor_proof_manual.v`](/home/yangfp/CAV/C/CAV/output/verify_20260607_033329_p011_string_xor/coq/generated/p011_string_xor_proof_manual.v) at `proof_of_p011_string_xor_entail_wit_1_1` and the symmetric `..._1_2`. I reduced the failure from a blind 120s timeout to a concrete proof-structure issue: after branch selection and witness choice, the goal collapses into a model-level `EX buf_l, pure && spatial` obligation that the current tactic sequences here do not discharge cleanly. I recorded the latest diagnosis and next correction point in [`issues.md`](/home/yangfp/CAV/C/CAV/output/verify_20260607_033329_p011_string_xor/logs/issues.md) and [`continue.md`](/home/yangfp/CAV/C/CAV/output/verify_20260607_033329_p011_string_xor/logs/continue.md).
-
-The concrete next step is to rebuild `proof_of_p011_string_xor_entail_wit_{1_1,1_2}` with the right low-level assertion combinators for that model-level existential goal, or to change the annotation shape again so symexec no longer generates this mixed whole-buffer entry witness.

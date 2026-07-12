@@ -1,5 +1,0 @@
-Verification completed for [`verify_20260607_094255_p126_is_sorted.c`](/home/yangfp/CAV/C/CAV/annotated/verify_20260607_094255_p126_is_sorted.c). I strengthened the loop-state annotation with `lst_size == Zlength(lv)`, reran symexec with the previous generated tree preserved under [`coq/last`](/home/yangfp/CAV/C/CAV/output/verify_20260607_094255_p126_is_sorted/coq/last), and discharged the regenerated manual witnesses in [`p126_is_sorted_proof_manual.v`](/home/yangfp/CAV/C/CAV/output/verify_20260607_094255_p126_is_sorted/coq/generated/p126_is_sorted_proof_manual.v).
-
-`p126_is_sorted.v`, `goal.v`, `proof_auto.v`, `proof_manual.v`, and `goal_check.v` all compiled successfully before cleanup. The workspace logs are updated at [`issues.md`](/home/yangfp/CAV/C/CAV/output/verify_20260607_094255_p126_is_sorted/logs/issues.md) and [`metrics.md`](/home/yangfp/CAV/C/CAV/output/verify_20260607_094255_p126_is_sorted/logs/metrics.md), and the non-`.v` Coq artifacts plus the input-side `p126_is_sorted` compile products were removed.
-
-Final Result: Success

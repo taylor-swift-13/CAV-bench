@@ -1,5 +1,0 @@
-Verified `p040_triples_sum_to_zero` end to end in the active workspace. I added nested-loop invariants and bridge assertions in [verify_20260607_095223_p040_triples_sum_to_zero.c](/home/yangfp/CAV/C/CAV/annotated/verify_20260607_095223_p040_triples_sum_to_zero.c), completed the generated manual proofs in [p040_triples_sum_to_zero_proof_manual.v](/home/yangfp/CAV/C/CAV/output/verify_20260607_095223_p040_triples_sum_to_zero/coq/generated/p040_triples_sum_to_zero_proof_manual.v), and recorded the concrete symexec/proof issues plus the final summary in [issues.md](/home/yangfp/CAV/C/CAV/output/verify_20260607_095223_p040_triples_sum_to_zero/logs/issues.md) and [metrics.md](/home/yangfp/CAV/C/CAV/output/verify_20260607_095223_p040_triples_sum_to_zero/logs/metrics.md).
-
-Final checks passed: symexec succeeded on the final annotated C, `goal/proof_auto/proof_manual/goal_check` all compiled, `proof_manual.v` has no `Admitted`/`admit`/`Abort`/new `Axiom`, and intermediate Coq artifacts were cleaned from this workspace and the target input path.
-
-Final Result: Success

@@ -1,5 +1,0 @@
-Verification completed for [`p138_is_equal_to_sum_even_proof_manual.v`](/home/yangfp/CAV/C/CAV/output/verify_20260608_123342_p138_is_equal_to_sum_even/coq/generated/p138_is_equal_to_sum_even_proof_manual.v). I kept the annotated C unchanged, proved the three manual return witnesses, ran `symexec` once on the current workspace mirror, and passed the official QCP compile sequence `original -> goal -> proof_auto -> proof_manual -> goal_check`.
-
-Final artifacts are in [`output/verify_20260608_123342_p138_is_equal_to_sum_even/coq/generated`](/home/yangfp/CAV/C/CAV/output/verify_20260608_123342_p138_is_equal_to_sum_even/coq/generated), and the required logs are [`issues.md`](/home/yangfp/CAV/C/CAV/output/verify_20260608_123342_p138_is_equal_to_sum_even/logs/issues.md) and [`metrics.md`](/home/yangfp/CAV/C/CAV/output/verify_20260608_123342_p138_is_equal_to_sum_even/logs/metrics.md).
-
-Final Result: Success

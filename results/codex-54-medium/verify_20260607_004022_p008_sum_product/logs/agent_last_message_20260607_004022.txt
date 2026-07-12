@@ -1,5 +1,0 @@
-Updated the loop invariant in [verify_20260607_004022_p008_sum_product.c](/home/yangfp/CAV/C/CAV/annotated/verify_20260607_004022_p008_sum_product.c) and completed the remaining return witness proof in [p008_sum_product_proof_manual.v](/home/yangfp/CAV/C/CAV/output/verify_20260607_004022_p008_sum_product/coq/generated/p008_sum_product_proof_manual.v). The key repair was proving the two output stores into `IntArray.full retval 2 (sum :: product :: nil)` with `derivable1_sepcon_mono` plus `IntArray.seg_merge_to_full`, after preserving and reusing the prior proof structure from `coq/last/`.
-
-`symexec` succeeded on the latest annotated C. `p008_sum_product_goal.v`, `p008_sum_product_proof_auto.v`, `p008_sum_product_proof_manual.v`, and `p008_sum_product_goal_check.v` all compiled successfully. Non-`.v` Coq artifacts were cleaned from the workspace and the compiled input-spec artifacts were removed. Required logs were written to [issues.md](/home/yangfp/CAV/C/CAV/output/verify_20260607_004022_p008_sum_product/logs/issues.md) and [metrics.md](/home/yangfp/CAV/C/CAV/output/verify_20260607_004022_p008_sum_product/logs/metrics.md).
-
-Final Result: Success

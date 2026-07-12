@@ -1,7 +1,0 @@
-From SimpleC.EE.CAV.verify_20260608_015527_p016_count_distinct_characters Require Import p016_count_distinct_characters_goal p016_count_distinct_characters_proof_auto p016_count_distinct_characters_proof_manual.
-
-Module VC_Correctness : VC_Correct.
-  Include char_array_strategy_proof.
-  Include p016_count_distinct_characters_proof_auto.
-  Include p016_count_distinct_characters_proof_manual.
-End VC_Correctness.

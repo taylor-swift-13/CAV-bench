@@ -1,5 +1,0 @@
-I did not finish the verify run.
-
-The workspace is advanced past the original impossible `next |->_ -> EX next_v, next |-> next_v` blocker. The current remaining blocker is in [p046_fib4_proof_manual.v](/home/yangfp/CAV/C/CAV/output/verify_20260606_201036_p046_fib4/coq/generated/p046_fib4_proof_manual.v:116), theorem `proof_of_p046_fib4_entail_wit_2_2`. `entail_wit_1` and `entail_wit_2_1` were repaired, but `entail_wit_2_2` still fails on the final recurrence equality for the `i >= 5` loop-step branch after storage and witness structure are correct.
-
-The concrete failing gate is `coqc` on `proof_manual.v`. The current failed step is the last pure subgoal after rewriting `H6`–`H9`; attempts using `vm_compute`, direct unfolding, and a bounded nat case split either fail or reintroduce compile-time blowups. I updated [continue.md](/home/yangfp/CAV/C/CAV/output/verify_20260606_201036_p046_fib4/logs/continue.md) with the current repair direction. The next round should focus only on replacing the final recurrence step in `proof_of_p046_fib4_entail_wit_2_2` with a cheaper normalization proof, then rerun `proof_manual.v`, `goal_check.v`, and cleanup.

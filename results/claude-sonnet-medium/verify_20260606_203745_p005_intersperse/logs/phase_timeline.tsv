@@ -1,6 +1,0 @@
-1780749565.239	2026-06-06 20:39:25	symexec_rerun_start	
-1780749565.293	2026-06-06 20:39:25	symexec_rerun_done	fail rc=1
-1780749684.272	2026-06-06 20:41:24	symexec_rerun_start	
-1780749684.325	2026-06-06 20:41:24	symexec_rerun_done	fail rc=1
-1780750020.055	2026-06-06 20:47:00	symexec_rerun_start	
-1780750020.150	2026-06-06 20:47:00	symexec_rerun_done	ok preserved=0 admitted=4 changed=0

@@ -1,7 +1,0 @@
-**Final Result: Success**
-
-All gates passed:
-- `p142_sum_squares_proof_manual.v` compiles with zero errors and zero `Admitted`/`admit`/`Abort`
-- `p142_sum_squares_goal_check.v` compiles clean
-
-The root cause of the last error (line 217) was a **use-after-clear bug**: in the final `split_pures` bullet of each `entail_wit_2_x` lemma, `clear H [H0]` was removing the modulo hypothesis before `dump_pre_spatial`, then `exact H` inside the nested `{ ... }` sub-proof resolved `H` to a global Coq term (`forall A, (A->A)->A->A`) instead of the local hypothesis. The fix was to omit `clear H [H0]` from that last bullet only — since it uses `ring` (not `lia`), the sac-scope `%` notation conflict does not arise.

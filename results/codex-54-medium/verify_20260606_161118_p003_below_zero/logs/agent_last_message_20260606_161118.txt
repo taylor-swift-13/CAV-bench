@@ -1,5 +1,0 @@
-Updated the annotated C in [verify_20260606_161118_p003_below_zero.c](/home/yangfp/CAV/C/CAV/annotated/verify_20260606_161118_p003_below_zero.c:1) with the loop invariant and return-site asserts needed to keep the stable pointer/size bridge and expose the prefix-sum facts at each return. Then I completed the remaining manual proofs in [p003_below_zero_proof_manual.v](/home/yangfp/CAV/C/CAV/output/verify_20260606_161118_p003_below_zero/coq/generated/p003_below_zero_proof_manual.v:1).
-
-Latest symexec succeeded, and the full Coq chain compiled successfully for `p003_below_zero_goal.v`, `p003_below_zero_proof_auto.v`, `p003_below_zero_proof_manual.v`, and `p003_below_zero_goal_check.v`. I also cleaned the generated non-`.v` Coq byproducts and wrote [issues.md](/home/yangfp/CAV/C/CAV/output/verify_20260606_161118_p003_below_zero/logs/issues.md:1) and [metrics.md](/home/yangfp/CAV/C/CAV/output/verify_20260606_161118_p003_below_zero/logs/metrics.md:1).
-
-Final Result: Success

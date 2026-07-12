@@ -1,7 +1,0 @@
-The repair loop progressed through the remaining local proof issues in [p018_how_many_times_proof_manual.v](/home/yangfp/CAV/C/CAV/output/verify_20260607_053351_p018_how_many_times/coq/generated/p018_how_many_times_proof_manual.v), including `entail_wit_4_1`, `entail_wit_4_2`, and the helper lemmas. The first non-repairable blocker is now `proof_of_p018_how_many_times_return_wit_1` at [p018_how_many_times_proof_manual.v:343](/home/yangfp/CAV/C/CAV/output/verify_20260607_053351_p018_how_many_times/coq/generated/p018_how_many_times_proof_manual.v:343).
-
-I confirmed this with a live `Show.` state: after `pre_process; split_pure_spatial`, the first subgoal is
-`CharArray.full str ... ** CharArray.full substring ... |-- CharArray.full str_pre ... ** CharArray.full substring_pre ...`
-and there are no hypotheses relating `str` to `str_pre` or `substring` to `substring_pre`. That makes the spatial entailment unprovable in the current generated witness shape. This is logged in [issues.md](/home/yangfp/CAV/C/CAV/output/verify_20260607_053351_p018_how_many_times/logs/issues.md) and summarized in [metrics.md](/home/yangfp/CAV/C/CAV/output/verify_20260607_053351_p018_how_many_times/logs/metrics.md). I also cleaned the temporary debug files and Coq build artifacts.
-
-Final Result: Fail

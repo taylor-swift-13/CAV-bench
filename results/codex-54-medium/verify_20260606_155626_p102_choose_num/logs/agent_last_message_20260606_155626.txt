@@ -1,5 +1,0 @@
-Completed the verify run for `p102_choose_num`. The manual return proofs are filled in at [p102_choose_num_proof_manual.v](/home/yangfp/CAV/C/CAV/output/verify_20260606_155626_p102_choose_num/coq/generated/p102_choose_num_proof_manual.v), symexec succeeded from the active annotated C, and all four Coq files compiled successfully with the corrected repo-local load-paths.
-
-I also wrote the required logs at [issues.md](/home/yangfp/CAV/C/CAV/output/verify_20260606_155626_p102_choose_num/logs/issues.md) and [metrics.md](/home/yangfp/CAV/C/CAV/output/verify_20260606_155626_p102_choose_num/logs/metrics.md), and cleaned the generated non-`.v` Coq artifacts in the workspace plus the compiled artifacts for `input/humaneval/p102_choose_num.v`.
-
-Final Result: Success

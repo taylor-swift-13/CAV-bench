@@ -1,5 +1,0 @@
-Updated the annotation in [verify_20260606_174757_p005_intersperse.c](/home/yangfp/CAV/C/CAV/annotated/verify_20260606_174757_p005_intersperse.c:1) to use a fixed-head plus tail-segment loop invariant, added the missing bridge assert after the first write, and carried the missing arithmetic bound into the invariant. That let `symexec` regenerate a stable proof shape.
-
-Completed the manual proofs in [p005_intersperse_proof_manual.v](/home/yangfp/CAV/C/CAV/output/verify_20260606_174757_p005_intersperse/coq/generated/p005_intersperse_proof_manual.v:1). I then compiled `goal`, `proof_auto`, `proof_manual`, and `goal_check` successfully, removed non-`.v` Coq byproducts, and wrote the required logs to [issues.md](/home/yangfp/CAV/C/CAV/output/verify_20260606_174757_p005_intersperse/logs/issues.md:1) and [metrics.md](/home/yangfp/CAV/C/CAV/output/verify_20260606_174757_p005_intersperse/logs/metrics.md:1).
-
-Final Result: Success

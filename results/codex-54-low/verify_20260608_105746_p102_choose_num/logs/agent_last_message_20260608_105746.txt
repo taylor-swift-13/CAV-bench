@@ -1,5 +1,0 @@
-Verification completed for `p102_choose_num`. The final manual proof is in [p102_choose_num_proof_manual.v](/home/yangfp/CAV/C/CAV/output/verify_20260608_105746_p102_choose_num/coq/generated/p102_choose_num_proof_manual.v), and the generated final artifacts are under [coq/generated](/home/yangfp/CAV/C/CAV/output/verify_20260608_105746_p102_choose_num/coq/generated).
-
-I ran the QCP mirror audit in order: symexec, original spec compile, `goal`, `proof_auto`, `proof_manual`, and `goal_check`. The only substantive fix was completing the five return witnesses in the mirrored proof manual and compiling with the required `_cav_original` load-path binding. I also cleaned the case-local `.aux/.vo/.glob/.vos/.vok` files and updated [issues.md](/home/yangfp/CAV/C/CAV/output/verify_20260608_105746_p102_choose_num/logs/issues.md) and [metrics.md](/home/yangfp/CAV/C/CAV/output/verify_20260608_105746_p102_choose_num/logs/metrics.md).
-
-Final Result: Success

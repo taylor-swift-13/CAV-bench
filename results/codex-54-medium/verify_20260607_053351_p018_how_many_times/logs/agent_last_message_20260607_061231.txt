@@ -1,5 +1,0 @@
-The run is not complete.
-
-I fixed the freshness problem and restored the canonical fresh symexec outputs in `coq/generated` so `goal/proof_auto/goal_check` now match `logs/fresh_symexec/generated`. I also recovered and re-proved the manual witnesses through `safety_wit_29`, `entail_wit_1`, `entail_wit_2_1`, `entail_wit_2_2`, and `entail_wit_3_1`..`3_4`. With the local `coq/tmp` strategy shim compile setup, `goal_check.v` compiles again.
-
-The remaining blocker is in [p018_how_many_times_proof_manual.v](/home/yangfp/CAV/C/CAV/output/verify_20260607_053351_p018_how_many_times/coq/generated/p018_how_many_times_proof_manual.v:206): `proof_of_p018_how_many_times_entail_wit_4_1` is stuck on the `Zlength_sublist` side condition inside the local `Hsubeq` proof. Because of that, `entail_wit_4_1`, `entail_wit_4_2`, and `return_wit_1`..`5` are still `Admitted`. I recorded the exact state in [issues.md](/home/yangfp/CAV/C/CAV/output/verify_20260607_053351_p018_how_many_times/logs/issues.md:1) and updated [metrics.md](/home/yangfp/CAV/C/CAV/output/verify_20260607_053351_p018_how_many_times/logs/metrics.md:1).

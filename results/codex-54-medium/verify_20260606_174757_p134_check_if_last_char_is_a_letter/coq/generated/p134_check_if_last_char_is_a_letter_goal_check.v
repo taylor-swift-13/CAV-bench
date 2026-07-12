@@ -1,7 +1,0 @@
-From SimpleC.EE.CAV.verify_20260606_174757_p134_check_if_last_char_is_a_letter Require Import p134_check_if_last_char_is_a_letter_goal p134_check_if_last_char_is_a_letter_proof_auto p134_check_if_last_char_is_a_letter_proof_manual.
-
-Module VC_Correctness : VC_Correct.
-  Include char_array_strategy_proof.
-  Include p134_check_if_last_char_is_a_letter_proof_auto.
-  Include p134_check_if_last_char_is_a_letter_proof_manual.
-End VC_Correctness.
