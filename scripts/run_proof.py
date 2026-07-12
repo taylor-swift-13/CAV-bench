@@ -125,6 +125,7 @@ def stage_qcp_mirror_for_proof(
         workspace_path=workspace_path,
         input_path=input_path,
         input_v_path=input_v_path,
+        annotated_input_path=annotated_input_path,
         annotated_c_path=annotated_c_path,
         function_name=function_name,
     )
@@ -145,6 +146,7 @@ def write_qcp_proof_audit_script(
     workspace_path: Path,
     input_path: Path,
     input_v_path: Path | None,
+    annotated_input_path: Path,
     annotated_c_path: Path,
     function_name: str,
 ) -> Path:
@@ -305,6 +307,7 @@ def build_run_proof_prompt(
     input_v_path: Path | None,
     function_name: str,
     workspace_path: Path,
+    annotated_input_path: Path,
     annotated_c_path: Path,
     restart_context: str | None = None,
 ) -> str:
@@ -539,7 +542,7 @@ def main() -> int:
         rc_path = Path(args.restart_context_file)
         if rc_path.exists():
             restart_context = rc_path.read_text(encoding="utf-8", errors="replace")
-    prompt = build_run_proof_prompt(skill_path, input_path, input_v_path, function_name, workspace_path, annotated_c_path, restart_context)
+    prompt = build_run_proof_prompt(skill_path, input_path, input_v_path, function_name, workspace_path, annotated_input_path, annotated_c_path, restart_context)
     ensure_parent(prompt_path)
     prompt_path.write_text(prompt, encoding="utf-8")
     if args.dry_run:
