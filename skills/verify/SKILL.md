@@ -108,6 +108,7 @@ linux-binary/symexec \
 ```bash
 cd SeparationLogic && coqc \
   -Q examples/CAV/<workspace>/deps "" \
+  -R flocq/src Flocq \
   -R SeparationLogic SimpleC.SL \
   -R unifysl Logic \
   -R sets SetsClass \
