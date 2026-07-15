@@ -21,6 +21,6 @@
     "_comment": "Per-stage wall-clock budgets in seconds, used by run_pipeline.py when the matching --*-timeout flag is not passed. CLI flag > this > built-in default.",
     "contract": 1800,
     "eval": 1800,
-    "verify": 7200
+    "verify": 5400
   }
 }

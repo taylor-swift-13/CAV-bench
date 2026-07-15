@@ -192,6 +192,7 @@ cleanup_workspace_after_result_copy() {
     "$ROOT/QualifiedCProgramming/SeparationLogic/examples/CAV/$base" \
     "$ROOT/QualifiedCProgramming/.tmp/SeparationLogic/examples/CAV/$base" \
     "$ROOT/QualifiedCProgramming/SeparationLogic/_cav_locks/$base" \
+    "$ROOT/QualifiedCProgramming/.tmp/SeparationLogic/_cav_locks/$base" \
     "$ROOT/annotated/$base.c" \
     "$workspace"
 }
