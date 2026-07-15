@@ -1,0 +1,6 @@
+From SimpleC.EE.CAV.ground_truth_p075_is_multiply_prime Require Import p075_is_multiply_prime_goal p075_is_multiply_prime_proof_auto p075_is_multiply_prime_proof_manual.
+
+Module VC_Correctness : VC_Correct.
+  Include p075_is_multiply_prime_proof_auto.
+  Include p075_is_multiply_prime_proof_manual.
+End VC_Correctness.

@@ -1,0 +1,6 @@
+From SimpleC.EE.CAV.ground_truth_p157_right_angle_triangle Require Import p157_right_angle_triangle_goal p157_right_angle_triangle_proof_auto p157_right_angle_triangle_proof_manual.
+
+Module VC_Correctness : VC_Correct.
+  Include p157_right_angle_triangle_proof_auto.
+  Include p157_right_angle_triangle_proof_manual.
+End VC_Correctness.

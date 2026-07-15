@@ -1,0 +1,146 @@
+// Strategies for the concrete local words table in humaneval StringClaude C_19.
+// They only borrow/restore memory resources; string comparison semantics stay in strcmp.
+
+#include "number_words_19_def.h"
+
+id : 21
+priority : core(1)
+left : PtrArray::undef_full(?p, ?n) at 0
+right : PtrArray::undef_seg(?p, 0, ?n) at 1
+action : right_erase(1);
+         left_erase(0);
+
+id : 22
+priority : core(1)
+left : PtrArray::undef_seg(?p, ?l, ?n) at 0
+right : undef_data_at(?p + (?i * sizeof(PTR)), PTR) at 1
+check : infer(l <= i);
+        infer(i < n);
+action : right_erase(1);
+         left_erase(0);
+         left_add(PtrArray::undef_missing_i(p, i, l, n));
+
+id : 23
+priority : post(1)
+left : PtrArray::undef_missing_i(?p, ?i, ?l, ?n) at 0
+check : infer(l == i);
+        infer(i < n);
+action : left_erase(0);
+         left_add(PtrArray::undef_seg(p, i + 1, n));
+
+id : 1
+priority : core(1)
+left : PtrArray::full(?words, 10,
+         cons{Z}(?w0, cons{Z}(?w1, cons{Z}(?w2, cons{Z}(?w3, cons{Z}(?w4,
+         cons{Z}(?w5, cons{Z}(?w6, cons{Z}(?w7, cons{Z}(?w8, cons{Z}(?w9, nil{Z}))))))))))) at 0
+       CharArray::full(w0, number_word_len_z(0) + 1, app{Z}(number_word_z(0), cons{Z}(0, nil{Z}))) at 1
+       CharArray::full(w1, number_word_len_z(1) + 1, app{Z}(number_word_z(1), cons{Z}(0, nil{Z}))) at 2
+       CharArray::full(w2, number_word_len_z(2) + 1, app{Z}(number_word_z(2), cons{Z}(0, nil{Z}))) at 3
+       CharArray::full(w3, number_word_len_z(3) + 1, app{Z}(number_word_z(3), cons{Z}(0, nil{Z}))) at 4
+       CharArray::full(w4, number_word_len_z(4) + 1, app{Z}(number_word_z(4), cons{Z}(0, nil{Z}))) at 5
+       CharArray::full(w5, number_word_len_z(5) + 1, app{Z}(number_word_z(5), cons{Z}(0, nil{Z}))) at 6
+       CharArray::full(w6, number_word_len_z(6) + 1, app{Z}(number_word_z(6), cons{Z}(0, nil{Z}))) at 7
+       CharArray::full(w7, number_word_len_z(7) + 1, app{Z}(number_word_z(7), cons{Z}(0, nil{Z}))) at 8
+       CharArray::full(w8, number_word_len_z(8) + 1, app{Z}(number_word_z(8), cons{Z}(0, nil{Z}))) at 9
+       CharArray::full(w9, number_word_len_z(9) + 1, app{Z}(number_word_z(9), cons{Z}(0, nil{Z}))) at 10
+right : number_words_full(words, w0, w1, w2, w3, w4, w5, w6, w7, w8, w9) at 11
+action : right_erase(11);
+         left_erase(10);
+         left_erase(9);
+         left_erase(8);
+         left_erase(7);
+         left_erase(6);
+         left_erase(5);
+         left_erase(4);
+         left_erase(3);
+         left_erase(2);
+         left_erase(1);
+         left_erase(0);
+
+id : 2
+priority : core(1)
+left : number_words_full(?words, ?w0, ?w1, ?w2, ?w3, ?w4, ?w5, ?w6, ?w7, ?w8, ?w9) at 0
+right : data_at(words + (?d * sizeof(PTR(struct blist))), PTR(struct blist), ?v) at 1
+check : infer(0 <= d);
+        infer(d < 10);
+action : right_erase(1);
+         right_add(v == Znth{Z}(d,
+           cons{Z}(w0, cons{Z}(w1, cons{Z}(w2, cons{Z}(w3, cons{Z}(w4,
+           cons{Z}(w5, cons{Z}(w6, cons{Z}(w7, cons{Z}(w8, cons{Z}(w9, nil{Z})))))))))), 0));
+
+id : 3
+priority : core(1)
+left : number_words_full(?words, ?w0, ?w1, ?w2, ?w3, ?w4, ?w5, ?w6, ?w7, ?w8, ?w9) at 0
+right : CharArray::full(?word, number_word_len_z(?d) + 1,
+          app{Z}(number_word_z(d), cons{Z}(0, nil{Z}))) at 1
+check : infer(0 <= d);
+        infer(d < 10);
+        infer(word == Znth{Z}(d,
+          cons{Z}(w0, cons{Z}(w1, cons{Z}(w2, cons{Z}(w3, cons{Z}(w4,
+          cons{Z}(w5, cons{Z}(w6, cons{Z}(w7, cons{Z}(w8, cons{Z}(w9, nil{Z})))))))))), 0));
+action : right_erase(1);
+         left_erase(0);
+         left_add(number_words_missing(words, d, word, w0, w1, w2, w3, w4, w5, w6, w7, w8, w9));
+
+id : 4
+priority : post(1)
+left : number_words_missing(?words, ?d, ?word, ?w0, ?w1, ?w2, ?w3, ?w4, ?w5, ?w6, ?w7, ?w8, ?w9) at 0
+       CharArray::full(word, number_word_len_z(d) + 1,
+          app{Z}(number_word_z(d), cons{Z}(0, nil{Z}))) at 1
+right : number_words_full(words, w0, w1, w2, w3, w4, w5, w6, w7, w8, w9) at 2
+check : infer(0 <= d);
+        infer(d < 10);
+action : right_erase(2);
+         left_erase(1);
+         left_erase(0);
+
+id : 5
+priority : core(2)
+left : CharArray::full(?p, ?n1, ?l1) at 0
+right : CharArray::full(p, ?n2, ?l2) at 1
+check : infer(n1 == n2);
+action : right_erase(1);
+         left_erase(0);
+         right_add(l1 == l2);
+
+id : 6
+priority : core(2)
+left : CharArray::undef_seg(?p, ?l1, ?r) at 0
+right : CharArray::undef_seg(p, ?l2, r) at 1
+check : infer(l1 == l2);
+action : right_erase(1);
+         left_erase(0);
+
+id : 7
+priority : core(1)
+left : number_words_full(?words, ?w0, ?w1, ?w2, ?w3, ?w4, ?w5, ?w6, ?w7, ?w8, ?w9) at 0
+right : PtrArray::full(words, 10,
+         cons{Z}(w0, cons{Z}(w1, cons{Z}(w2, cons{Z}(w3, cons{Z}(w4,
+         cons{Z}(w5, cons{Z}(w6, cons{Z}(w7, cons{Z}(w8, cons{Z}(w9, nil{Z}))))))))))) at 1
+        CharArray::full(w0, 5, app{Z}(number_word_z(0), cons{Z}(0, nil{Z}))) at 2
+        CharArray::full(w1, 4, app{Z}(number_word_z(1), cons{Z}(0, nil{Z}))) at 3
+        CharArray::full(w2, 4, app{Z}(number_word_z(2), cons{Z}(0, nil{Z}))) at 4
+        CharArray::full(w3, 6, app{Z}(number_word_z(3), cons{Z}(0, nil{Z}))) at 5
+        CharArray::full(w4, 5, app{Z}(number_word_z(4), cons{Z}(0, nil{Z}))) at 6
+        CharArray::full(w5, 5, app{Z}(number_word_z(5), cons{Z}(0, nil{Z}))) at 7
+        CharArray::full(w6, 4, app{Z}(number_word_z(6), cons{Z}(0, nil{Z}))) at 8
+        CharArray::full(w7, 6, app{Z}(number_word_z(7), cons{Z}(0, nil{Z}))) at 9
+        CharArray::full(w8, 6, app{Z}(number_word_z(8), cons{Z}(0, nil{Z}))) at 10
+        CharArray::full(w9, 5, app{Z}(number_word_z(9), cons{Z}(0, nil{Z}))) at 11
+action : right_erase(11);
+         right_erase(10);
+         right_erase(9);
+         right_erase(8);
+         right_erase(7);
+         right_erase(6);
+         right_erase(5);
+         right_erase(4);
+         right_erase(3);
+         right_erase(2);
+         right_erase(1);
+         left_erase(0);
+
+id : 8
+priority : core(2)
+left : CharArray::undef_seg(?p, ?x, ?x) at 0
+action : left_erase(0);

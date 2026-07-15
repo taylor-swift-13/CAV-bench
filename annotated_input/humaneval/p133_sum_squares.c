@@ -1,13 +1,44 @@
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdlib.h>
-#include <math.h>
-#include <string.h>
-#include <stdio.h>
+/* Exact rational boundary for ceiling each number before squaring. */
 #include "verification_stdlib.h"
 #include "verification_list.h"
+#include "int_array_def.h"
 
-int he_external_ceil(double x)
-/*@ Require emp
-    Ensure he_ceil_spec(x, __return)
-*/;
+/*@ Extern Coq (problem_133_pre_z : list Z -> list Z -> Prop)
+               (problem_133_spec_z : list Z -> list Z -> Z -> Prop)
+               (problem_133_prefix_z : list Z -> list Z -> Z -> Z -> Prop) */
+/*@ Import Coq Require Import p133_sum_squares */
+
+int sum_squares(const int *numerators, const int *denominators, int size)
+/*@ With nums dens
+    Require 0 <= size && size < INT_MAX &&
+            Zlength(nums) == size && Zlength(dens) == size &&
+            problem_133_pre_z(nums, dens) &&
+            IntArray::full(numerators, size, nums) *
+            IntArray::full(denominators, size, dens)
+    Ensure problem_133_spec_z(nums, dens, __return) &&
+           IntArray::full(numerators, size, nums) *
+           IntArray::full(denominators, size, dens)
+*/
+{
+    int sum = 0;
+    int i;
+    /*@ Inv
+        numerators == numerators@pre &&
+        denominators == denominators@pre && size == size@pre &&
+        0 <= i && i <= size && size < INT_MAX &&
+        Zlength(nums) == size && Zlength(dens) == size &&
+        problem_133_pre_z(nums, dens) &&
+        problem_133_prefix_z(nums, dens, i, sum) &&
+        IntArray::full(numerators, size, nums) *
+        IntArray::full(denominators, size, dens)
+    */
+    for (i = 0; i < size; ++i) {
+        int q = numerators[i] / denominators[i];
+        int r = numerators[i] % denominators[i];
+        int z = q;
+        if (r > 0) z = q + 1;
+        sum = sum + z * z;
+    }
+    return sum;
+}
+

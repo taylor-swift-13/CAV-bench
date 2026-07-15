@@ -15,6 +15,11 @@ Verify 在 QCP C 程序上完成 annotation + proof + compile，不修改 functi
 - 唯一文字产物是当前 QCP mirror logs 中的 `issues.md` 和 `metrics.md`。
 - 不写过程 reasoning 日志。
 
+### 0.1 工具链要求
+
+- QCP verify 使用 opam switch `qcp-8.20`，即 Coq 8.20.1。
+- 运行 `symexec`、`coqc` 和 final-check 前，先确认 `coqc -v` 显示 `The Coq Proof Assistant, version 8.20.1`。
+
 ## 1. 路径和读写边界
 
 路径：

@@ -11,6 +11,8 @@
 
 进入本模式说明：symexec 已经成功、`proof_auto.v` 也已就位，但 `proof_manual.v` 还存在未完成的手工证明义务，需要 agent 优先写真实 proof。
 
+工具链仍按主 verify skill：使用 opam switch `qcp-8.20` / Coq 8.20.1。
+
 ## 写边界
 
 - **不改** `input/`、`raw/`、`workspace/original/`；

@@ -1,4 +1,4 @@
-/*@ Extern Coq (sum : list Z -> Z) 
+/*@ Extern Coq (sum : list Z -> Z)
                (sublist : {A} -> Z -> Z -> list A -> list A)
                (IntArray::full : Z -> Z -> list Z -> Assertion)
                (IntArray::missing_i: Z -> Z -> Z -> Z -> list Z -> Assertion)

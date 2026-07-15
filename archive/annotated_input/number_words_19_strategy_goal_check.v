@@ -1,0 +1,5 @@
+From SimpleC.EE Require Import number_words_19_strategy_goal number_words_19_strategy_proof.
+
+Module number_words_19_Strategy_Correctness : number_words_19_Strategy_Correct.
+  Include number_words_19_strategy_proof.
+End number_words_19_Strategy_Correctness.

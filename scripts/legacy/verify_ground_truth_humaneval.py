@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Verify ground_truth humaneval cases by rerunning symexec and coqc.
+"""Verify active ground_truth humaneval cases by rerunning symexec and coqc.
 
 For each ground_truth/<problem>, this stages the aligned C into the local QCP
-mirror, reruns symexec to regenerate goal/proof_auto/goal_check, replaces
-proof_manual with the migrated proof, then compiles case-local support, goal,
-proof_auto, proof_manual, and goal_check. Ground-truth cases do not use deps
+mirror, reruns symexec to regenerate goal/proof templates/goal_check, preserves
+the generated proof_auto unchanged, replaces only proof_manual with the
+completed migrated proof, then compiles all generated targets.
+Ground-truth cases do not use deps
 directories; required support must be inlined into case-local .v files.
 """
 from __future__ import annotations
@@ -52,6 +53,9 @@ def coq_common_args(workspace: str, deps_flag: list[str] | None = None) -> list[
     args.extend(
         [
             "-R",
+            str(QCP_ROOT / "SeparationLogic" / "flocq" / "src"),
+            "Flocq",
+            "-R",
             str(QCP_ROOT / "SeparationLogic" / "SeparationLogic"),
             "SimpleC.SL",
             "-R",
@@ -87,6 +91,24 @@ def coq_common_args(workspace: str, deps_flag: list[str] | None = None) -> list[
             "-R",
             str(QCP_ROOT / "SeparationLogic" / "listlib"),
             "ListLib",
+            "-R",
+            str(QCP_ROOT / "SeparationLogic" / "MaxMinLib"),
+            "MaxMinLib",
+            "-R",
+            str(QCP_ROOT / "SeparationLogic" / "GraphLib"),
+            "GraphLib",
+            "-R",
+            str(QCP_ROOT / "SeparationLogic" / "SumLib"),
+            "SumLib",
+            "-R",
+            str(QCP_ROOT / "SeparationLogic" / "tracelib"),
+            "TraceLib",
+            "-R",
+            str(QCP_ROOT / "SeparationLogic" / "coq-record-update" / "src"),
+            "RecordUpdate",
+            "-Q",
+            str(QCP_ROOT / "SeparationLogic" / "algorithms"),
+            "Algorithms",
             "-R",
             str(QCP_COQ_ROOT / workspace),
             f"SimpleC.EE.CAV.{workspace}",
@@ -138,11 +160,20 @@ def stage_case(case_dir: Path, workspace: str) -> tuple[Path, Path]:
     shutil.copy2(case_dir / f"{stem}.c", qcp_input / f"{stem}.c")
     copy_headers(qcp_input)
 
+    strategy_source_dir = QCP_ROOT / STRATEGY_SOURCE_PATH
+    strategy_coq_dir = QCP_ROOT / "SeparationLogic" / "examples" / STRATEGY_COQ_PATH.split(".")[-1]
+    strategy_source_dir.mkdir(parents=True, exist_ok=True)
+    strategy_coq_dir.mkdir(parents=True, exist_ok=True)
+    for source in sorted(case_dir.glob("*.strategies")):
+        shutil.copy2(source, strategy_source_dir / source.name)
+    for source in sorted(case_dir.glob("*_strategy_*.v")):
+        shutil.copy2(source, strategy_coq_dir / source.name)
+
     for source in sorted(INPUT.glob("*.v")):
         shutil.copy2(source, qcp_coq / source.name)
 
     for source in sorted(case_dir.glob("*.v")):
-        if source.name not in {
+        if "_strategy_" not in source.stem and source.name not in {
             f"{stem}_goal.v",
             f"{stem}_proof_auto.v",
             f"{stem}_proof_manual.v",
@@ -306,8 +337,8 @@ def verify_case(case_dir: Path, *, timeout: int, keep: bool) -> dict:
         return result
     log.append("symexec replay succeeded")
 
-    migrated_manual = case_dir / f"{stem}_proof_manual.v"
-    shutil.copy2(migrated_manual, qcp_coq / migrated_manual.name)
+    migrated = case_dir / f"{stem}_proof_manual.v"
+    shutil.copy2(migrated, qcp_coq / migrated.name)
 
     case_args = coq_common_args(workspace)
     for support in support_dep_order(qcp_coq, stem):
@@ -319,6 +350,24 @@ def verify_case(case_dir: Path, *, timeout: int, keep: bool) -> dict:
             return result
     log.append("[OK] support")
 
+    strategy_dir = QCP_ROOT / "SeparationLogic" / "examples" / STRATEGY_COQ_PATH.split(".")[-1]
+    strategy_sources = strategy_roots_from_generated(qcp_coq)
+    for strategy in strategy_dep_order(strategy_sources):
+        rc = run(
+            [*COQC_COMMAND, *case_args, strategy.name],
+            cwd=strategy_dir,
+            timeout=timeout,
+            log=log,
+        )
+        if rc != 0:
+            result["stage"] = f"strategy:{strategy.name}"
+            log.append(f"[FAIL] strategy:{strategy.name}")
+            (case_dir / "verify_ground_truth.log").write_text(
+                "\n".join(log) + "\n", encoding="utf-8"
+            )
+            return result
+    log.append("[OK] strategy")
+
     for suffix in ("goal", "proof_auto", "proof_manual", "goal_check"):
         name = f"{stem}_{suffix}.v"
         rc = run([*COQC_COMMAND, *case_args, name], cwd=qcp_coq, timeout=timeout, log=log)
@@ -329,11 +378,15 @@ def verify_case(case_dir: Path, *, timeout: int, keep: bool) -> dict:
             return result
         log.append(f"[OK] {suffix}")
 
-    manual_text = (qcp_coq / f"{stem}_proof_manual.v").read_text(encoding="utf-8", errors="replace")
-    if OBLIGATION_RE.search(manual_text):
+    proof_text = (qcp_coq / f"{stem}_proof_manual.v").read_text(
+        encoding="utf-8", errors="replace"
+    )
+    if OBLIGATION_RE.search(proof_text):
         result["stage"] = "proof_manual_obligation_marker"
         log.append("[FAIL] proof_manual_obligation_marker")
-        (case_dir / "verify_ground_truth.log").write_text("\n".join(log) + "\n", encoding="utf-8")
+        (case_dir / "verify_ground_truth.log").write_text(
+            "\n".join(log) + "\n", encoding="utf-8"
+        )
         return result
 
     for suffix in ("goal", "proof_auto", "proof_manual", "goal_check"):
@@ -356,7 +409,13 @@ def main() -> int:
     args = parser.parse_args()
 
     selected = set(args.problem or [])
-    case_dirs = sorted(path for path in GROUND_TRUTH.iterdir() if path.is_dir())
+    # A top-level case must contain its same-named C source; repository-level
+    # archived cases are therefore outside this enumeration.
+    case_dirs = sorted(
+        path
+        for path in GROUND_TRUTH.iterdir()
+        if path.is_dir() and (path / f"{path.name}.c").is_file()
+    )
     if selected:
         case_dirs = [path for path in case_dirs if path.name in selected]
     if args.limit is not None:

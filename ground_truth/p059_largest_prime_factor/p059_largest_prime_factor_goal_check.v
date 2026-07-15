@@ -1,0 +1,6 @@
+From SimpleC.EE.CAV.ground_truth_p059_largest_prime_factor Require Import p059_largest_prime_factor_goal p059_largest_prime_factor_proof_auto p059_largest_prime_factor_proof_manual.
+
+Module VC_Correctness : VC_Correct.
+  Include p059_largest_prime_factor_proof_auto.
+  Include p059_largest_prime_factor_proof_manual.
+End VC_Correctness.
