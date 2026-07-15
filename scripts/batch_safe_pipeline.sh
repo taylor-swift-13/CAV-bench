@@ -390,11 +390,12 @@ for target_raw in mappings.values():
 
 for target_raw in mappings.values():
     base = Path(target_raw).name
-    if not base.startswith("verify_"):
-        continue
     shutil.rmtree(root / "QualifiedCProgramming" / "QCP_examples" / "CAV" / base, ignore_errors=True)
+    shutil.rmtree(root / "QualifiedCProgramming" / ".tmp" / "QCP_examples" / "CAV" / base, ignore_errors=True)
     shutil.rmtree(root / "QualifiedCProgramming" / "SeparationLogic" / "examples" / "CAV" / base, ignore_errors=True)
+    shutil.rmtree(root / "QualifiedCProgramming" / ".tmp" / "SeparationLogic" / "examples" / "CAV" / base, ignore_errors=True)
     shutil.rmtree(root / "QualifiedCProgramming" / "SeparationLogic" / "_cav_locks" / base, ignore_errors=True)
+    shutil.rmtree(root / "QualifiedCProgramming" / ".tmp" / "SeparationLogic" / "_cav_locks" / base, ignore_errors=True)
     annotated = root / "annotated" / f"{base}.c"
     if annotated.exists():
         annotated.unlink()
