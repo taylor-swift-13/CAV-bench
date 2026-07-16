@@ -18,6 +18,7 @@ Contract 把原始题意 + C 实现整理成 verify 友好的入口/出口 funct
   - `.agents/skills/annotation-filling/docs/reference-cases.md` — 按题型查找可参考的 annotation 案例。
   - `.agents/skills/annotation-filling/docs/common-annotation-errors.md` — 常见 annotation 错误、symexec 报错形态和修复方向。
   - `.agents/skills/annotation-filling/docs/builtin-array-string-support.md` — 内置数组/字符串支持、长度和 no-zero 等必要 side condition。
+  - `../skills/examples/float.c` — CAV 提供的 QCP `fp32` / `fp64` function contract 与浮点运算示例；处理浮点程序时必须读取。该示例位于主仓库，不属于 QCP submodule。
 - 本 skill 只规定 CAV 工程约束、产物、gate、退出和日志。
 - 唯一文字产物是 `logs/issues.md` 和 `logs/metrics.md`。
 - 必须按本 skill 的示例检索规则读取具体相关示例；只读 `reference-cases.md` 不够。
@@ -61,7 +62,7 @@ Contract 把原始题意 + C 实现整理成 verify 友好的入口/出口 funct
 ## 3. 工作循环
 
 1. 读题意和代码，并先读取 §0 列出的全部 QCP 文档。
-2. 按题型关键词检索并读取具体相关示例：`QCP_examples/{Applications_human,LLM_bench,QCP_demos_human,QCP_demos_LLM}/`。
+2. 按题型关键词检索并读取具体相关示例：`QCP_examples/{Applications_human,LLM_bench,QCP_demos_human,QCP_demos_LLM}/`；浮点题还必须读取 `../skills/examples/float.c`。
 3. 选择性读取 `tutorial/`。
 4. 生成 `mid/<dataset>/<name>.c` 和必要的 `.v`。
 5. 跑 runner gate：`check_spec_wellformed` / `.v` definition-only / `coqc mid/.v`。

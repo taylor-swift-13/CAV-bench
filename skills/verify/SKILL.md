@@ -48,6 +48,7 @@ Runner prompt 提供当前 case 的 QCP mirror 路径、QCP final-check 摘要�
   - 对应证明来自 `SeparationLogic/examples/{Applications_human,LLM_bench,QCP_demos_human,QCP_demos_LLM}/` 和 `SeparationLogic/stdlib/`；
   - 相关教程来自 `tutorial/`；
   - CAV 历史同型 workspace 只能作为补充参考，不能替代上述官方示例源。
+  - 浮点 case 必须先读取主仓库的 `../skills/examples/float.c`，以其中 QCP `fp32` / `fp64` contract 和运算模式为准；该路径在 QCP 工作目录之外，不修改 submodule。
 - QCP skill 文档路径只作为可选参考，不要求启动时读取；annotation 语法、symexec 报错、proof tactic、final-check 细节不确定时，只读取一个最相关的小文件或章节：
   - orchestration：`QualifiedCProgramming/.agents/skills/verification-orchestrator/SKILL.md`
   - annotation filling：`QualifiedCProgramming/.agents/skills/annotation-filling/SKILL.md`
