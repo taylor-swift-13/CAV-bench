@@ -15,6 +15,11 @@ Verify 在 QCP C 程序上完成 annotation + proof + compile，不修改 functi
 - 唯一文字产物是当前 QCP mirror logs 中的 `issues.md` 和 `metrics.md`。
 - 不写过程 reasoning 日志。
 
+## 工具链要求
+
+- QCP verify 使用 opam switch `qcp-8.20`，即 Coq 8.20.1。
+- 运行 `symexec`、`coqc` 和 final-check 前，先确认 `coqc -v` 显示 `The Coq Proof Assistant, version 8.20.1`。
+
 ## 1. 路径和读写边界
 
 路径：
@@ -64,7 +69,7 @@ Runner prompt 提供当前 case 的 QCP mirror 路径、QCP final-check 摘要�
 3. 若 symexec 失败或 VC 缺 annotation 中间事实，回到 annotation 修改。
 4. 进入 proof 阶段后，补当前 QCP Coq mirror 中的 `<name>_proof_manual.v`。
 5. 若 proof 暴露 annotation 缺口，回到 annotation 阶段并重跑 symexec。
-6. 当前 proof 和 runner 最终验收要求都满足后才退出。
+6. 当前 proof 和全部完成条件都满足后才退出。
 
 - Annotation 只新增或修改验证注解，不修改原始 C 实现。
 - 公共验证头使用裸名 include，并保持原名：
@@ -136,9 +141,11 @@ cd SeparationLogic && coqc <same load-path args> examples/CAV/<workspace>/<name>
 
 若有多个原始 bare-import deps，先把每个 `examples/CAV/<workspace>/deps/<dep>.v` 按 runner 给出的 dependency closure 顺序全部编译完，再编译四个 target `.v`。只修改 `proof_manual.v` 后，可以从 `proof_manual.v` 重新编译到 `goal_check.v`；annotation 改动后必须重新运行 symexec 并重新走完整编译顺序。
 
-## 4. Audit、编译和退出
+## 4. 完成判据、编译和退出
 
-正式成功判定只使用 runner 对当前 QCP mirror 的最终验收。
+完成当前 case 必须满足以下要求。
+
+- 保持原始 executable C 和 function contract 不变；annotation 后 symexec 成功；按依赖顺序编译 original deps、goal、proof_auto、proof_manual、goal_check；`proof_manual.v` 的每个手工义务都由真实证明完成；全程遵守当前 case 的读写边界。
 
 1. annotated C 和公共头位于 `QualifiedCProgramming/QCP_examples/CAV/<workspace>/`。
 2. target Coq 文件位于 `QualifiedCProgramming/SeparationLogic/examples/CAV/<workspace>/`。
@@ -151,17 +158,17 @@ cd SeparationLogic && coqc <same load-path args> examples/CAV/<workspace>/<name>
 - 所有 symexec、coqc、final-check 都在当前 QCP mirror scratch 中完成。
 - 以 runner 提供的当前 QCP mirror final-check 要求作为最终检查标准。
 - 禁止 agent 复制产物；runner 负责复制回 output，且不复制 `.vo/.glob/.aux`。
-- final-check 或 runner 验收要求尚未满足时不要退出；继续编辑 annotation/proof 并再次运行相关 QCP 检查。
+- final-check 或上述完成条件尚未满足时不要退出；继续编辑 annotation/proof 并再次运行相关 QCP 检查。
 - 禁止任何第三种最终状态。
 - 普通 annotation、symexec、coqc、proof 失败都不是退出理由。
 
 ## 5. 日志和最终结果
 
 - `logs/issues.md` 记录真正遇到的 issue：现象、定位、关键报错片段、最终解决方式或卡住原因。
-- `logs/metrics.md` 记录最终结果、attempt、耗时、agent/model、输入/输出路径和 runner 最终验收结果。
-- 当前 QCP mirror 满足 final-check 和 runner 最终验收要求后，维护 `logs/issues.md` 和 `logs/metrics.md`，最后一行写裸的 `Final Result: Success`。
-- final-check 或 runner 验收要求尚未满足时可以持续更新 `logs/issues.md`，但更新后继续工作。
-- 写完 `issues.md` 或 `metrics.md` 不是退出理由；final-check 或 runner 验收要求尚未满足就继续。
+- `logs/metrics.md` 记录最终结果、attempt、耗时、agent/model 和输入/输出路径。
+- 当前 QCP mirror 满足全部完成条件后，维护 `logs/issues.md` 和 `logs/metrics.md`，最后一行写裸的 `Final Result: Success`。
+- final-check 或上述完成条件尚未满足时可以持续更新 `logs/issues.md`，但更新后继续工作。
+- 写完 `issues.md` 或 `metrics.md` 不是退出理由；final-check 或上述完成条件尚未满足就继续。
 - 只有确认 `contract_program_mismatch_blocker` 时，最后一行才写裸的 `Final Result: Fail`。
 - `contract_program_mismatch_blocker` 指 Contract 与原始程序语义冲突，当前 case 必须回 Contract 阶段或用户决策，且无法通过 annotation/proof 修复。
 - 写 `Final Result: Fail` 时，`logs/issues.md` 必须包含 `contract_program_mismatch_blocker`：失败 gate、退出码或 theorem/witness 名、关键报错、相关路径、Contract 与程序语义哪里冲突、为什么无法通过 annotation/proof 修复且必须回 Contract/用户决策。
