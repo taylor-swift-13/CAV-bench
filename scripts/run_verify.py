@@ -16,6 +16,7 @@ import time
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import agent_config
 import agent_metrics
+import check_leakage
 import check_verify_audit
 
 
@@ -372,8 +373,8 @@ def _qcp_final_check_commands(
             *commands,
             "```",
             "Do not search for symexec, Makefiles, dune files, QCP docs, scripts, or external parser directories. Use only the commands above.",
-            "Runner-side final acceptance will re-check the same QCP mirror after you exit. If any annotation, symexec, proof, or final-check step fails while you are working, do not exit; keep editing annotation/proof and rerun the relevant QCP check. Only write Final Result: Success when the mirror is ready for runner acceptance. Only write Final Result: Fail when you have confirmed a contract_program_mismatch_blocker: the Contract and original program semantics conflict and the case must return to Contract/user decision.",
-            "Runner acceptance expects the original executable program and contract to be preserved, and every manual proof obligation to be justified by real proof work from the available case facts. Separately, you must keep all work inside the active case workspace and must not use prior answers or unrelated runs.",
+            "If any annotation, symexec, proof, or final-check step fails while you are working, do not exit; keep editing annotation/proof and rerun the relevant QCP check. Only write Final Result: Success after every completion requirement below is satisfied. Only write Final Result: Fail when you have confirmed a contract_program_mismatch_blocker: the Contract and original program semantics conflict and the case must return to Contract/user decision.",
+            "Completion requires preserving the original executable program and contract, justifying every manual proof obligation with real proof work from the available case facts, keeping all work inside the active case workspace, and not using prior answers or unrelated runs.",
             "Do not prove or edit proof_auto.v. It is normal QCP-generated output; the real manual burden is proof_manual.v. Completion is judged by all manual proof obligations being genuinely discharged and goal_check.v compiling.",
             "Do not add anything whose purpose is to make the files accepted without proving the stated obligations, and do not use external answer artifacts. If proof_manual.v is empty or has no manual obligations and the QCP final-check sequence succeeds, immediately write QCP logs/issues.md, QCP logs/metrics.md, and finish with Final Result: Success.",
         ]
@@ -391,7 +392,7 @@ def build_prompt(
     restart_context: str | None = None,
 ) -> str:
     lines = [
-        "Use the repo-level CAV verify skill plus QCP official workflow rules. First read the repo-level CAV skill files and the full read-only QCP `.agents/skills/` list below; then use this prompt and the current QCP mirror for case-specific paths and audit requirements.",
+        "Use the repo-level CAV verify skill plus QCP official workflow rules. First read the repo-level CAV skill files and the full read-only QCP `.agents/skills/` list below; then use this prompt and the current QCP mirror for case-specific paths and completion requirements.",
         "",
         _repo_skill_list(skill_path),
         "",
@@ -429,7 +430,7 @@ def build_proof_only_prompt(
     restart_context: str | None = None,
 ) -> str:
     lines = [
-        "Use the repo-level CAV verify skill plus QCP official workflow rules. First read the repo-level CAV skill files and the full read-only QCP `.agents/skills/` list below, even in proof-only mode; then use this prompt and the current QCP mirror for case-specific paths and audit requirements.",
+        "Use the repo-level CAV verify skill plus QCP official workflow rules. First read the repo-level CAV skill files and the full read-only QCP `.agents/skills/` list below, even in proof-only mode; then use this prompt and the current QCP mirror for case-specific paths and completion requirements.",
         "",
         _repo_skill_list(skill_path, proof_only=True),
         "",
@@ -642,13 +643,6 @@ def stage_qcp_mirror_for_agent(
     shutil.copy2(annotated_c_path, qcp_annotated)
     _copy_header_deps(input_path.parent, qcp_input_dir)
     stage_original_v_deps(input_path, input_v_path, qcp_deps_dir)
-    write_qcp_agent_audit_script(
-        workspace_path=workspace_path,
-        input_path=input_path,
-        input_v_path=input_v_path,
-        annotated_c_path=annotated_c_path,
-        function_name=function_name,
-    )
     return {
         "qcp_input_dir": qcp_input_dir,
         "qcp_examples_dir": qcp_examples_dir,
@@ -736,9 +730,61 @@ expected_executable = {expected_executable!r}
 expected_contracts = json.loads({json.dumps(expected_contracts)!r})
 
 def normalize_c_without_annotations(text):
-    text = re.sub(r"/\\*.*?\\*/", "", text, flags=re.DOTALL)
-    text = re.sub(r"//.*", "", text)
-    return re.sub(r"\\s+", "", text)
+    multi = ("<<=", ">>=", "...", "->", "++", "--", "<<", ">>", "<=", ">=", "==", "!=", "&&", "||", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "##", "::")
+    tokens = []
+    i = 0
+    while i < len(text):
+        ch = text[i]
+        if ch.isspace():
+            i += 1
+        elif text.startswith("//", i):
+            end = text.find("\\n", i + 2)
+            i = len(text) if end < 0 else end + 1
+        elif text.startswith("/*", i):
+            end = text.find("*/", i + 2)
+            if end < 0:
+                tokens.append("<unterminated-comment>")
+                break
+            i = end + 2
+        elif ch == '"' or ch == "'":
+            quote, start = ch, i
+            i += 1
+            while i < len(text):
+                if text[i] == "\\\\":
+                    i += 2
+                elif text[i] == quote:
+                    i += 1
+                    break
+                else:
+                    i += 1
+            tokens.append(text[start:i])
+        elif ch.isalpha() or ch == "_":
+            start = i
+            i += 1
+            while i < len(text) and (text[i].isalnum() or text[i] == "_"):
+                i += 1
+            tokens.append(text[start:i])
+        elif ch.isdigit() or (ch == "." and i + 1 < len(text) and text[i + 1].isdigit()):
+            start = i
+            i += 1
+            while i < len(text):
+                cur = text[i]
+                if cur.isalnum() or cur in "._":
+                    i += 1
+                elif cur in "+-" and i > start and text[i - 1] in "eEpP":
+                    i += 1
+                else:
+                    break
+            tokens.append(text[start:i])
+        else:
+            op = next((candidate for candidate in multi if text.startswith(candidate, i)), None)
+            if op is None:
+                tokens.append(ch)
+                i += 1
+            else:
+                tokens.append(op)
+                i += len(op)
+    return "\\x1f".join(tokens)
 
 def normalize(text):
     return re.sub(r"\\s+", " ", text).strip()
@@ -932,15 +978,29 @@ def verify_unified_cheating_audit_check(
     return True, f"verify_audit_success:{log_path}"
 
 
+def verify_transcript_leakage_check(workspace_path: Path) -> tuple[bool, str]:
+    """Reject answer-bearing or cross-run reads recorded in agent transcripts."""
+    transcripts = check_leakage.discover_transcripts([workspace_path])
+    findings = check_leakage.scan_paths([workspace_path])
+    summary = check_leakage.summarize(findings, len(transcripts))
+    log_path = workspace_path / "logs" / "leakage_audit.json"
+    log_path.write_text(json.dumps({
+        "summary": summary,
+        "findings": [check_leakage.asdict(item) for item in findings],
+    }, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    if not summary["clean"]:
+        categories = ",".join(summary["categories"])
+        return False, f"leakage_audit_failed:{log_path}:categories={categories}"
+    return True, f"leakage_audit_success:{log_path}"
+
+
 def file_sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def normalize_c_without_annotations(text: str) -> str:
-    """Remove comments/QCP annotations and whitespace to compare executable C."""
-    text = re.sub(r"/\*.*?\*/", "", text, flags=re.DOTALL)
-    text = re.sub(r"//.*", "", text)
-    return re.sub(r"\s+", "", text)
+    """Token-aware executable C normalization shared with the final audit."""
+    return check_verify_audit.normalize_c_without_annotations(text)
 
 
 def verify_audit_check(
@@ -952,6 +1012,10 @@ def verify_audit_check(
     annotated_c_path: Path,
 ) -> tuple[bool, str]:
     checks: list[tuple[bool, str]] = []
+
+    checks.append(verify_transcript_leakage_check(workspace_path))
+    if not checks[-1][0]:
+        return False, ";".join(detail for _, detail in checks)
 
     checks.append(verify_unified_cheating_audit_check(
         workspace_path=workspace_path,

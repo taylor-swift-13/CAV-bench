@@ -108,13 +108,6 @@ def stage_qcp_mirror_for_proof(
     if annotated_input_path.parent != input_path.parent:
         rv._copy_header_deps(annotated_input_path.parent, qcp_input_dir)
     rv.stage_original_v_deps(input_path, input_v_path, qcp_deps_dir)
-    write_qcp_proof_audit_script(
-        workspace_path=workspace_path,
-        input_path=input_path,
-        input_v_path=input_v_path,
-        annotated_c_path=annotated_c_path,
-        function_name=function_name,
-    )
     return {
         "qcp_input_dir": qcp_input_dir,
         "qcp_examples_dir": qcp_examples_dir,
@@ -191,9 +184,61 @@ expected_executable = {expected_executable!r}
 expected_contracts = json.loads({json.dumps(expected_contracts)!r})
 
 def normalize_c_without_annotations(text):
-    text = re.sub(r"/\\*.*?\\*/", "", text, flags=re.DOTALL)
-    text = re.sub(r"//.*", "", text)
-    return re.sub(r"\\s+", "", text)
+    multi = ("<<=", ">>=", "...", "->", "++", "--", "<<", ">>", "<=", ">=", "==", "!=", "&&", "||", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "##", "::")
+    tokens = []
+    i = 0
+    while i < len(text):
+        ch = text[i]
+        if ch.isspace():
+            i += 1
+        elif text.startswith("//", i):
+            end = text.find("\\n", i + 2)
+            i = len(text) if end < 0 else end + 1
+        elif text.startswith("/*", i):
+            end = text.find("*/", i + 2)
+            if end < 0:
+                tokens.append("<unterminated-comment>")
+                break
+            i = end + 2
+        elif ch == '"' or ch == "'":
+            quote, start = ch, i
+            i += 1
+            while i < len(text):
+                if text[i] == "\\\\":
+                    i += 2
+                elif text[i] == quote:
+                    i += 1
+                    break
+                else:
+                    i += 1
+            tokens.append(text[start:i])
+        elif ch.isalpha() or ch == "_":
+            start = i
+            i += 1
+            while i < len(text) and (text[i].isalnum() or text[i] == "_"):
+                i += 1
+            tokens.append(text[start:i])
+        elif ch.isdigit() or (ch == "." and i + 1 < len(text) and text[i + 1].isdigit()):
+            start = i
+            i += 1
+            while i < len(text):
+                cur = text[i]
+                if cur.isalnum() or cur in "._":
+                    i += 1
+                elif cur in "+-" and i > start and text[i - 1] in "eEpP":
+                    i += 1
+                else:
+                    break
+            tokens.append(text[start:i])
+        else:
+            op = next((candidate for candidate in multi if text.startswith(candidate, i)), None)
+            if op is None:
+                tokens.append(ch)
+                i += 1
+            else:
+                tokens.append(op)
+                i += len(op)
+    return "\\x1f".join(tokens)
 
 def normalize(text):
     return re.sub(r"\\s+", " ", text).strip()
@@ -300,8 +345,8 @@ def build_run_proof_prompt(
         "```",
         "",
         "Write only `<function>_proof_manual.v` and `logs/issues.md` / `logs/metrics.md` after symexec generates files. Do not edit proof_auto.v, goal.v, goal_check.v, deps, or the annotated C.",
-        "Runner acceptance expects the annotated program and contract to stay unchanged, and every manual proof obligation to be justified by real proof work from the available case facts. Separately, you must keep all work inside the active case workspace and must not use prior answers or unrelated runs.",
-        "Only finish with Final Result: Success after the QCP final-check sequence succeeds and the mirror is ready for runner acceptance. If symexec fails or the annotation is insufficient, record the blocker in logs/issues.md and finish with Final Result: Fail only for a confirmed contract_program_mismatch_blocker.",
+        "Completion requires the annotated program and contract to stay unchanged, every manual proof obligation to be justified by real proof work from the available case facts, all work to stay inside the active case workspace, and no use of prior answers or unrelated runs.",
+        "Only finish with Final Result: Success after the QCP final-check sequence succeeds and every completion requirement is satisfied. If symexec fails or the annotation is insufficient, record the blocker in logs/issues.md and finish with Final Result: Fail only for a confirmed contract_program_mismatch_blocker.",
     ]
     if restart_context:
         lines += ["", "Restart feedback:", restart_context.rstrip()]
@@ -309,52 +354,13 @@ def build_run_proof_prompt(
 
 
 def proof_audit_check(workspace_path: Path, function_name: str, input_path: Path, input_v_path: Path | None, annotated_c_path: Path) -> tuple[bool, str]:
-    unified_ok, unified_detail = rv.verify_unified_cheating_audit_check(
+    return rv.verify_audit_check(
         workspace_path=workspace_path,
+        function_name=function_name,
         input_path=input_path,
         input_v_path=input_v_path,
         annotated_c_path=annotated_c_path,
     )
-    if not unified_ok:
-        return False, unified_detail
-    audit = rv.qcp_case_coq_dir(workspace_path) / "run_audit.sh"
-    if not audit.exists():
-        return False, f"missing_audit_script:{audit}"
-    proc = subprocess.run(
-        ["bash", str(audit.relative_to(rv.QCP_ROOT))],
-        cwd=rv.QCP_ROOT,
-        text=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        timeout=300,
-    )
-    audit_log = rv.qcp_case_coq_dir(workspace_path) / "logs" / "agent_audit.log"
-    out_log = workspace_path / "logs" / "audit_check_coqc.log"
-    if audit_log.exists():
-        shutil.copy2(audit_log, out_log)
-    else:
-        out_log.write_text(proc.stdout + proc.stderr, encoding="utf-8")
-    if proc.returncode != 0:
-        return False, f"proof_audit_failed:{out_log}"
-    rv.collect_qcp_mirror_artifacts(workspace_path, function_name)
-    unified_ok, unified_detail = rv.verify_unified_cheating_audit_check(
-        workspace_path,
-        input_path=input_path,
-        input_v_path=input_v_path,
-        annotated_c_path=annotated_c_path,
-    )
-    if not unified_ok:
-        return False, f"proof_audit_failed:{out_log};{unified_detail}"
-    artifact_ok, artifact_detail = rv.verify_proof_artifact_check(
-        workspace_path,
-        function_name,
-        input_v_path,
-        annotated_c_path,
-        input_path,
-    )
-    if not artifact_ok:
-        return False, f"proof_audit_failed:{out_log};{unified_detail};{artifact_detail}"
-    return True, f"proof_audit_success:{out_log};{unified_detail};{artifact_detail}"
 
 
 def build_parser() -> argparse.ArgumentParser:
