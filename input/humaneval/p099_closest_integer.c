@@ -9,4 +9,17 @@
 int closest_integer(int numerator, int denominator)
 /*@ Require problem_99_pre_ratio(numerator, denominator) && emp
     Ensure problem_99_spec_ratio(numerator@pre, denominator@pre, __return) && emp
-*/;
+*/
+{
+    int q = numerator / denominator;
+    int r = numerator % denominator;
+    if (r > 0) {
+        if (2 * r >= denominator) return q + 1;
+        return q;
+    }
+    if (r < 0) {
+        if (-2 * r >= denominator) return q - 1;
+        return q;
+    }
+    return q;
+}

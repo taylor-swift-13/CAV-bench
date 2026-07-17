@@ -1,10 +1,10 @@
 # Ground-truth status
 
-The selected HumanEval set has 32 cases. The 22 verified cases are kept under
-`ground_truth/`; the 10 unverified cases are kept outside the active trees under
+The selected HumanEval set has 32 cases. The 21 verified cases are kept under
+`ground_truth/`; the 11 unverified cases are kept outside the active trees under
 the repository-level `archive/` directory for later work.
 
-## Verified (22)
+## Verified (21)
 
 - p002_truncate_number
 - p022_filter_integers
@@ -27,9 +27,8 @@ the repository-level `archive/` directory for later work.
 - p133_sum_squares
 - p151_double_the_difference
 - p157_right_angle_triangle
-- p162_string_to_md5
 
-## Unverified archive (10)
+## Unverified archive (11)
 
 - p000_has_close_elements
 - p004_mean_absolute_deviation
@@ -41,6 +40,7 @@ the repository-level `archive/` directory for later work.
 - p047_median
 - p081_numerical_letter_grade
 - p137_compare_one
+- p162_string_to_md5
 
 The directories above are located at `archive/ground_truth/<case>/`. Their raw
 and annotated inputs are likewise located at `archive/input/<case>.{c,v}` and

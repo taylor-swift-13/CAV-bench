@@ -11,4 +11,11 @@ int any_int(int a, int b, int c, int a_is_int, int b_is_int, int c_is_int)
     Ensure problem_92_spec_z(a@pre, b@pre, c@pre,
                              a_is_int@pre, b_is_int@pre, c_is_int@pre,
                              __return) && emp
-*/;
+*/
+{
+    if (a_is_int == 0) return 0;
+    if (b_is_int == 0) return 0;
+    if (c_is_int == 0) return 0;
+    if (a == b + c || b == a + c || c == a + b) return 1;
+    return 0;
+}

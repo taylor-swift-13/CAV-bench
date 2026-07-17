@@ -19,4 +19,11 @@ int derivative(const int* xs, int xs_size, int* out)
             problem_62_spec_z(input, output) &&
             IntArray::full(xs, xs_size, input) *
             IntArray::full(out, __return, output)
-*/;
+*/
+{
+    int i;
+    for (i = 1; i < xs_size; ++i) {
+        out[i - 1] = i * xs[i];
+    }
+    return xs_size - 1;
+}

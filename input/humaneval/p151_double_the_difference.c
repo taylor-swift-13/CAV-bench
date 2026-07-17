@@ -19,4 +19,15 @@ int double_the_difference(const int* lst, int lst_size)
             IntArray::full(lst, lst_size, input)
     Ensure problem_151_spec_z(input, __return) &&
            IntArray::full(lst, lst_size, input)
-*/;
+*/
+{
+    int sum = 0;
+    int i;
+    for (i = 0; i < lst_size; ++i) {
+        int x = lst[i];
+        if (x > 0 && x % 2 != 0) {
+            sum += x * x;
+        }
+    }
+    return sum;
+}

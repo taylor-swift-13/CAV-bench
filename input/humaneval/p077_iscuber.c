@@ -35,7 +35,6 @@ int iscuber(int a)
 */
 {
     int i;
-
     for (i=0;i*i*i<=abs(a);i++)
         if (i*i*i==abs(a)) return 1;
     return 0;

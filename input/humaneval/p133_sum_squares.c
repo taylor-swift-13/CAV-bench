@@ -18,5 +18,16 @@ int sum_squares(const int *numerators, const int *denominators, int size)
     Ensure problem_133_spec_z(nums, dens, __return) &&
            IntArray::full(numerators, size, nums) *
            IntArray::full(denominators, size, dens)
-*/;
-
+*/
+{
+    int sum = 0;
+    int i;
+    for (i = 0; i < size; ++i) {
+        int q = numerators[i] / denominators[i];
+        int r = numerators[i] % denominators[i];
+        int z = q;
+        if (r > 0) z = q + 1;
+        sum = sum + z * z;
+    }
+    return sum;
+}

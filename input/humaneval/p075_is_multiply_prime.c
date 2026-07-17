@@ -21,9 +21,7 @@ int is_multiply_prime(int a)
 {
     int num=0;
     int i;
-
     for (i=2;i*i<=a;i++)
-
     while (a%i==0 && a>i)
     {
         a=a/i;

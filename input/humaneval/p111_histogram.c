@@ -67,6 +67,7 @@ CharIntMap *histogram(const char *test)
     out->size = 0;
     int size = 0;
     int i;
+    int ch;
     for (i = 0; i < 256; ++i) {
         count[i] = 0;
     }
@@ -79,7 +80,6 @@ CharIntMap *histogram(const char *test)
             }
         }
     }
-    int ch;
     for (ch = 0; ch < 256; ++ch) {
         if (count[ch] == max && max > 0) {
             keys[size] = (char)ch;
