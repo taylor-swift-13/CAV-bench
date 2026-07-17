@@ -34,8 +34,8 @@ proof-only 模式也必须遵守 `../skills/verify/SKILL.md` 的相关示例检�
 - proof 工作按主 SKILL 的“检索相似例子/阅读必要文档 -> 修改 `proof_manual.v` -> 编译 -> 阅读第一个失败点”循环推进；若 proof 过程中确认当前 VC 在现有 annotation 下不可证，或 `coqc`/witness 失败表明当前 VC 缺少 annotation 中间事实，则必须退出 proof 循环，回到外层“写 annotation”阶段，修改 `Inv` / `Assert` / `Inv Assert` / `which implies` / `where`，并按主 SKILL 的刷新规则重跑 symexec，然后重新进入 proof 循环；
 - 若返回 annotation 修改后 symexec 无法生成完整 VC，则退出 proof-only 的直接证明路径，按主 SKILL 的 verify 外层主循环重新推进：检索相似例子/阅读必要文档，修正 annotation，运行 symexec，获得有效 VC 后再进入 proof 循环；
 - tactic 起手式与分离逻辑证明套路不确定时，按主 skill 规则最小读取相关 QCP proof 文档；可选路径是 `QualifiedCProgramming/.agents/skills/group-worker-proving/SKILL.md`、`QualifiedCProgramming/.agents/skills/group-worker-proving/docs/refinement-proof-tactics.md`、`QualifiedCProgramming/.agents/skills/group-worker-proving/docs/separation-logic-whole-proof-tactics.md`；
-- attempt > 1 或 prompt 带 `Restart feedback` / `Audit findings:` 时，优先读取反馈中的首个失败点并继续。
+- attempt > 1 或 prompt 带 `Restart feedback` / `Failure feedback:` 时，优先读取反馈中的首个失败点并继续。
 
 ## 完成判据
 
-和主 SKILL 的最终验收判据一致：四个 target `.v` 编译通过；`proof_manual.v` 中的手工义务都以真实证明完成；除 `proof_manual.v` 外，另外三个 target `.v` 只能由 symexec 产生，不得手改。
+和主 SKILL 的完成判据一致：四个 target `.v` 编译通过；`proof_manual.v` 中的手工义务都以真实证明完成；除 `proof_manual.v` 外，另外三个 target `.v` 只能由 symexec 产生，不得手改。

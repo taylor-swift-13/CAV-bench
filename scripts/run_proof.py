@@ -121,14 +121,6 @@ def stage_qcp_mirror_for_proof(
             workspace_logic_path=f"SimpleC.EE.CAV.{workspace_path.name}",
             case_module=input_path.stem,
         )
-    write_qcp_proof_audit_script(
-        workspace_path=workspace_path,
-        input_path=input_path,
-        input_v_path=input_v_path,
-        annotated_input_path=annotated_input_path,
-        annotated_c_path=annotated_c_path,
-        function_name=function_name,
-    )
     return {
         "qcp_input_dir": qcp_input_dir,
         "qcp_examples_dir": qcp_examples_dir,
@@ -394,8 +386,8 @@ def build_run_proof_prompt(
         "```",
         "",
         "Write only `<function>_proof_manual.v` and `logs/issues.md` / `logs/metrics.md` after symexec generates files. Do not edit proof_auto.v, goal.v, goal_check.v, deps, or the annotated C.",
-        "Runner acceptance expects the annotated program and contract to stay unchanged, and every manual proof obligation to be justified by real proof work from the available case facts. Separately, you must keep all work inside the active case workspace and must not use prior answers or unrelated runs.",
-        "Only finish with Final Result: Success after the QCP final-check sequence succeeds and the mirror is ready for runner acceptance. If symexec fails or the annotation is insufficient, record the blocker in logs/issues.md and finish with Final Result: Fail only for a confirmed contract_program_mismatch_blocker.",
+        "Completion requires the annotated program and contract to stay unchanged, every manual proof obligation to be justified by real proof work from the available case facts, all work to stay inside the active case workspace, and no use of prior answers or unrelated runs.",
+        "Only finish with Final Result: Success after the QCP final-check sequence succeeds and every completion requirement is satisfied. If symexec fails or the annotation is insufficient, record the blocker in logs/issues.md and finish with Final Result: Fail only for a confirmed contract_program_mismatch_blocker.",
     ]
     if restart_context:
         lines += ["", "Restart feedback:", restart_context.rstrip()]
@@ -403,55 +395,13 @@ def build_run_proof_prompt(
 
 
 def proof_audit_check(workspace_path: Path, function_name: str, input_path: Path, input_v_path: Path | None, annotated_c_path: Path) -> tuple[bool, str]:
-    leakage_ok, leakage_detail = rv.verify_transcript_leakage_check(workspace_path)
-    if not leakage_ok:
-        return False, leakage_detail
-    unified_ok, unified_detail = rv.verify_unified_cheating_audit_check(
+    return rv.verify_audit_check(
         workspace_path=workspace_path,
+        function_name=function_name,
         input_path=input_path,
         input_v_path=input_v_path,
         annotated_c_path=annotated_c_path,
     )
-    if not unified_ok:
-        return False, unified_detail
-    audit = rv.qcp_case_coq_dir(workspace_path) / "run_audit.sh"
-    if not audit.exists():
-        return False, f"missing_audit_script:{audit}"
-    proc = subprocess.run(
-        ["bash", str(audit.relative_to(rv.QCP_ROOT))],
-        cwd=rv.QCP_ROOT,
-        text=True,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        timeout=300,
-    )
-    audit_log = rv.qcp_case_coq_dir(workspace_path) / "logs" / "agent_audit.log"
-    out_log = workspace_path / "logs" / "audit_check_coqc.log"
-    if audit_log.exists():
-        shutil.copy2(audit_log, out_log)
-    else:
-        out_log.write_text(proc.stdout + proc.stderr, encoding="utf-8")
-    if proc.returncode != 0:
-        return False, f"proof_audit_failed:{out_log}"
-    rv.collect_qcp_mirror_artifacts(workspace_path, function_name)
-    unified_ok, unified_detail = rv.verify_unified_cheating_audit_check(
-        workspace_path,
-        input_path=input_path,
-        input_v_path=input_v_path,
-        annotated_c_path=annotated_c_path,
-    )
-    if not unified_ok:
-        return False, f"proof_audit_failed:{out_log};{unified_detail}"
-    artifact_ok, artifact_detail = rv.verify_proof_artifact_check(
-        workspace_path,
-        function_name,
-        input_v_path,
-        annotated_c_path,
-        input_path,
-    )
-    if not artifact_ok:
-        return False, f"proof_audit_failed:{out_log};{unified_detail};{artifact_detail}"
-    return True, f"proof_audit_success:{out_log};{unified_detail};{artifact_detail}"
 
 
 def build_parser() -> argparse.ArgumentParser:

@@ -372,8 +372,8 @@ def _qcp_final_check_commands(
             *commands,
             "```",
             "Do not search for symexec, Makefiles, dune files, QCP docs, scripts, or external parser directories. Use only the commands above.",
-            "Runner-side final acceptance will re-check the same QCP mirror after you exit. If any annotation, symexec, proof, or final-check step fails while you are working, do not exit; keep editing annotation/proof and rerun the relevant QCP check. Only write Final Result: Success when the mirror is ready for runner acceptance. Only write Final Result: Fail when you have confirmed a contract_program_mismatch_blocker: the Contract and original program semantics conflict and the case must return to Contract/user decision.",
-            "Runner acceptance expects the original executable program and contract to be preserved, and every manual proof obligation to be justified by real proof work from the available case facts. Separately, you must keep all work inside the active case workspace and must not use prior answers or unrelated runs.",
+            "If any annotation, symexec, proof, or final-check step fails while you are working, do not exit; keep editing annotation/proof and rerun the relevant QCP check. Only write Final Result: Success after every completion requirement below is satisfied. Only write Final Result: Fail when you have confirmed a contract_program_mismatch_blocker: the Contract and original program semantics conflict and the case must return to Contract/user decision.",
+            "Completion requires preserving the original executable program and contract, justifying every manual proof obligation with real proof work from the available case facts, keeping all work inside the active case workspace, and not using prior answers or unrelated runs.",
             "Do not prove or edit proof_auto.v. It is normal QCP-generated output; the real manual burden is proof_manual.v. Completion is judged by all manual proof obligations being genuinely discharged and goal_check.v compiling.",
             "Do not add anything whose purpose is to make the files accepted without proving the stated obligations, and do not use external answer artifacts. If proof_manual.v is empty or has no manual obligations and the QCP final-check sequence succeeds, immediately write QCP logs/issues.md, QCP logs/metrics.md, and finish with Final Result: Success.",
         ]
@@ -391,7 +391,7 @@ def build_prompt(
     restart_context: str | None = None,
 ) -> str:
     lines = [
-        "Use the repo-level CAV verify skill plus QCP official workflow rules. First read the repo-level CAV skill files and the full read-only QCP `QualifiedCProgramming/.agents/skills/` list below; then use this prompt and the current QCP mirror for case-specific paths and audit requirements.",
+        "Use the repo-level CAV verify skill plus QCP official workflow rules. First read the repo-level CAV skill files and the full read-only QCP `QualifiedCProgramming/.agents/skills/` list below; then use this prompt and the current QCP mirror for case-specific paths and completion requirements.",
         "",
         _repo_skill_list(skill_path),
         "",
@@ -429,7 +429,7 @@ def build_proof_only_prompt(
     restart_context: str | None = None,
 ) -> str:
     lines = [
-        "Use the repo-level CAV verify skill plus QCP official workflow rules. First read the repo-level CAV skill files and the full read-only QCP `QualifiedCProgramming/.agents/skills/` list below, even in proof-only mode; then use this prompt and the current QCP mirror for case-specific paths and audit requirements.",
+        "Use the repo-level CAV verify skill plus QCP official workflow rules. First read the repo-level CAV skill files and the full read-only QCP `QualifiedCProgramming/.agents/skills/` list below, even in proof-only mode; then use this prompt and the current QCP mirror for case-specific paths and completion requirements.",
         "",
         _repo_skill_list(skill_path, proof_only=True),
         "",
@@ -647,13 +647,6 @@ def stage_qcp_mirror_for_agent(
         qcp_examples_dir,
         workspace_logic_path=f"SimpleC.EE.CAV.{workspace_name}",
         case_module=input_path.stem,
-    )
-    write_qcp_agent_audit_script(
-        workspace_path=workspace_path,
-        input_path=input_path,
-        input_v_path=input_v_path,
-        annotated_c_path=annotated_c_path,
-        function_name=function_name,
     )
     return {
         "qcp_input_dir": qcp_input_dir,
