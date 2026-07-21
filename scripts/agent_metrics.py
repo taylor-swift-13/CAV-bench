@@ -41,6 +41,7 @@ UNIFIED_USAGE_KEYS = (
     "input_tokens",
     "output_tokens",
     "total_tokens",
+    "reasoning_output_tokens",
     "uncached_input_tokens",
     "cached_input_tokens",
     "cache_creation_input_tokens",
@@ -56,6 +57,7 @@ UNIFIED_USAGE_KEYS = (
     "kimi_context_token_count_max",
     "kimi_context_token_count_delta_sum",
     "kimi_context_usage_events",
+    "opencode_usage_events",
 )
 
 CLAUDE_INPUT_DETAIL_KEYS = ("cache_creation_input_tokens", "cache_read_input_tokens")
@@ -285,6 +287,53 @@ def parse_kimicode_context_usage(context_jsonl: Path | None) -> dict[str, int] |
     }, "kimicode")
 
 
+def parse_opencode_usage(stdout_jsonl: Path | None) -> dict[str, int] | None:
+    """Sum token deltas from OpenCode ``step-finish`` JSON events."""
+    if stdout_jsonl is None or not stdout_jsonl.exists():
+        return None
+    uncached_input = 0
+    output = 0
+    reasoning = 0
+    cache_read = 0
+    cache_write = 0
+    events = 0
+    for raw in stdout_jsonl.read_text(encoding="utf-8", errors="replace").splitlines():
+        raw = raw.strip()
+        if not raw.startswith("{"):
+            continue
+        try:
+            obj = json.loads(raw)
+        except json.JSONDecodeError:
+            continue
+        part = obj.get("part") if isinstance(obj, dict) else None
+        if not isinstance(part, dict) or part.get("type") != "step-finish":
+            continue
+        tokens = part.get("tokens")
+        if not isinstance(tokens, dict):
+            continue
+        events += 1
+        uncached_input += tokens.get("input", 0) if isinstance(tokens.get("input"), int) else 0
+        output += tokens.get("output", 0) if isinstance(tokens.get("output"), int) else 0
+        reasoning += tokens.get("reasoning", 0) if isinstance(tokens.get("reasoning"), int) else 0
+        cache = tokens.get("cache")
+        if isinstance(cache, dict):
+            cache_read += cache.get("read", 0) if isinstance(cache.get("read"), int) else 0
+            cache_write += cache.get("write", 0) if isinstance(cache.get("write"), int) else 0
+    if not events:
+        return None
+    input_tokens = uncached_input + cache_read + cache_write
+    return {
+        "input_tokens": input_tokens,
+        "output_tokens": output,
+        "total_tokens": input_tokens + output + reasoning,
+        "reasoning_output_tokens": reasoning,
+        "uncached_input_tokens": uncached_input,
+        "cached_input_tokens": cache_read,
+        "cache_creation_input_tokens": cache_write,
+        "opencode_usage_events": events,
+    }
+
+
 def find_saved_kimicode_context(logs_dir: Path) -> Path | None:
     candidates = sorted(
         logs_dir.glob("kimi_session_context_*.jsonl"),
@@ -390,6 +439,78 @@ def extract_claude_last_message(stdout_path: Path | None) -> str | None:
     return last
 
 
+def extract_opencode_last_message(stdout_path: Path | None) -> str | None:
+    """Best-effort final assistant text from OpenCode JSON events."""
+    if stdout_path is None or not stdout_path.exists():
+        return None
+    last: str | None = None
+    for raw in stdout_path.read_text(encoding="utf-8", errors="replace").splitlines():
+        raw = raw.strip()
+        if not raw.startswith("{"):
+            continue
+        try:
+            obj = json.loads(raw)
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(obj, dict):
+            continue
+        candidates: list[str] = []
+        for key in ("result", "text", "content"):
+            value = obj.get(key)
+            if isinstance(value, str) and value.strip():
+                candidates.append(value)
+        message = obj.get("message")
+        if isinstance(message, str) and message.strip():
+            candidates.append(message)
+        elif isinstance(message, dict):
+            for key in ("text", "content"):
+                value = message.get(key)
+                if isinstance(value, str) and value.strip():
+                    candidates.append(value)
+        if candidates:
+            last = candidates[-1]
+    return last
+
+
+def cleanup_opencode_heavy_artifacts(
+    *,
+    logs_dir: Path,
+    data_home: str | None,
+    config_home: str | None = None,
+    state_home: str | None = None,
+    cache_home: str | None = None,
+) -> list[Path]:
+    """Remove task-local OpenCode caches after stdout and timeline capture."""
+    removed: list[Path] = []
+    logs_root = logs_dir.resolve(strict=False)
+    candidates = [logs_dir / "opencode_artifacts", logs_dir / ".tmp"]
+    for home in (data_home, config_home, state_home, cache_home):
+        if not home:
+            continue
+        path = Path(home)
+        try:
+            path.resolve(strict=False).relative_to(logs_root)
+        except (OSError, ValueError):
+            candidates.extend((path / "opencode", path / ".bun"))
+        else:
+            candidates.append(path)
+    seen: set[str] = set()
+    for path in sorted(candidates, key=lambda item: len(item.parts), reverse=True):
+        key = str(path)
+        if key in seen or (not path.exists() and not path.is_symlink()):
+            continue
+        seen.add(key)
+        try:
+            if path.is_dir() and not path.is_symlink():
+                shutil.rmtree(path)
+            else:
+                path.unlink()
+        except OSError:
+            continue
+        removed.append(path)
+    return removed
+
+
 def parse_usage(agent: str, stdout_path: Path | None) -> dict[str, int] | None:
     """Dispatch usage parsing by agent backend."""
     if agent == "claude":
@@ -400,6 +521,8 @@ def parse_usage(agent: str, stdout_path: Path | None) -> dict[str, int] | None:
         return parse_kimicode_wire_usage(find_saved_kimicode_wire(stdout_path.parent)) or parse_kimicode_context_usage(
             find_saved_kimicode_context(stdout_path.parent)
         )
+    if agent == "opencode":
+        return parse_opencode_usage(stdout_path)
     return parse_codex_usage(stdout_path)
 
 

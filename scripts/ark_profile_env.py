@@ -47,6 +47,7 @@ def main() -> int:
     env = {
         "ARK_PROFILE_AGENT": profile["agent"],
         "ARK_API_KEY": profile["api_key"],
+        "ARK_BASE_URL": profile["base_url"],
         "ANTHROPIC_AUTH_TOKEN": profile["api_key"],
         "ANTHROPIC_API_KEY": profile["api_key"],
         "ANTHROPIC_BASE_URL": profile["base_url"],
