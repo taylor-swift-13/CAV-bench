@@ -1,0 +1,57 @@
+\section{CAV-Bench}
+\label{sec:benchmark-design}
+
+\textsc{CAV-Bench} turns HumanEval programs and their contracts into 140 repository-level C verification tasks. We construct the benchmark by collecting and adapting the source materials, building verified ground truth, and defining three task settings.
+
+\subsection{Benchmark Data Collection}
+
+Each \textsc{CAV-Bench} task is built from a natural language description and a C implementation, together with a complete ground-truth artifact consisting of a QCP contract, auxiliary annotations, and Rocq proofs. \wslcomment{The descriptions come from HumanEval~\cite{chen2021evaluating}, and the C implementations are  adapted from the corresponding C++ implementations in HumanEval-X~\cite{zheng2023codegeex}, with modifications to accommodate C's  data representation, library operations, and memory management. During verification of the adapted C implementations,  we found several cases whose behavior deviated  from the original HumanEval descriptions. We corrected the implementations to match the descriptions and report the affected tasks in the supplementary material. For contracts, we adapt the human-written Rocq contracts released with \textsc{Coins}~\cite{yang2026coins} (which specify functional correctness only) into QCP contracts, adding  conditions to establish memory safety and the absence of runtime errors (RTEs) in C. We also retain or adapt any mathematical helper definitions required by the contracts.}
+
+Of the 164 HumanEval problems, 140 enter \textsc{CAV-Bench}. We mainly exclude floating-point programs because their numerical reasoning is beyond the practical scope of the current QCP workflow.
+
+\begin{table}[t]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{4pt}
+\caption{Statistics of the verified \textsc{CAV-Bench} corpus.}
+\label{tab:benchmark-components}
+\begin{tabular}{L{0.50\columnwidth}rr}
+\toprule
+\rowcolor{benchmarkhead}
+Statistic & Total & Mean / task \\
+\midrule
+HumanEval source problems & 164 & -- \\
+Verified benchmark problems & 140 & -- \\
+C code LOC & 4,076 & 29.1 \\
+Function-contract LOC & 3,114 & 22.2 \\
+Auxiliary-annotation LOC & 10,270 & 73.4 \\
+Task-specific Rocq definition LOC & 8,083 & 57.7 \\
+Manual Rocq proof LOC & 62,812 & 448.7 \\
+Generated verification conditions & 5,562 & 39.7 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% Each task is built from a fixed C implementation, its natural-language description, a QCP contract, and any required Rocq definitions. Agents work in the QCP repository, where they can run VCG and Rocq, read the documentation and examples, and import the provided Rocq libraries in their proofs. Ground-truth auxiliary annotations and proofs are revealed only when required by the task setting.
+
+Agents work in the QCP repository, where they can run the VCG and Rocq, consult documentation and examples, and import
+the provided Rocq libraries. The QCP contract with required Rocq definitions, and auxiliary annotations are exposed only when
+required by the task setting. Ground-truth Rocq proofs are never exposed to agents.
+
+\subsection{Ground-Truth Construction}
+\label{sec:human-loop-workflow}
+
+We construct a complete verification result for every included problem through the human-agent workflow in Figure~\ref{fig:task-design}. \wslcomment{Starting from a C implementation and the contract derived from \textsc{Coins}}, human experts guide a code agent to produce auxiliary annotations and proof. QCP's VCG analyzes the annotated C program and generates proof goals, which Rocq then checks~\cite{wu2025qcppracticalseparationlogicbased}. The agent iteratively revises the auxiliary annotations and proof based on feedback from these tools.
+
+Human experts review intermediate results, provide semantic guidance when the agent stalls, and check the final contract against the HumanEval description and the adapted \textsc{Coins} contract. \wslcomment{They prevent the agent  from using commands that bypass proof obligations (e.g., \texttt{admit} or \texttt{axiom}), but do not write task-specific proofs or annotations themselves.}
+
+A task is included only when rerunning VCG regenerates all proof goals, Rocq accepts every proof, and the experts confirm that the contract preserves the intended behavior. %Programs beyond the current capabilities of QCP and results that do not pass these checks are excluded. 
+Because this construction process includes human effort that is not fully recorded, its time and token costs are not directly comparable with the fully automated evaluation runs.
+
+\subsection{Task Design}
+
+The 140 verified results define the three task settings shown in Figure~\ref{fig:task-design}. Our primary \emph{contract-to-proof} task provides a fixed, human-reviewed, \wslcomment{formally verified ground-truth contract} and asks the agent to complete the auxiliary annotation and proof stages. Fixing the contract gives every agent the same intended behavior while focusing on the interaction between auxiliary annotations and proofs.
+
+We additionally provide two tasks. The \emph{end-to-end} task asks the agent to complete all three stages. Because different contracts may correctly describe the same behavior, contract quality cannot be determined by a single automatic check. We therefore use a lightweight rubric to evaluate whether the generated contract adequately covers the intended behavior and safety requirements, with details provided in the supplementary material. The \emph{proof-only} task supplies the  contract and the ground-truth auxiliary annotations, allowing us to evaluate proof construction separately.
+
+Evaluated agents receive no expert guidance or task-specific proof hints. The deterministic audit reruns VCG and Rocq, checks that the fixed contract and executable implementation remain unchanged, detects ways of avoiding the required proof, and verifies that the agent did not read disallowed material. Further details are provided in the supplementary material.

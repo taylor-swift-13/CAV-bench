@@ -1,0 +1,36 @@
+\section{Repository Implementation}
+\label{sec:implementation}
+
+The benchmark is implemented as a runner-managed, file-based workflow in the repository. The implementation is designed to make each run replayable and auditable. Rather than relying on hidden conversation state, the runner creates a per-task workspace, stages the task inputs, writes the prompt that defines the task boundary and work loop, launches the main agent in that workspace, records stdout and resource metrics, runs the final audit, and copies back the artifacts needed for inspection.
+
+\subsection{Repository Layout}
+
+The repository separates immutable task inputs, agent-editable verification artifacts, and collected run outputs. A contract-stage run writes or records the function contract when that stage is evaluated. A verification-stage run creates a fresh workspace for the agent and later collects the submitted annotated implementation, generated verification conditions, proof artifacts, logs, metrics, and audit records.
+
+\begin{center}
+\small
+\begin{tabular}{L{0.26\linewidth}L{0.63\linewidth}}
+\toprule
+\textbf{Artifact} & \textbf{Role} \\
+\midrule
+Input implementation & Immutable executable C program for the task. \\
+Function contract & Fixed or generated specification, depending on task mode. \\
+Annotated implementation & Agent-produced source-level verification annotations. \\
+Verification conditions & Obligations regenerated from the annotated implementation. \\
+Proof artifacts & Agent-produced proof material checked against the obligations. \\
+Run record & Logs, metrics, final status, and failure-gate summary. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Runner-Owned Checking}
+
+All verification and proof checking are performed through the benchmark-provided audit script. The agent is instructed to use this script rather than inventing a separate success criterion. The audit checks source integrity, regenerates verification conditions from the submitted annotated implementation, checks the proof artifacts against those obligations, and rejects forbidden proof shortcuts.
+
+This separation is important for reproducibility. The output directory is an artifact collection location, while the runner owns the authoritative final check. This ensures that every accepted run corresponds to the same verification chain used by the benchmark.
+
+\subsection{Agent Interface}
+
+The benchmark is intended for tool-using code agents. An agent receives the staged task, reads the workflow instructions, edits the allowed files, runs verifier and proof-checker commands, and iterates on feedback. The prompt exposes the same deterministic checks used by the runner, so the agent can diagnose failures locally, but the final label is assigned only by the runner after the agent stops. A run is rejected if the agent changes immutable inputs, weakens fixed contracts in later stages, edits generated obligations, leaves \texttt{Admitted}, \texttt{admit}, \texttt{Abort}, or introduces unsound \texttt{Axiom} declarations in proof files.
+
+The implementation supports batch execution. Each problem is run in its own timestamped workspace and moved into a model-specific results directory after completion. This supports large-scale comparison of code agents while preserving per-task evidence for later inspection.
