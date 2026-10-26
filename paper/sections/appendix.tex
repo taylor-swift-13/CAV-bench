@@ -1,0 +1,251 @@
+\section{Corrections to HumanEval-X C++ Implementations}
+\label{app:humanevalx-corrections}
+
+We use the original HumanEval descriptions as the authority for task semantics
+and cross-check the expected behavior against the canonical Python
+solutions~\cite{chen2021evaluating}. During formal verification, we found seven
+HumanEval-X C++ reference implementations whose behavior differed from the
+original semantics~\cite{zheng2023codegeex}. For each case, we constructed a
+concrete counterexample, corrected the C implementation to follow HumanEval,
+and then verified the corrected program. Table~\ref{tab:humanevalx-corrections}
+summarizes the discrepancies and corrections. These discrepancies were not
+exercised by the released HumanEval-X tests.
+
+\begin{table*}[!t]
+\centering
+\caption{Corrections to HumanEval-X C++ reference implementations.}
+\label{tab:humanevalx-corrections}
+\scriptsize
+\setlength{\tabcolsep}{3.2pt}
+\renewcommand{\arraystretch}{0.90}
+\begin{tabular}{L{0.07\textwidth}L{0.19\textwidth}L{0.31\textwidth}L{0.36\textwidth}}
+\toprule
+\rowcolor{benchmarkhead}
+Task & Required behavior & Counterexample and original behavior & Correction \\
+\midrule
+\texttt{p006} & Produce one maximum nesting depth for each nonempty
+space-delimited group. & On \texttt{"()(())"}, the C++ implementation returns
+\texttt{\{1,2\}} instead of \texttt{\{2\}} because it emits a result whenever
+the nesting depth returns to zero. & Treat spaces, rather than returns to depth
+zero, as group boundaries and compute one maximum depth per group. \\
+
+\rowcolor{papergraytwo}
+\texttt{p009} & Compute the rolling maximum for an arbitrary integer sequence.
+& On \texttt{\{-5,-3,-4\}}, the C++ implementation returns
+\texttt{\{0,0,0\}} instead of \texttt{\{-5,-3,-3\}} because its running
+maximum starts at zero. & Initialize the running maximum from the first element
+(or an equivalent lower bound) while handling the empty input separately. \\
+
+\texttt{p080} & Every three consecutive characters must be pairwise distinct.
+& The C++ implementation returns true on \texttt{"aab"}: it compares the third
+character with the first two but never compares the first two characters with
+each other. & Check all three pairs in every length-three window, including the
+first pair of the string. \\
+
+\rowcolor{papergraytwo}
+\texttt{p086} & Sort characters within each word while preserving all spaces.
+& On an input consisting of two leading spaces followed by \texttt{"ba"}, the
+C++ implementation returns \texttt{"ab"} and drops both spaces. & Preserve
+every input space, including leading spaces and empty word boundaries, while
+sorting only the non-space characters of each word. \\
+
+\texttt{p132} & Return true when the input contains a nested bracket
+subsequence of the form \texttt{[[]]}. & The string \texttt{"[][]]"} contains
+such a subsequence at positions $0,2,3,4$, but the C++ depth-based algorithm
+returns false. & Replace the depth heuristic with a four-state subsequence
+recognizer for \texttt{[}, \texttt{[}, \texttt{]}, \texttt{]}. \\
+
+\rowcolor{papergraytwo}
+\texttt{p134} & Return true only when the final space-delimited word is a single
+alphabetic character. & The C++ implementation returns true on
+\texttt{"abc.e"}, even though the final \texttt{e} belongs to the same word,
+because it only checks that the preceding character is not a letter. & Require
+the final letter either to be the only character or to be immediately preceded
+by a space. \\
+
+\texttt{p160} & Evaluate the constructed expression using the operator
+semantics of the original Python expression, including right-associative
+exponentiation. & For operands \texttt{\{2,3,2\}} and operators
+\texttt{\{"**","**"\}}, the C++ implementation evaluates
+$(2^3)^2=64$ instead of $2^{(3^2)}=512$. & Evaluate exponentiation from right
+to left while retaining the specified precedence and left associativity of the
+other operators. \\
+\bottomrule
+\end{tabular}
+\vspace{-6pt}
+\end{table*}
+
+These cases illustrate why passing the source benchmark tests was insufficient
+for constructing verified ground truth. Formalization required an explicit
+semantic comparison with the original task descriptions, and verification
+exposed behaviors outside the finite test set. We retain the corrected C
+implementations in \textsc{CAV-Bench} and record the changes so that they are
+not mistaken for semantics-preserving C++-to-C adaptations.
+
+\section{Reproducibility and Agent Setup}
+\label{app:reproducibility}
+
+This section describes the files, agent commands, time budget, and instructions used in our experiments. It also explains how we decide whether a submitted artifact succeeds.
+
+\subsection{Agent Invocation and Runtime}
+\label{app:agent-runtime}
+
+All agents are launched by the same experiment runner. For each task, it creates a fresh workspace, provides the same instructions, records the run and its cost, and audits the submitted artifact.
+
+\paragraph{Task information.}
+The agent receives the target function, the task inputs, the QCP repository, workspace paths, and shared verification instructions. It receives no task-specific auxiliary annotation, proof outline, proof steps, or reference solution. Any task-specific formal definitions are part of the benchmark input. The instructions state which files may be read or changed, which documentation and examples may be used, how to run VCG and Rocq, and how success is checked.
+
+\begin{figure*}[!t]
+\centering
+\begin{lstlisting}[style=artifact,basicstyle=\ttfamily\scriptsize,escapeinside={(*@}{@*)}]
+(*@\textbf{\textcolor{artifactkw}{Task:}}@*)
+Verify the fixed C implementation against its contract. Complete
+Auxiliary Annotation and Proof, and submit an artifact that passes
+the audit. Do not change the contract or executable implementation.
+
+(*@\textbf{\textcolor{artifactkw}{Available tools and references:}}@*)
+- Use VCG to generate proof goals and Rocq to check proofs.
+- You may read the supplied documentation, examples, task definitions,
+  and Rocq libraries.
+- You may import the supplied Rocq libraries in the proof.
+
+(*@\textbf{\textcolor{artifactkw}{Allowed changes:}}@*)
+- Change only auxiliary annotations and the proof.
+- Do not change the fixed contract, executable C implementation,
+  generated proof goals, or automatically generated proof files.
+- Do not read reference answers, runner files, other task workspaces,
+  or other disallowed material.
+
+(*@\textbf{\textcolor{artifactkw}{Verification loop:}}@*)
+1. Add or repair auxiliary annotations and run VCG.
+2. Complete the proof and run Rocq.
+3. If the proof needs a missing fact, add it to the auxiliary
+   annotations, rerun VCG, and repair the proof.
+4. Continue until the audit passes or the time budget is exhausted.
+5. Do not use unfinished proofs, new axioms, or imports that bypass
+   proof checking.
+
+(*@\textbf{\textcolor{artifactkw}{Audit and exit:}}@*)
+- Run <audit_script> after each complete attempt.
+- Report Success only after the audit passes.
+- An ordinary VCG, Rocq, or audit failure is not a reason to stop.
+\end{lstlisting}
+\caption{Core verification instructions supplied to every primary-task agent.}
+\label{fig:app-verification-prompt}
+\end{figure*}
+
+\paragraph{Budget and outcomes.}
+Each primary-task and proof-only run has a 90-minute wall-clock budget. The runner starts the harness once and does not automatically send another prompt, although the harness may perform its own iterations. Eleven interrupted runs were restarted in the same workspace without extending their total budget. When a run ends, the runner audits its submitted artifact. For the primary task, an audited submission is \emph{Correct} only if its recorded end-to-end wall-clock time is at most 5,400 seconds. Audited completions exceeding that limit count as \emph{Timeout}. Runs that exhaust the budget are also \emph{Timeout}, and other submissions are \emph{Wrong}. The agent's final message does not determine the result.
+
+\noindent\begin{minipage}{\columnwidth}
+\paragraph{\textcolor{gptfivenavy}{Agent commands.}}
+Codex, Claude Code, OpenCode, and Kimi Code receive the same task instructions and are checked by the same audit. The exact commands are shown below.
+
+\begin{lstlisting}[style=artifact,basicstyle=\ttfamily\scriptsize,escapeinside={(*@}{@*)}]
+(*@\textbf{\textcolor{artifactkw}{[Codex]}}@*)
+codex exec --json --skip-git-repo-check \
+  --sandbox workspace-write --ephemeral \
+  -C <qcp_root> -o <last_message_path> \
+  --model <model> \
+  --reasoning-effort <effort> \
+  -
+
+(*@\textbf{\textcolor{artifactkw}{[Claude Code]}}@*)
+claude --print --bare --no-session-persistence \
+  --permission-mode bypassPermissions \
+  --add-dir <repo_root> <qcp_root> \
+  --output-format stream-json --verbose \
+  --model <model>
+
+(*@\textbf{\textcolor{artifactkw}{[OpenCode]}}@*)
+opencode run --format json --agent build \
+  --model <model> \
+  <prompt>
+
+(*@\textbf{\textcolor{artifactkw}{[Kimi Code]}}@*)
+kimi --print --work-dir <qcp_root> \
+  --input-format text \
+  --output-format stream-json \
+  --model <model> --thinking
+\end{lstlisting}
+\end{minipage}
+
+\section{Checking Submitted Artifacts}
+\label{app:acceptance-protocol}
+
+\subsection{Deterministic Audit}
+\label{app:audit-checklist}
+
+The deterministic audit checks the submitted artifact and decides success rather than relying on the agent's final message. As in the main paper, it reruns VCG and Rocq, checks that the fixed contract and executable implementation remain unchanged, detects ways of avoiding the required proof, and verifies that the agent did not read disallowed material. The agent may run the same checks while working, but the experiment runner performs the final audit after the run ends.
+
+\begin{center}
+\small
+\begin{tabular}{L{0.30\linewidth}L{0.59\linewidth}}
+\toprule
+\textbf{Check} & \textbf{Acceptance condition} \\
+\midrule
+VCG and Rocq & VCG is rerun from the submitted auxiliary annotations and must regenerate every required proof goal. Rocq then checks the submitted proof against the regenerated goals and required task definitions. \\
+Fixed inputs & The fixed contract must be unchanged. After comments and auxiliary annotations are removed from the submitted C file, its executable implementation must match the original input. \\
+Proof integrity & The proof must exist and contain no unfinished proof, added axiom, forbidden import, edited generated goal, deleted obligation, or other way of avoiding the required proof. \\
+Disallowed material & The run logs are checked to confirm that the agent did not read reference answers, other task workspaces, runner output, or other disallowed material. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The submitted artifact is accepted only if every check succeeds. This connects the checked proof to the fixed contract and implementation while preventing success through task modification or an invalid shortcut.
+
+\subsection{Contract Evaluation}
+\label{app:why-program-verification}
+
+A generated contract must do more than compile. It should accept the intended inputs, rule out unsafe C executions, and describe the required result on every relevant path. A contract can still be too weak, too restrictive, or tied too closely to one implementation even when the implementation can be proved against it.
+
+Existing benchmarks check generated contracts through equivalence proofs, positive and negative examples, or faulty program variants~\cite{thakur2025clever,ye2026verina,lecong2025formalbench,yang2026coins}. These methods are useful, but no single method is sufficient here. QCP contracts describe both functional behavior and C memory. Tests cannot directly check every memory requirement or Rocq definition, while proving equivalence to a reference contract would add another difficult proof task. Checking only that the implementation satisfies the generated contract would also accept contracts that say too little.
+
+For the additional end-to-end task, we therefore use an LLM judge as an initial contract-quality check. It receives the task description, fixed C implementation, generated contract, and any required Rocq definitions. It checks whether the contract covers the intended inputs, C safety, outputs, and program paths. This judge is not used in the primary task, which provides a fixed human-reviewed contract. The main part of the judge prompt is shown below.
+
+\begin{figure*}[!t]
+\centering
+\begin{minipage}{0.96\textwidth}
+\begin{lstlisting}[style=artifact,basicstyle=\ttfamily\scriptsize,
+  xleftmargin=0.4em,xrightmargin=0.4em]
+Evaluate whether the candidate contract fully characterizes the target behavior on the task's legal input domain.
+
+For each item, return Pass, Fail, or Inconclusive with one sentence of evidence from the contract, program, or Rocq definitions:
+1. Legal inputs: does the contract exclude any intended input?
+2. C safety: does it rule out runtime errors and provide the required memory access?
+3. Required result: does it state the result rather than only shape, bounds, or an empty condition?
+4. Correctness: is every claimed behavior consistent with the code?
+5. Inputs and outputs: does it connect every relevant input and output?
+6. Memory effects: does it fully describe every required change to memory?
+7. Program paths: does it cover every observable branch?
+8. Full behavior: does it determine the intended result for every legal input?
+
+Treat explicit task constraints as the intended domain. Permit only additional restrictions needed for memory and integer safety. Reject undefined conditions, conditions equivalent to True, and definitions that merely repeat the implementation. Return Correct only if all eight items Pass; otherwise return Buggy or Inconclusive.
+\end{lstlisting}
+\end{minipage}
+\caption{Prompt used to review generated contracts in the end-to-end task.}
+\label{fig:app-judge-prompt}
+\end{figure*}
+
+The eight checks separate contracts that say too little from contracts that make an incorrect claim. A failed check rejects the contract, and insufficient evidence produces \emph{Inconclusive}. Because this review is not a formal proof, it does not determine the primary fixed-contract score. After a generated contract passes this review, Auxiliary Annotation and Proof are still checked by VCG, Rocq, and the deterministic audit.
+
+\begin{table}[!t]
+\centering
+\caption{Examples of generated contracts rejected by the contract review.}
+\label{tab:app-judge-examples}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{L{0.25\columnwidth}L{0.67\columnwidth}}
+\toprule
+\textbf{Task} & \textbf{Detected contract error} \\
+\midrule
+\rowcolor{papergraytwo} \texttt{p002} truncate & The postcondition only placed the return value in a range; it did not require the fractional part. \\
+\texttt{p035} maximum & The postcondition required an input element but did not require the maximum, and it missed one return path. \\
+\rowcolor{papergraytwo} \texttt{p059} prime factor & The precondition excluded legal prime inputs and imposed an unnecessarily small upper bound. \\
+\texttt{p062} derivative & The contract did not connect the mathematical result to the returned array and allowed an empty result on ordinary inputs. \\
+\rowcolor{papergraytwo} \texttt{p071} triangle area & The result condition reduced to \texttt{True} and therefore placed no requirement on the return value. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The primary task includes both Auxiliary Annotation and Proof because the two stages depend on each other. A failed proof may reveal a fact that must first be added to the auxiliary annotations. The agent must then rerun VCG and repair the proof. The additional proof-only task isolates Proof, while the primary task measures whether the agent can complete this coupled process.

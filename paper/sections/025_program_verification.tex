@@ -1,0 +1,38 @@
+\section{Preliminaries}
+\label{sec:preliminaries}
+
+\paragraph{Program verification.}
+Program verification formally checks whether an implementation satisfies its contract.  Contract gives pre- and post-conditions specifying the intended behavior. Auxiliary annotations, notably loop invariants,  supply intermediate facts  bridging the precondition to the postcondition. A verification condition generator (VCG) then performs program reasoning on the implementation, contract, and annotations to produce proof obligations, purely logical formulas independent of control flow.  Proof discharges these obligations using a proof assistant. 
+ If all pass, verification succeeds; if not, it may require repairing the proof or strengthening the annotation, after which the VCG is rerun.
+ %A failed goal may require repairing the Proof or strengthening the Auxiliary Annotation.
+
+\paragraph{QCP.}
+
+QCP~\cite{wu2025qcppracticalseparationlogicbased} is the verification environment we use throughout this work. It is a separation logic-based verifier for C, able to describe memory layouts and changes.   Given an implementation, contract, and annotations, QCP invokes its VCG to generate proof obligations in separation logic, which are then discharged in Rocq, where VCG and proof checking are integrated. This unified loop provides deterministic feedback, VCG errors or proof failures supporting iterative revision across stages.
+
+%QCP is a separation-logic-based C verification tool that can describe memory ownership and changes~\cite{wu2025qcppracticalseparationlogicbased}. Given an implementation, Contract, and Auxiliary Annotation, it runs VCG and uses Rocq to check the Proof. Its feedback supports repeated refinement of Auxiliary Annotation and Proof.
+
+\paragraph{Example.}
+HumanEval Problem 52, \texttt{below\_threshold}, returns whether every array element is below \texttt{t}. 
+The contract specifies functional correctness (via predicates \texttt{pre}, \texttt{post}) and memory safety via \texttt{IntArray::full}. The annotation provides a loop invariant. The VCG generates proof obligations: the invariant must hold on entry, be preserved by each iteration, and imply the postcondition on exit. The proof discharges them in Rocq.
+\begin{lstlisting}[style=artifactvscode,basicstyle=\ttfamily\fontsize{5.2}{5.7}\selectfont,aboveskip=2pt,belowskip=2pt,escapeinside={(*!}{!*)}]
+int p052_below_threshold(int *l, int l_size, int t)
+(*!\codebadge{stagecontractcolor}{CONTRACT}!*)
+(*!\stagecodeline{stagecontractcolor}{/*@ With xs}!*)
+(*!\stagecodeline{stagecontractcolor}{ Require 0 <= l_size && l_size < INT_MAX && pre(xs) &&}!*)
+(*!\stagecodeline{stagecontractcolor}{         IntArray::full(l, l_size, xs)}!*)
+(*!\stagecodeline{stagecontractcolor}{ Ensure ((__return != 0) && post(xs,t,true) ||}!*)
+(*!\stagecodeline{stagecontractcolor}{         (__return == 0) && post(xs,t,false)) &&}!*)
+(*!\stagecodeline{stagecontractcolor}{         IntArray::full(l, l_size, xs) */}!*)
+{
+(*!\codebadge{stageannotationcolor}{AUXILIARY ANNOTATION}!*)
+(*!\stagecodeline{stageannotationcolor}{  /*@ Inv Assert 0 <= i && i <= l_size && pre(xs) &&}!*)
+(*!\stagecodeline{stageannotationcolor}{      (forall (k: Z), (0 <= k && k < i) => Znth(k,xs,0) < t) &&}!*)
+(*!\stagecodeline{stageannotationcolor}{      IntArray::full(l, l_size, xs) */}!*)
+  for (i = 0; i < l_size; i++)
+    if (l[i] >= t) return 0;
+  return 1;
+}
+
+(*!\codebadge{stageproofcolor}{PROOF (EXCERPT)}!*) (*!\stagecodeline{stageproofcolor}{Proof. pre_process; ...; lia. Qed.}!*)
+\end{lstlisting}

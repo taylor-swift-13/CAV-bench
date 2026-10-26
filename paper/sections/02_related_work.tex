@@ -1,0 +1,46 @@
+\section{Related Work}
+\label{sec:related-work}
+
+\paragraph{Code-generation benchmarks.}
+Function-level benchmarks such as HumanEval, MBPP, APPS, and CodeContests usually evaluate generated programs through tests~\cite{chen2021evaluating,austin2021program,hendrycks2021apps,li2022alphacode}. MultiPL-E, ClassEval, LiveCodeBench, and BigCodeBench extend coverage across languages, program structures, time, and realistic library use~\cite{cassano2022multiple,du2025classeval,jain2025livecodebench,zhuo2025bigcodebench}. RepoBench adds repository context, while SWE-agent, SWE-bench, SWE-Bench Pro, and Terminal-Bench evaluate tool-using agents on repository or command-line tasks~\cite{liu2024repobench,yang2024sweagent,jimenez2024swebench,deng2026swebenchpro,merrill2026terminalbench}. \textsc{CAV-Bench} adopts this repository interaction setting but asks agents to formally verify a fixed C implementation rather than generate or repair code.
+
+\paragraph{Theorem-proving benchmarks.}
+Recent mathematical theorem-proving benchmarks are centered largely on Lean. MiniF2F and FIMO formalize Olympiad-level problems, ProofNet targets undergraduate mathematics, and PutnamBench extends competition mathematics across Lean, Isabelle, and Coq~\cite{zheng2021minif2f,liu2023fimo,azerbayev2023proofnet,tsoukalas2024putnambench}. CoqGym and CoqStoq instead evaluate proof synthesis across open-source Coq projects, with CoqStoq introduced alongside Rango~\cite{yang2019learning,thompson2025rango}. These benchmarks evaluate theorem or proof-state completion rather than a verification workflow rooted in executable programs that couples auxiliary annotations with proofs.
+
+\paragraph{Program-verification benchmarks.}
+Program-verification benchmarks cover complementary parts of the workflow. FormalBench, \textsc{Coins}, and specification-inference work emphasize contracts or semantic properties, while InvBench focuses on auxiliary annotations~\cite{cosler2023nl2spec,autospec,ma2025specgen,lecong2025formalbench,yang2026coins,wei2025invbench}. DafnyBench, CloverBench, CLEVER, VERINA, VeriBench, VeriEquivBench, Vericoding, AlgoVeri, and VeriContest study broader combinations of verifiable code and proofs, while FVAPPS, NTP4VC, and VeriSoftBench emphasize proofs or proof repositories~\cite{loughridge2024dafnybench,sun2024clover,thakur2025clever,ye2026verina,miranda2026veribench,zeng2026veriequivbench,bursuc2025vericoding,zhao2026algoveri,xie2026vericontest,dougherty2025proving,xu2026neural,xin2026verisoftbench}. These benchmarks do not evaluate the coupled auxiliary-annotation and proof workflow for C programs, where auxiliary annotations must explicitly characterize memory.
+
+\paragraph{C program verification.}
+Many tools have been developed for C program verification, using different Contract languages and proof workflows. Frama-C uses ACSL to express quantified conditions, program behaviors, and memory changes, and its WP plugin relies mainly on automated provers~\cite{kirchner2015framac}. VeriFast instead uses separation logic to express memory ownership and recursive data structures, which it checks through symbolic execution~\cite{jacobs2011verifast}. QCP combines memory-aware Contracts and Rocq definitions with an explicit Rocq Proof, exposing the interaction between Auxiliary Annotation and Proof that \textsc{CAV-Bench} evaluates~\cite{wu2025qcppracticalseparationlogicbased}.
+
+
+
+\begin{table*}[t]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{3.2pt}
+\caption{Comparison with program-verification benchmarks. Filled marks indicate components generated and evaluated in the benchmark; ``GT Verified'' indicates that the complete ground-truth artifact passes the corresponding checker.}
+\label{tab:related-work-comparison}
+\begin{tabular}{L{0.145\textwidth}L{0.185\textwidth}ccccc}
+\toprule
+\rowcolor{benchmarkhead}
+Benchmark & Language / verifier & Spec. & Inv. & Other Ann. & ITP proof & GT Verified \\
+\midrule
+FormalBench & Java / OpenJML & \benchyes & \benchyes & \benchyes & \benchno & \benchno \\
+InvBench & C / UAutomizer & \benchno & \benchyes & \benchno & \benchno & \benchno \\
+DafnyBench & Dafny & \benchno & \benchno & \benchyes & \benchno & \benchyes \\
+CloverBench & Dafny & \benchyes & \benchyes & \benchyes & \benchno & \benchyes \\
+CLEVER & Lean & \benchyes & \benchno & \benchno & \benchyes & \benchno \\
+VERINA & Lean & \benchyes & \benchno & \benchno & \benchyes & \benchno \\
+VeriBench & Lean & \benchyes & \benchno & \benchno & \benchyes & \benchno \\
+AlgoVeri & Dafny / Verus / Lean & \benchno & \benchyes & \benchyes & \benchyes & \benchno \\
+FVAPPS & Lean & \benchno & \benchno & \benchno & \benchyes & \benchno \\
+NTP4VC & Lean / Rocq / Isabelle & \benchno & \benchno & \benchno & \benchyes & \benchyes \\
+VeriSoftBench & Lean & \benchno & \benchno & \benchno & \benchyes & \benchyes \\
+\rowcolor{benchmarkhighlight}
+\textsc{CAV-Bench} & C / Rocq & \benchyes & \benchyes & \benchyes & \benchyes & \benchyes \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+Table~\ref{tab:related-work-comparison} summarizes this comparison. Unlike the compared benchmarks, \textsc{CAV-Bench} requires a repository-running agent to complete the coupled auxiliary annotation and proof workflow for a fixed C implementation and contract.

@@ -1,0 +1,11 @@
+\section{Limitations}
+\label{sec:threats-validity}
+
+\paragraph{Program scale.}
+The 140 benchmark tasks are short, single-function HumanEval programs. They do not cover large APIs, concurrent systems, or multi-module verification projects, so the results may not generalize to larger and more complex programs. Nevertheless, formally verifying these programs remains extremely challenging even at this scale.
+
+\paragraph{Model coverage.}
+We evaluate a representative subset of models and effort configurations rather than all available systems. The observed accuracies and rankings should therefore not be extrapolated beyond the evaluated configurations.
+
+\paragraph{Evaluation cost.}
+At public list prices, the evaluated runs represent approximately \$6,700 in API-equivalent inference cost. Agentic verification involves long trajectories and repeated model calls, making evaluation expensive even for HumanEval-scale programs. This cost constrains both the scale of the programs and the number of model configurations that we can evaluate.

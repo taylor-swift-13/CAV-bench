@@ -1,0 +1,82 @@
+{
+  "branch_sizes": {
+    "/home/yangfp/CAV/2.0.3/CAV-bench": 30,
+    "/home/yangfp/CAV/2.0.4/CAV-bench": 8,
+    "/home/yangfp/CAV/main/CAV-bench": 102
+  },
+  "generated_at": "2026-07-22T04:55:56.370015+00:00",
+  "outcomes": {
+    "end_to_end": {
+      "attempted": 140,
+      "contract_error": 65,
+      "correct": 16,
+      "downstream_fail": 59
+    },
+    "primary": {
+      "attempted": 140,
+      "contract_error": 0,
+      "correct": 20,
+      "downstream_fail": 120
+    },
+    "proof_only": {
+      "attempted": 140,
+      "contract_error": 0,
+      "correct": 30,
+      "downstream_fail": 110
+    }
+  },
+  "paired_work": {
+    "runs": 12,
+    "summary": {
+      "primary": {
+        "input_m": 12.133927583333334,
+        "minutes": 18.458499999999997,
+        "output_k": 38.4785,
+        "tool_calls": 115.66666666666667
+      },
+      "proof_only": {
+        "input_m": 11.023095750000001,
+        "minutes": 17.052583333333335,
+        "output_k": 34.864916666666666,
+        "tool_calls": 106.33333333333333
+      }
+    },
+    "tasks": [
+      "p053_add",
+      "p060_sum_to_n",
+      "p072_will_it_fly",
+      "p073_smallest_change",
+      "p077_iscuber",
+      "p083_starts_one_ends",
+      "p100_make_a_pile",
+      "p122_add_elements",
+      "p135_can_arrange",
+      "p136_largest_smallest_integers",
+      "p138_is_equal_to_sum_even",
+      "p159_eat"
+    ]
+  },
+  "time_profile": {
+    "end_to_end": {
+      "annotation": 5.1529895187020305,
+      "contract": 4.790479166666667,
+      "proof": 20.94077089796464,
+      "runs": 16,
+      "total": 30.884239583333336
+    },
+    "primary": {
+      "annotation": 2.6044798380136496,
+      "contract": 0.0,
+      "proof": 18.63434516198635,
+      "runs": 20,
+      "total": 21.238825
+    },
+    "proof_only": {
+      "annotation": 0.0,
+      "contract": 0.0,
+      "proof": 21.63763333333333,
+      "runs": 30,
+      "total": 21.63763333333333
+    }
+  }
+}

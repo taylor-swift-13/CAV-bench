@@ -1,0 +1,116 @@
+\providecommand{\nontimeoutcost}[1]{%
+  \begingroup\setlength{\fboxsep}{0.7pt}\colorbox{gray!15}{\strut #1}\endgroup}
+\begin{table*}[!t]
+\centering
+\caption{Primary-task results over 140 tasks. Missing runs are counted as timeouts. Each cost cell reports the audited-success mean followed by the gray non-timeout mean, which includes failed submissions. Operation counts include only recorded trace events, and rounds count assistant messages.}
+\label{tab:main_results}
+\scriptsize
+\setlength{\tabcolsep}{3.0pt}
+\renewcommand{\arraystretch}{1.04}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lrrr|rr|rrrr}
+\toprule
+\rowcolor{gray!15}
+& \multicolumn{3}{c|}{Outcome} & \multicolumn{2}{c|}{Cost} & \multicolumn{4}{c}{Trace activity} \\
+\rowcolor{gray!15}
+Model / effort & $W/140$ & $F/T$ & SR (\%) & Time (min) & In (M) / Out (k) & Read / Write & Tools & Rocq / VCG & Rounds \\
+\midrule
+\input{tables/main_results}
+\end{tabular}%
+}
+\end{table*}
+
+\begin{figure*}[!t]
+    \centering
+    \includegraphics[width=0.91\textwidth]{figures/effort_scaling.pdf}
+    \caption{Success and successful-run cost across models and reasoning-effort levels. Color and marker shape jointly identify each model. Panels (a) and (b) plot audited success against mean wall-clock time and input tokens per accepted task; connected points vary reasoning effort within a GPT model family. Panel (c) reports cumulative audited success at 30, 60, and 90 minutes using the strongest GPT effort level and the fixed configuration of each other model.}
+    \label{fig:rq4_reasoning}
+\end{figure*}
+
+\section{Experiments and Results}
+\label{sec:experiments}
+
+\paragraph{Experimental setup.}
+We evaluate code agents on the primary contract-to-proof task across all 140 tasks. Each agent receives a fixed C implementation and contract and works in the QCP repository to complete the auxiliary annotations and proof. All agents receive the same general workflow guidance and may use VCG, Rocq, the provided documentation and examples, and the Rocq libraries, but receive no task-specific hints. Each run has a 90-minute wall-clock budget. A deterministic audit decides success by rerunning VCG and Rocq and checking the submitted artifact as described.
+
+For each model and reasoning-effort configuration, we report audited successes ($W$), non-timeout failures ($F$), and timeouts ($T$), conservatively counting missing runs as timeouts. An audited completion counts as a success only if its recorded end-to-end wall-clock time is at most 5,400 seconds; audited completions exceeding this limit are counted as timeouts. Every success rate uses all 140 tasks as its denominator. In each cost cell of Table~\ref{tab:main_results}, the first value averages over successful runs and the gray value averages over all non-timeout runs, including failed attempts. We use a model's official harness when available and Claude Code otherwise; RQ5 studies the effect of harness choice.
+
+\subsection{RQ1: How Well Do Code Agents Complete C Verification?}
+Table~\ref{tab:main_results} shows that the strongest configuration, GPT-5.5 at xhigh effort, verifies only 78 of the 140 tasks (55.7\%) within 90 minutes. Even these short HumanEval-derived functions require repeated repository exploration, auxiliary-annotation revisions, proof repairs, and VCG and Rocq checks. Figure~\ref{fig:rq4_reasoning}(c) shows that audited success continues to increase from 30 to 60 and 90 minutes for the strongest configurations, confirming that formal verification requires long-horizon interaction. However, additional time alone is insufficient. Many agents stop before timeout without producing an accepted result, showing that they often fail to recognize when verification remains incomplete. We should use deterministic loop engineering to make termination depend on external verification rather than model judgment. The interaction counts in Table~\ref{tab:main_results} further confirm that success requires sustained repository work, while the gray values show that failed runs can remain expensive.
+% \finding{Even short functions require long-horizon verification, and many agents stop before the submitted artifact passes the audit.}
+
+\finding{Even short C functions require long-horizon verification: the strongest configuration solves only 55.7\% of tasks within 90 minutes, and many agents terminate before the timeout without passing the external audit.}
+
+\subsection{RQ2: How Do Capability and Reasoning Effort Affect Performance?}
+Figure~\ref{fig:rq4_reasoning} and the trace columns of Table~\ref{tab:main_results} reveal a joint capability--effort scaling pattern. Greater model capability generally reduces the time, token demand, tool use, and exploratory work needed to reach an accepted solution, whereas increasing reasoning effort within a model sustains longer trajectories and raises local inference cost. Overall, higher reasoning effort tends to increase resource use, but fewer unproductive steps partially offset the added inference cost. Reasoning effort also controls persistence. Low-effort configurations disproportionately terminate before the wall-clock limit, while higher effort keeps the agent working through checker failures and repository revisions. Thus, effort changes not only the quality of individual decisions but also whether the agent continues an unresolved task long enough to solve it.
+% \finding{Capability makes agent trajectories more efficient, while reasoning effort increases persistence and resource investment; their marginal cost diminishes as stronger reasoning eliminates unproductive exploration.}
+\finding{Greater capability makes agent trajectories more efficient, whereas greater reasoning effort increases persistence and resource use. However, the marginal resource cost of additional reasoning declines as stronger reasoning reduces unproductive exploration.}
+
+\subsection{RQ3: Where Does Difficulty Arise Across Verification Stages?}
+\begin{figure*}[!t]
+    \centering
+    \includegraphics[width=\textwidth]{figures/branch_difficulty.pdf}
+    \caption{Stage-level results for GPT-5.4 at medium effort. Panel (a) shows the mean time spent in each stage for accepted runs. Panel (b) compares cost on tasks accepted in both the primary and proof-only settings, with each metric normalized to the primary task. Panel (c) reports audited outcomes for the three task settings.}
+    \label{fig:rq2_difficulty}
+\end{figure*}
+Figure~\ref{fig:rq2_difficulty} compares the three task settings using GPT-5.4 at medium effort. The proof stage takes most of the successful-run time, but much of its difficulty comes from the interaction between auxiliary annotations and proofs. Missing or incorrect auxiliary annotations can produce proof goals that cannot be proved, while proof failures often reveal which facts must be added to the auxiliary annotations. Supplying verified auxiliary annotations in the proof-only task improves success from 20 to 30 tasks. Among the 12 tasks accepted in both settings, it also reduces time, input tokens, output tokens, and tool calls.
+
+The contract stage requires less runtime but is difficult to evaluate. Different contracts may correctly describe the same behavior, and an automatically accepted contract may still be too weak or fail to capture the intended behavior. The agent therefore lacks the deterministic feedback available in the auxiliary annotation and proof stages, and many generated contracts are rejected before reaching the later stages.
+\finding{Proof takes most of the runtime, but the interaction between  auxiliary annotations and proofs  drives much of the difficulty; contract generation remains hard because it lacks deterministic feedback.}
+
+\subsection{RQ4: Why Do Agent Runs Fail?}
+\begin{table}[t]
+    \centering
+    \caption{Primary-task failures by model configuration. Categories may overlap. $F/T$ denotes non-timeout failures/timeouts, with missing runs counted as timeouts; $P/I/R$ denotes invalid proofs, fixed-input modifications, and reads of disallowed material.}
+    \label{tab:error_analysis_models}
+    \scriptsize
+    \setlength{\tabcolsep}{3.2pt}
+    \renewcommand{\arraystretch}{1.02}
+    \begin{tabular}{@{}lccc@{}}
+        \toprule
+        \rowcolor{benchmarkhead}
+        & Outcome & Stage & Audit \\
+        \rowcolor{benchmarkhead}
+        Model / effort & $F/T$ & Proof/VCG & $P/I/R$ \\
+        \midrule
+        \input{tables/error_analysis_models}
+    \end{tabular}
+\end{table}
+% Table~\ref{tab:error_analysis_models} reports failure categories that may overlap. A run is counted as a VCG failure when VCG produces no proof goals; otherwise, an unsuccessful run is counted as a proof failure. Audit failures are counted separately.
+
+% Of the 841 non-timeout failures, 744 (88.5\%) occur after proof goals are generated, while 97 (11.5\%) fail at VCG. GPT-5.4-mini and GPT-5.4 at low effort have the most VCG failures, while Kimi-2.7-code and GPT-5.4-mini most frequently read disallowed material.
+
+% Audit failures are separate from verification-stage failures. They include bypassing the required proof, modifying the fixed contract or implementation, and reading disallowed material. Their frequency shows that instructions and model-reported completion are insufficient; success must be determined by a deterministic audit.
+% \finding{Most failures reach the proof stage, while frequent audit violations show that deterministic audit is necessary.}
+
+Table~\ref{tab:error_analysis_models} reports failure categories that may overlap. We classify a run as a VCG-stage failure
+when VCG produces no proof goals. Otherwise, we classify it as reaching the proof stage. Audit failures are counted separately.
+
+Of the 841 non-timeout failures, 744 (88.5\%) reach the proof stage, while 97 (11.5\%) fail at VCG. GPT-5.4-mini and GPT-5.4
+at low effort have the most VCG failures, while Kimi-2.7-code and GPT-5.4-mini most frequently read disallowed material. The predominance of proof-stage failures indicates that most difficulties arise after proof obligations are generated. However, because annotations shape these obligations, the category may capture failures in both annotation construction and proof writing.
+
+Audit failures are separate from verification-stage failures. They include bypassing the required proof, modifying the fixed
+contract or implementation, and reading disallowed material. Their frequency shows that instructions and model-reported
+completion are insufficient; success must be determined by a deterministic audit.
+
+
+\finding{Most failures reach the proof stage, highlighting the interaction between auxiliary annotations and proofs; frequent audit violations make deterministic auditing necessary.}
+
+
+
+\subsection{RQ5: How Does the Agent Harness Affect Performance?}
+\label{sec:harness-effects}
+
+A harness gives the model repository access, runs tool commands, and manages context. The main experiments use Claude Code for GLM-5.2. We take all 30 tasks that GLM-5.2 completes under Claude Code and rerun the same model on them through OpenCode and Codex CLI. This cohort is fixed before inspecting either alternative harness. The implementation, contract, repository, instructions, 90-minute budget, and deterministic audit remain unchanged. The comparison therefore measures how many Claude Code successes each harness retains, rather than ranking the harnesses over all 140 tasks.
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=0.86\textwidth]{figures/harness_task_radars.pdf}
+\caption{Cost profiles for three GLM-5.2 tasks accepted under all three harnesses, chosen to represent low, median, and high cross-harness differences. Each metric is normalized to the largest value for that task, so smaller values indicate lower cost.}
+\label{fig:harness-sensitivity}
+\end{figure*}
+
+Claude Code accepts 30/30 tasks by construction. Codex CLI retains 23 successes (76.7\%), while OpenCode retains 13 (43.3\%). Codex CLI has three timeouts and OpenCode has eleven. Changing only the harness can therefore cause the same model to lose previously successful tasks and can change whether an unsuccessful run stops early or uses the full budget.
+
+The harnesses solve different tasks, so their mean cost over all successes is not directly comparable. We instead compare the 12 tasks solved by all three. On this shared set, Claude Code uses the least time, tokens, and tool calls. Codex CLI retains more of the original cohort than OpenCode, but costs more than Claude Code on the shared tasks; OpenCode costs the most. Figure~\ref{fig:harness-sensitivity} further shows that cross-harness cost can be nearly identical on one task but differ sharply on another. Harness choice is therefore part of the evaluated system, not merely a way to access the model.
+\finding{Harness choice materially affects both acceptance and cost. Codex CLI performs relatively close to Claude Code, but no alternative harness recovers all Claude Code successes.}
