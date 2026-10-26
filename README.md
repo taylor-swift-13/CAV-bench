@@ -8,7 +8,7 @@ CAV-Bench combines executable C programs, functional contracts, auxiliary annota
 
 - [Main paper](paper/main.pdf) · [Supplementary material](paper/appendix.pdf) · [Reproducibility checklist](paper/ReproducibilityChecklist.pdf)
 - [Paper sources and build instructions](paper/README.md)
-- [Author response](paper/rebuttal.md), including clearly marked AI-review and AC-letter drafts
+- [Author response](paper/rebuttal.md), including the AI-review response and AC letter
 - [Reference artifacts](ground_truth/) · [Reference layout](ground_truth/README.md)
 - [Execution documentation](doc/run.md) · [Audit policy](doc/check_cheating.md)
 
