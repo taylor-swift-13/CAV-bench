@@ -1,0 +1,914 @@
+{
+  "cohort_size": 30,
+  "cohorts": {
+    "2.0.3": [],
+    "2.0.4": [
+      "p059_largest_prime_factor",
+      "p060_sum_to_n"
+    ],
+    "main": [
+      "p003_below_zero",
+      "p005_intersperse",
+      "p008_sum_product",
+      "p009_rolling_max",
+      "p017_parse_music",
+      "p023_strlen",
+      "p042_incr_list",
+      "p052_below_threshold",
+      "p055_fib",
+      "p073_smallest_change",
+      "p076_is_simple_power",
+      "p082_prime_length",
+      "p085_add",
+      "p100_make_a_pile",
+      "p104_unique_digits",
+      "p106_f",
+      "p109_move_one_ball",
+      "p121_solutions",
+      "p122_add_elements",
+      "p126_is_sorted",
+      "p128_prod_signs",
+      "p131_digits",
+      "p134_check_if_last_char_is_a_letter",
+      "p135_can_arrange",
+      "p138_is_equal_to_sum_even",
+      "p141_file_name_check",
+      "p142_sum_squares",
+      "p159_eat"
+    ]
+  },
+  "generated_at": "2026-07-22T11:03:00.811101+00:00",
+  "model": "GLM-5.2",
+  "paired_success_cost": {
+    "Claude Code": {
+      "input_tokens": 8630833.166666666,
+      "input_tokens_runs": 12,
+      "output_tokens": 72163.0,
+      "output_tokens_runs": 12,
+      "tasks": 12,
+      "tool_calls": 94.66666666666667,
+      "tool_calls_runs": 12,
+      "turns": 78.83333333333333,
+      "turns_runs": 12,
+      "wall_seconds": 1488.1991666666668,
+      "wall_seconds_runs": 12
+    },
+    "Codex CLI": {
+      "input_tokens": 10129550.25,
+      "input_tokens_runs": 12,
+      "output_tokens": 138902.5,
+      "output_tokens_runs": 12,
+      "tasks": 12,
+      "tool_calls": 105.83333333333333,
+      "tool_calls_runs": 12,
+      "turns": 64.5,
+      "turns_runs": 12,
+      "wall_seconds": 2072.6091666666666,
+      "wall_seconds_runs": 12
+    },
+    "OpenCode": {
+      "input_tokens": 15613168.416666666,
+      "input_tokens_runs": 12,
+      "output_tokens": 134286.58333333334,
+      "output_tokens_runs": 12,
+      "tasks": 12,
+      "tool_calls": 112.33333333333333,
+      "tool_calls_runs": 12,
+      "turns": 0.0,
+      "turns_runs": 12,
+      "wall_seconds": 2695.784166666667,
+      "wall_seconds_runs": 12
+    }
+  },
+  "representative_tasks": [
+    "main/p134_check_if_last_char_is_a_letter",
+    "main/p042_incr_list",
+    "main/p076_is_simple_power"
+  ],
+  "rows": {
+    "Claude Code": {
+      "accuracy": 0.18292682926829268,
+      "attempted": 30,
+      "attempted_accuracy": 1.0,
+      "avg_input_tokens_m": 11.493871200000001,
+      "avg_input_tokens_m_non_timeout": 11.493871200000001,
+      "avg_input_tokens_m_solved": 11.493871200000001,
+      "avg_minutes": 28.256883333333327,
+      "avg_minutes_non_timeout": 28.256883333333327,
+      "avg_minutes_solved": 28.256883333333327,
+      "avg_output_tokens_k": 93.01753333333333,
+      "avg_output_tokens_k_non_timeout": 93.01753333333333,
+      "avg_output_tokens_k_solved": 93.01753333333333,
+      "avg_tool_calls": 105.83333333333333,
+      "avg_tool_calls_non_timeout": 105.83333333333333,
+      "avg_tool_calls_solved": 105.83333333333333,
+      "avg_tool_profile": {
+        "coqc": 30.966666666666665,
+        "read": 79.46666666666667,
+        "rounds": 89.83333333333333,
+        "total": 105.83333333333333,
+        "vcg": 3.2666666666666666,
+        "write": 27.066666666666666
+      },
+      "avg_tool_profile_non_timeout": {
+        "coqc": 30.966666666666665,
+        "read": 79.46666666666667,
+        "rounds": 89.83333333333333,
+        "total": 105.83333333333333,
+        "vcg": 3.2666666666666666,
+        "write": 27.066666666666666
+      },
+      "avg_tool_profile_solved": {
+        "coqc": 30.966666666666665,
+        "read": 79.46666666666667,
+        "rounds": 89.83333333333333,
+        "total": 105.83333333333333,
+        "vcg": 3.2666666666666666,
+        "write": 27.066666666666666
+      },
+      "avg_total_tokens_m": 11.586888733333334,
+      "benchmark_task_count": 132,
+      "construction_excluded": 32,
+      "correct": 30,
+      "coverage": 0.22727272727272727,
+      "non_timeout_runs": 30,
+      "non_timeout_time_runs": 30,
+      "non_timeout_token_runs": 30,
+      "non_timeout_trace_runs": 30,
+      "per_task": {
+        "p003_below_zero": "correct",
+        "p005_intersperse": "correct",
+        "p008_sum_product": "correct",
+        "p009_rolling_max": "correct",
+        "p017_parse_music": "correct",
+        "p023_strlen": "correct",
+        "p042_incr_list": "correct",
+        "p052_below_threshold": "correct",
+        "p055_fib": "correct",
+        "p059_largest_prime_factor": "correct",
+        "p060_sum_to_n": "correct",
+        "p073_smallest_change": "correct",
+        "p076_is_simple_power": "correct",
+        "p082_prime_length": "correct",
+        "p085_add": "correct",
+        "p100_make_a_pile": "correct",
+        "p104_unique_digits": "correct",
+        "p106_f": "correct",
+        "p109_move_one_ball": "correct",
+        "p121_solutions": "correct",
+        "p122_add_elements": "correct",
+        "p126_is_sorted": "correct",
+        "p128_prod_signs": "correct",
+        "p131_digits": "correct",
+        "p134_check_if_last_char_is_a_letter": "correct",
+        "p135_can_arrange": "correct",
+        "p138_is_equal_to_sum_even": "correct",
+        "p141_file_name_check": "correct",
+        "p142_sum_squares": "correct",
+        "p159_eat": "correct"
+      },
+      "protocol_rejections": {
+        "additional_complete_attempts_ignored": {},
+        "artifact_categories": {},
+        "artifact_groups": {},
+        "by_reason": {},
+        "count": 0,
+        "incomplete_attempts_ignored": {},
+        "leakage_categories": {},
+        "tasks": {}
+      },
+      "runnable_universe": 132,
+      "runnable_yield": 0.22727272727272727,
+      "selected_workspaces": {
+        "p003_below_zero": "/home/yangfp/CAV/main/CAV-bench/results/claude/glm-5.2/api/verify_20260618_11584626935_p003_below_zero",
+        "p005_intersperse": "/home/yangfp/CAV/main/CAV-bench/results/claude/glm-5.2/api/verify_20260618_120733251_p005_intersperse",
+        "p008_sum_product": "/home/yangfp/CAV/main/CAV-bench/results/claude/glm-5.2/api/verify_20260618_1245506257_p008_sum_product",
+        "p009_rolling_max": "/home/yangfp/CAV/main/CAV-bench/results/claude/glm-5.2/api/verify_20260719_1212205114_p009_rolling_max",
+        "p017_parse_music": "/home/yangfp/CAV/main/CAV-bench/results/claude/glm-5.2/api/verify_20260719_13341231908_p017_parse_music",
+        "p023_strlen": "/home/yangfp/CAV/main/CAV-bench/results/claude/glm-5.2/api/verify_20260622_1348565539_p023_strlen",
+        "p042_incr_list": "/home/yangfp/CAV/main/CAV-bench/results/claude/glm-5.2/api/verify_20260622_22190314908_p042_incr_list",
+        "p052_below_threshold": "/home/yangfp/CAV/main/CAV-bench/results/claude/glm-5.2/api/verify_20260623_05563930975_p052_below_threshold",
+        "p055_fib": "/home/yangfp/CAV/main/CAV-bench/results/claude/glm-5.2/api/verify_20260617_13043811641_p055_fib",
+        "p059_largest_prime_factor": "/home/yangfp/CAV/2.0.4/CAV-bench/results/claude/glm-5.2/api/verify_20260720_05575716473_p059_largest_prime_factor",
+        "p060_sum_to_n": "/home/yangfp/CAV/2.0.4/CAV-bench/results/claude/glm-5.2/api/verify_20260720_0350465096_p060_sum_to_n",
+        "p073_smallest_change": "/home/yangfp/CAV/main/CAV-bench/results/claude/glm-5.2/api/verify_20260623_20220621118_p073_smallest_change",
+        "p076_is_simple_power": "/home/yangfp/CAV/main/CAV-bench/results/claude/glm-5.2/api/verify_20260617_1256531247_p076_is_simple_power",
+        "p082_prime_length": "/home/yangfp/CAV/main/CAV-bench/results/claude/glm-5.2/api/verify_20260617_1244036997_p082_prime_length",
+        "p085_add": "/home/yangfp/CAV/main/CAV-bench/results/claude/glm-5.2/api/verify_20260617_12371867_p085_add",
+        "p100_make_a_pile": "/home/yangfp/CAV/main/CAV-bench/results/claude/glm-5.2/api/verify_20260617_11490625811_p100_make_a_pile",
+        "p104_unique_digits": "/home/yangfp/CAV/main/CAV-bench/results/claude/glm-5.2/api/verify_20260625_08144615263_p104_unique_digits",
+        "p106_f": "/home/yangfp/CAV/main/CAV-bench/results/claude/glm-5.2/api/verify_20260625_0814463392_p106_f",
+        "p109_move_one_ball": "/home/yangfp/CAV/main/CAV-bench/results/claude/glm-5.2/api/verify_20260625_1021123775_p109_move_one_ball",
+        "p121_solutions": "/home/yangfp/CAV/main/CAV-bench/results/claude/glm-5.2/api/verify_20260625_2153428824_p121_solutions",
+        "p122_add_elements": "/home/yangfp/CAV/main/CAV-bench/results/claude/glm-5.2/api/verify_20260625_22305010790_p122_add_elements",
+        "p126_is_sorted": "/home/yangfp/CAV/main/CAV-bench/results/claude/glm-5.2/api/verify_20260626_01240421616_p126_is_sorted",
+        "p128_prod_signs": "/home/yangfp/CAV/main/CAV-bench/results/claude/glm-5.2/api/verify_20260625_00074129501_p128_prod_signs",
+        "p131_digits": "/home/yangfp/CAV/main/CAV-bench/results/claude/glm-5.2/api/verify_20260617_1205269927_p131_digits",
+        "p134_check_if_last_char_is_a_letter": "/home/yangfp/CAV/main/CAV-bench/results/claude/glm-5.2/api/verify_20260626_03582124068_p134_check_if_last_char_is_a_letter",
+        "p135_can_arrange": "/home/yangfp/CAV/main/CAV-bench/results/claude/glm-5.2/api/verify_20260626_0415269489_p135_can_arrange",
+        "p138_is_equal_to_sum_even": "/home/yangfp/CAV/main/CAV-bench/results/claude/glm-5.2/api/verify_20260625_15042621076_p138_is_equal_to_sum_even",
+        "p141_file_name_check": "/home/yangfp/CAV/main/CAV-bench/results/claude/glm-5.2/api/verify_20260626_07271625013_p141_file_name_check",
+        "p142_sum_squares": "/home/yangfp/CAV/main/CAV-bench/results/claude/glm-5.2/api/verify_20260619_1755327347_p142_sum_squares",
+        "p159_eat": "/home/yangfp/CAV/main/CAV-bench/results/claude/glm-5.2/api/verify_20260626_1405259396_p159_eat"
+      },
+      "solved_time_runs": 30,
+      "solved_token_runs": 30,
+      "solved_trace_runs": 30,
+      "source_universe": 164,
+      "source_yield": 0.18292682926829268,
+      "task_universe": 164,
+      "time_runs": 30,
+      "timeout": 0,
+      "token_runs": 30,
+      "trace_runs": 30,
+      "wrong": 0
+    },
+    "Codex CLI": {
+      "accuracy": 0.1402439024390244,
+      "attempted": 30,
+      "attempted_accuracy": 0.7666666666666667,
+      "avg_input_tokens_m": 10.402548880000001,
+      "avg_input_tokens_m_non_timeout": 10.402548880000001,
+      "avg_input_tokens_m_solved": 9.720340681818184,
+      "avg_minutes": 41.780911111111116,
+      "avg_minutes_non_timeout": 36.406895061728385,
+      "avg_minutes_solved": 34.704862318840576,
+      "avg_output_tokens_k": 150.3724,
+      "avg_output_tokens_k_non_timeout": 150.3724,
+      "avg_output_tokens_k_solved": 138.05672727272727,
+      "avg_tool_calls": 112.86666666666666,
+      "avg_tool_calls_non_timeout": 105.11111111111111,
+      "avg_tool_calls_solved": 101.56521739130434,
+      "avg_tool_profile": {
+        "coqc": 31.833333333333332,
+        "read": 98.43333333333334,
+        "rounds": 66.93333333333334,
+        "total": 112.86666666666666,
+        "vcg": 3.2666666666666666,
+        "write": 23.933333333333334
+      },
+      "avg_tool_profile_non_timeout": {
+        "coqc": 29.62962962962963,
+        "read": 90.96296296296296,
+        "rounds": 63.407407407407405,
+        "total": 105.11111111111111,
+        "vcg": 2.888888888888889,
+        "write": 22.37037037037037
+      },
+      "avg_tool_profile_solved": {
+        "coqc": 29.08695652173913,
+        "read": 87.30434782608697,
+        "rounds": 61.82608695652174,
+        "total": 101.56521739130434,
+        "vcg": 2.652173913043478,
+        "write": 21.086956521739133
+      },
+      "avg_total_tokens_m": 10.552921279999998,
+      "benchmark_task_count": 132,
+      "construction_excluded": 32,
+      "correct": 23,
+      "coverage": 0.22727272727272727,
+      "non_timeout_runs": 27,
+      "non_timeout_time_runs": 27,
+      "non_timeout_token_runs": 25,
+      "non_timeout_trace_runs": 27,
+      "per_task": {
+        "p003_below_zero": "correct",
+        "p005_intersperse": "correct",
+        "p008_sum_product": "correct",
+        "p009_rolling_max": "timeout",
+        "p017_parse_music": "wrong",
+        "p023_strlen": "correct",
+        "p042_incr_list": "correct",
+        "p052_below_threshold": "correct",
+        "p055_fib": "wrong",
+        "p059_largest_prime_factor": "timeout",
+        "p060_sum_to_n": "correct",
+        "p073_smallest_change": "correct",
+        "p076_is_simple_power": "correct",
+        "p082_prime_length": "correct",
+        "p085_add": "correct",
+        "p100_make_a_pile": "correct",
+        "p104_unique_digits": "timeout",
+        "p106_f": "correct",
+        "p109_move_one_ball": "correct",
+        "p121_solutions": "correct",
+        "p122_add_elements": "correct",
+        "p126_is_sorted": "correct",
+        "p128_prod_signs": "correct",
+        "p131_digits": "wrong",
+        "p134_check_if_last_char_is_a_letter": "correct",
+        "p135_can_arrange": "correct",
+        "p138_is_equal_to_sum_even": "correct",
+        "p141_file_name_check": "wrong",
+        "p142_sum_squares": "correct",
+        "p159_eat": "correct"
+      },
+      "protocol_rejections": {
+        "additional_complete_attempts_ignored": {},
+        "artifact_categories": {},
+        "artifact_groups": {},
+        "by_reason": {
+          "transcript_leakage": 1
+        },
+        "count": 1,
+        "incomplete_attempts_ignored": {},
+        "leakage_categories": {
+          "other_cav_workspace_access": 5
+        },
+        "tasks": {
+          "p131_digits": {
+            "artifact_audit": {
+              "categories": {},
+              "checked": false,
+              "error_count": 0,
+              "examples": [],
+              "groups": {}
+            },
+            "leakage": {
+              "categories": {
+                "other_cav_workspace_access": 5
+              },
+              "examples": [
+                {
+                  "category": "other_cav_workspace_access",
+                  "line": 63,
+                  "snippet": "/bin/bash -lc 'cat QCP_examples/CAV/verify_20260722_03484031899_p104_unique_digits/verification_stdlib.h 2>/dev/null | head -30; echo \"=== C FILE ===\"; cat QCP_examples/CAV/verify_20260722_03484031899_p104_unique_digits/verify_20260722_03484031899_p104_unique_digits.c 2>/dev/null | head -80'",
+                  "tool": "Bash",
+                  "transcript": "/home/yangfp/CAV/main/CAV-bench/results/codex/glm-5.2/api/verify_20260722_0453254289_p131_digits/logs/agent_stdout_20260722_045325.jsonl"
+                },
+                {
+                  "category": "other_cav_workspace_access",
+                  "line": 69,
+                  "snippet": "/bin/bash -lc 'cat QCP_examples/CAV/verify_20260722_03484031899_p104_unique_digits/verify_20260722_03484031899_p104_unique_digits.c 2>/dev/null | head -200'",
+                  "tool": "Bash",
+                  "transcript": "/home/yangfp/CAV/main/CAV-bench/results/codex/glm-5.2/api/verify_20260722_0453254289_p131_digits/logs/agent_stdout_20260722_045325.jsonl"
+                },
+                {
+                  "category": "other_cav_workspace_access",
+                  "line": 74,
+                  "snippet": "/bin/bash -lc 'cat SeparationLogic/examples/CAV/verify_20260722_03484031899_p104_unique_digits/deps/p104_unique_digits.v 2>/dev/null'",
+                  "tool": "Bash",
+                  "transcript": "/home/yangfp/CAV/main/CAV-bench/results/codex/glm-5.2/api/verify_20260722_0453254289_p131_digits/logs/agent_stdout_20260722_045325.jsonl"
+                }
+              ],
+              "finding_count": 5
+            },
+            "reasons": [
+              "transcript_leakage"
+            ],
+            "transcript_count": 1,
+            "workspace": "/home/yangfp/CAV/main/CAV-bench/results/codex/glm-5.2/api/verify_20260722_0453254289_p131_digits"
+          }
+        }
+      },
+      "runnable_universe": 132,
+      "runnable_yield": 0.17424242424242425,
+      "selected_workspaces": {
+        "p003_below_zero": "/home/yangfp/CAV/main/CAV-bench/results/codex/glm-5.2/api/verify_20260702_22271818860_p003_below_zero",
+        "p005_intersperse": "/home/yangfp/CAV/main/CAV-bench/results/codex/glm-5.2/api/verify_20260721_1727091128_p005_intersperse",
+        "p008_sum_product": "/home/yangfp/CAV/main/CAV-bench/results/codex/glm-5.2/api/verify_20260703_1143128147_p008_sum_product",
+        "p009_rolling_max": "/home/yangfp/CAV/main/CAV-bench/results/codex/glm-5.2/api/verify_20260721_17441219173_p009_rolling_max",
+        "p017_parse_music": "/home/yangfp/CAV/main/CAV-bench/results/codex/glm-5.2/api/verify_20260721_18135523847_p017_parse_music",
+        "p023_strlen": "/home/yangfp/CAV/main/CAV-bench/results/codex/glm-5.2/api/verify_20260721_19142712363_p023_strlen",
+        "p042_incr_list": "/home/yangfp/CAV/main/CAV-bench/results/codex/glm-5.2/api/verify_20260721_21100620870_p042_incr_list",
+        "p052_below_threshold": "/home/yangfp/CAV/main/CAV-bench/results/codex/glm-5.2/api/verify_20260721_22265413723_p052_below_threshold",
+        "p055_fib": "/home/yangfp/CAV/main/CAV-bench/results/codex/glm-5.2/api/verify_20260721_2204292474_p055_fib",
+        "p059_largest_prime_factor": "/home/yangfp/CAV/2.0.4/CAV-bench/results/codex/glm-5.2/api/verify_20260722_09291127141_p059_largest_prime_factor",
+        "p060_sum_to_n": "/home/yangfp/CAV/2.0.4/CAV-bench/results/codex/glm-5.2/api/verify_20260722_10312023840_p060_sum_to_n",
+        "p073_smallest_change": "/home/yangfp/CAV/main/CAV-bench/results/codex/glm-5.2/api/verify_20260722_0117431984_p073_smallest_change",
+        "p076_is_simple_power": "/home/yangfp/CAV/main/CAV-bench/results/codex/glm-5.2/api/verify_20260703_1235326514_p076_is_simple_power",
+        "p082_prime_length": "/home/yangfp/CAV/main/CAV-bench/results/codex/glm-5.2/api/verify_20260703_1321215476_p082_prime_length",
+        "p085_add": "/home/yangfp/CAV/main/CAV-bench/results/codex/glm-5.2/api/verify_20260722_02145616351_p085_add",
+        "p100_make_a_pile": "/home/yangfp/CAV/main/CAV-bench/results/codex/glm-5.2/api/verify_20260722_02391531585_p100_make_a_pile",
+        "p104_unique_digits": "/home/yangfp/CAV/main/CAV-bench/results/codex/glm-5.2/api/verify_20260722_03484031899_p104_unique_digits",
+        "p106_f": "/home/yangfp/CAV/main/CAV-bench/results/codex/glm-5.2/api/verify_20260722_0329425078_p106_f",
+        "p109_move_one_ball": "/home/yangfp/CAV/main/CAV-bench/results/codex/glm-5.2/api/verify_20260722_05184922865_p109_move_one_ball",
+        "p121_solutions": "/home/yangfp/CAV/main/CAV-bench/results/codex/glm-5.2/api/verify_20260703_13501513827_p121_solutions",
+        "p122_add_elements": "/home/yangfp/CAV/main/CAV-bench/results/codex/glm-5.2/api/verify_20260722_05463617702_p122_add_elements",
+        "p126_is_sorted": "/home/yangfp/CAV/main/CAV-bench/results/codex/glm-5.2/api/verify_20260722_04255926729_p126_is_sorted",
+        "p128_prod_signs": "/home/yangfp/CAV/main/CAV-bench/results/codex/glm-5.2/api/verify_20260722_06083627721_p128_prod_signs",
+        "p131_digits": "/home/yangfp/CAV/main/CAV-bench/results/codex/glm-5.2/api/verify_20260722_0453254289_p131_digits",
+        "p134_check_if_last_char_is_a_letter": "/home/yangfp/CAV/main/CAV-bench/results/codex/glm-5.2/api/verify_20260722_05465032728_p134_check_if_last_char_is_a_letter",
+        "p135_can_arrange": "/home/yangfp/CAV/main/CAV-bench/results/codex/glm-5.2/api/verify_20260722_07380219557_p135_can_arrange",
+        "p138_is_equal_to_sum_even": "/home/yangfp/CAV/main/CAV-bench/results/codex/glm-5.2/api/verify_20260703_14411527571_p138_is_equal_to_sum_even",
+        "p141_file_name_check": "/home/yangfp/CAV/main/CAV-bench/results/codex/glm-5.2/api/verify_20260722_08002029633_p141_file_name_check",
+        "p142_sum_squares": "/home/yangfp/CAV/main/CAV-bench/results/codex/glm-5.2/api/verify_20260722_07153318895_p142_sum_squares",
+        "p159_eat": "/home/yangfp/CAV/main/CAV-bench/results/codex/glm-5.2/api/verify_20260722_09150818181_p159_eat"
+      },
+      "solved_time_runs": 23,
+      "solved_token_runs": 22,
+      "solved_trace_runs": 23,
+      "source_universe": 164,
+      "source_yield": 0.1402439024390244,
+      "task_universe": 164,
+      "time_runs": 30,
+      "timeout": 3,
+      "token_runs": 25,
+      "trace_runs": 30,
+      "wrong": 4
+    },
+    "OpenCode": {
+      "accuracy": 0.07926829268292683,
+      "attempted": 30,
+      "attempted_accuracy": 0.43333333333333335,
+      "avg_input_tokens_m": 15.786598814814814,
+      "avg_input_tokens_m_non_timeout": 12.997109631578946,
+      "avg_input_tokens_m_solved": 16.996491538461537,
+      "avg_minutes": 59.19685000000001,
+      "avg_minutes_non_timeout": 40.78792105263158,
+      "avg_minutes_solved": 46.36865384615384,
+      "avg_output_tokens_k": 132.31096296296295,
+      "avg_output_tokens_k_non_timeout": 122.30436842105263,
+      "avg_output_tokens_k_solved": 142.96361538461537,
+      "avg_tool_calls": 93.9,
+      "avg_tool_calls_non_timeout": 99.94736842105263,
+      "avg_tool_calls_solved": 115.84615384615384,
+      "avg_tool_profile": {
+        "coqc": 0.0,
+        "read": 0.0,
+        "rounds": 0.0,
+        "total": 93.9,
+        "vcg": 0.0,
+        "write": 0.0
+      },
+      "avg_tool_profile_non_timeout": {
+        "coqc": 0.0,
+        "read": 0.0,
+        "rounds": 0.0,
+        "total": 99.94736842105263,
+        "vcg": 0.0,
+        "write": 0.0
+      },
+      "avg_tool_profile_solved": {
+        "coqc": 0.0,
+        "read": 0.0,
+        "rounds": 0.0,
+        "total": 115.84615384615384,
+        "vcg": 0.0,
+        "write": 0.0
+      },
+      "avg_total_tokens_m": 15.938619592592591,
+      "benchmark_task_count": 132,
+      "construction_excluded": 32,
+      "correct": 13,
+      "coverage": 0.22727272727272727,
+      "non_timeout_runs": 19,
+      "non_timeout_time_runs": 19,
+      "non_timeout_token_runs": 19,
+      "non_timeout_trace_runs": 19,
+      "per_task": {
+        "p003_below_zero": "timeout",
+        "p005_intersperse": "wrong",
+        "p008_sum_product": "timeout",
+        "p009_rolling_max": "timeout",
+        "p017_parse_music": "timeout",
+        "p023_strlen": "timeout",
+        "p042_incr_list": "correct",
+        "p052_below_threshold": "timeout",
+        "p055_fib": "wrong",
+        "p059_largest_prime_factor": "wrong",
+        "p060_sum_to_n": "correct",
+        "p073_smallest_change": "correct",
+        "p076_is_simple_power": "correct",
+        "p082_prime_length": "wrong",
+        "p085_add": "correct",
+        "p100_make_a_pile": "timeout",
+        "p104_unique_digits": "timeout",
+        "p106_f": "timeout",
+        "p109_move_one_ball": "correct",
+        "p121_solutions": "correct",
+        "p122_add_elements": "timeout",
+        "p126_is_sorted": "wrong",
+        "p128_prod_signs": "correct",
+        "p131_digits": "correct",
+        "p134_check_if_last_char_is_a_letter": "correct",
+        "p135_can_arrange": "wrong",
+        "p138_is_equal_to_sum_even": "correct",
+        "p141_file_name_check": "timeout",
+        "p142_sum_squares": "correct",
+        "p159_eat": "correct"
+      },
+      "protocol_rejections": {
+        "additional_complete_attempts_ignored": {},
+        "artifact_categories": {},
+        "artifact_groups": {},
+        "by_reason": {},
+        "count": 0,
+        "incomplete_attempts_ignored": {},
+        "leakage_categories": {},
+        "tasks": {}
+      },
+      "runnable_universe": 132,
+      "runnable_yield": 0.09848484848484848,
+      "selected_workspaces": {
+        "p003_below_zero": "/home/yangfp/CAV/main/CAV-bench/results/opencode/glm-5.2/api/verify_20260702_00434515685_p003_below_zero",
+        "p005_intersperse": "/home/yangfp/CAV/main/CAV-bench/results/opencode/glm-5.2/api/verify_20260720_10211011555_p005_intersperse",
+        "p008_sum_product": "/home/yangfp/CAV/main/CAV-bench/results/opencode/glm-5.2/api/verify_20260702_05175317257_p008_sum_product",
+        "p009_rolling_max": "/home/yangfp/CAV/main/CAV-bench/results/opencode/glm-5.2/api/verify_20260720_10212419322_p009_rolling_max",
+        "p017_parse_music": "/home/yangfp/CAV/main/CAV-bench/results/opencode/glm-5.2/api/verify_20260720_10400320191_p017_parse_music",
+        "p023_strlen": "/home/yangfp/CAV/main/CAV-bench/results/opencode/glm-5.2/api/verify_20260720_11513631227_p023_strlen",
+        "p042_incr_list": "/home/yangfp/CAV/main/CAV-bench/results/opencode/glm-5.2/api/verify_20260720_1451458521_p042_incr_list",
+        "p052_below_threshold": "/home/yangfp/CAV/main/CAV-bench/results/opencode/glm-5.2/api/verify_20260718_02155229191_p052_below_threshold",
+        "p055_fib": "/home/yangfp/CAV/main/CAV-bench/results/opencode/glm-5.2/api/verify_20260720_17094926694_p055_fib",
+        "p059_largest_prime_factor": "/home/yangfp/CAV/2.0.4/CAV-bench/results/opencode/glm-5.2/api/verify_20260721_1656248260_p059_largest_prime_factor",
+        "p060_sum_to_n": "/home/yangfp/CAV/2.0.4/CAV-bench/results/opencode/glm-5.2/api/verify_20260721_16562426815_p060_sum_to_n",
+        "p073_smallest_change": "/home/yangfp/CAV/main/CAV-bench/results/opencode/glm-5.2/api/verify_20260720_19033028197_p073_smallest_change",
+        "p076_is_simple_power": "/home/yangfp/CAV/main/CAV-bench/results/opencode/glm-5.2/api/verify_20260702_15494424447_p076_is_simple_power",
+        "p082_prime_length": "/home/yangfp/CAV/main/CAV-bench/results/opencode/glm-5.2/api/verify_20260702_16573825731_p082_prime_length",
+        "p085_add": "/home/yangfp/CAV/main/CAV-bench/results/opencode/glm-5.2/api/verify_20260720_20183213408_p085_add",
+        "p100_make_a_pile": "/home/yangfp/CAV/main/CAV-bench/results/opencode/glm-5.2/api/verify_20260720_19213224793_p100_make_a_pile",
+        "p104_unique_digits": "/home/yangfp/CAV/main/CAV-bench/results/opencode/glm-5.2/api/verify_20260720_2137554148_p104_unique_digits",
+        "p106_f": "/home/yangfp/CAV/main/CAV-bench/results/opencode/glm-5.2/api/verify_20260720_20514429289_p106_f",
+        "p109_move_one_ball": "/home/yangfp/CAV/main/CAV-bench/results/opencode/glm-5.2/api/verify_20260720_23080417914_p109_move_one_ball",
+        "p121_solutions": "/home/yangfp/CAV/main/CAV-bench/results/opencode/glm-5.2/api/verify_20260702_18443216120_p121_solutions",
+        "p122_add_elements": "/home/yangfp/CAV/main/CAV-bench/results/opencode/glm-5.2/api/verify_20260720_23312328319_p122_add_elements",
+        "p126_is_sorted": "/home/yangfp/CAV/main/CAV-bench/results/opencode/glm-5.2/api/verify_20260720_22215610742_p126_is_sorted",
+        "p128_prod_signs": "/home/yangfp/CAV/main/CAV-bench/results/opencode/glm-5.2/api/verify_20260721_01012924905_p128_prod_signs",
+        "p131_digits": "/home/yangfp/CAV/main/CAV-bench/results/opencode/glm-5.2/api/verify_20260720_22320717462_p131_digits",
+        "p134_check_if_last_char_is_a_letter": "/home/yangfp/CAV/main/CAV-bench/results/opencode/glm-5.2/api/verify_20260720_23354622919_p134_check_if_last_char_is_a_letter",
+        "p135_can_arrange": "/home/yangfp/CAV/main/CAV-bench/results/opencode/glm-5.2/api/verify_20260721_02442829283_p135_can_arrange",
+        "p138_is_equal_to_sum_even": "/home/yangfp/CAV/main/CAV-bench/results/opencode/glm-5.2/api/verify_20260702_21002725995_p138_is_equal_to_sum_even",
+        "p141_file_name_check": "/home/yangfp/CAV/main/CAV-bench/results/opencode/glm-5.2/api/verify_20260721_0257444247_p141_file_name_check",
+        "p142_sum_squares": "/home/yangfp/CAV/main/CAV-bench/results/opencode/glm-5.2/api/verify_20260721_00555822961_p142_sum_squares",
+        "p159_eat": "/home/yangfp/CAV/main/CAV-bench/results/opencode/glm-5.2/api/verify_20260721_05171918315_p159_eat"
+      },
+      "solved_time_runs": 13,
+      "solved_token_runs": 13,
+      "solved_trace_runs": 13,
+      "source_universe": 164,
+      "source_yield": 0.07926829268292683,
+      "task_universe": 164,
+      "time_runs": 30,
+      "timeout": 11,
+      "token_runs": 27,
+      "trace_runs": 30,
+      "wrong": 6
+    }
+  },
+  "selection": "all tasks accepted under Claude Code before inspecting OpenCode or Codex CLI",
+  "shared_success_tasks": [
+    "2.0.4/p060_sum_to_n",
+    "main/p042_incr_list",
+    "main/p073_smallest_change",
+    "main/p076_is_simple_power",
+    "main/p085_add",
+    "main/p109_move_one_ball",
+    "main/p121_solutions",
+    "main/p128_prod_signs",
+    "main/p134_check_if_last_char_is_a_letter",
+    "main/p138_is_equal_to_sum_even",
+    "main/p142_sum_squares",
+    "main/p159_eat"
+  ],
+  "shared_task_metrics": {
+    "2.0.4/p060_sum_to_n": {
+      "Claude Code": {
+        "input_tokens": 8547749.0,
+        "outcome": "correct",
+        "output_tokens": 108198.0,
+        "tool_calls": 84,
+        "total_tokens": 8655947.0,
+        "turns": 68,
+        "wall_seconds": 1300.75
+      },
+      "Codex CLI": {
+        "input_tokens": 4593475.0,
+        "outcome": "correct",
+        "output_tokens": 82881.0,
+        "tool_calls": 64,
+        "total_tokens": 4676356.0,
+        "turns": 38,
+        "wall_seconds": 2297.0
+      },
+      "OpenCode": {
+        "input_tokens": 9006276.0,
+        "outcome": "correct",
+        "output_tokens": 103720.0,
+        "tool_calls": 94,
+        "total_tokens": 9109996.0,
+        "turns": 0,
+        "wall_seconds": 1844.42
+      }
+    },
+    "main/p042_incr_list": {
+      "Claude Code": {
+        "input_tokens": 9604012.0,
+        "outcome": "correct",
+        "output_tokens": 73941.0,
+        "tool_calls": 109,
+        "total_tokens": 9677953.0,
+        "turns": 101,
+        "wall_seconds": 1484.65
+      },
+      "Codex CLI": {
+        "input_tokens": 7747435.0,
+        "outcome": "correct",
+        "output_tokens": 111012.0,
+        "tool_calls": 80,
+        "total_tokens": 7858447.0,
+        "turns": 48,
+        "wall_seconds": 2030.06
+      },
+      "OpenCode": {
+        "input_tokens": 21416639.0,
+        "outcome": "correct",
+        "output_tokens": 167698.0,
+        "tool_calls": 139,
+        "total_tokens": 21584337.0,
+        "turns": 0,
+        "wall_seconds": 4809.83
+      }
+    },
+    "main/p073_smallest_change": {
+      "Claude Code": {
+        "input_tokens": 5843357.0,
+        "outcome": "correct",
+        "output_tokens": 94019.0,
+        "tool_calls": 70,
+        "total_tokens": 5937376.0,
+        "turns": 56,
+        "wall_seconds": 2289.92
+      },
+      "Codex CLI": {
+        "input_tokens": 7628756.0,
+        "outcome": "correct",
+        "output_tokens": 101882.0,
+        "tool_calls": 80,
+        "total_tokens": 7730638.0,
+        "turns": 54,
+        "wall_seconds": 1321.5
+      },
+      "OpenCode": {
+        "input_tokens": 8234617.0,
+        "outcome": "correct",
+        "output_tokens": 110134.0,
+        "tool_calls": 77,
+        "total_tokens": 8344751.0,
+        "turns": 0,
+        "wall_seconds": 1625.96
+      }
+    },
+    "main/p076_is_simple_power": {
+      "Claude Code": {
+        "input_tokens": 6584197.0,
+        "outcome": "correct",
+        "output_tokens": 22633.0,
+        "tool_calls": 102,
+        "total_tokens": 6606830.0,
+        "turns": 80,
+        "wall_seconds": 464.97
+      },
+      "Codex CLI": {
+        "input_tokens": 11493218.0,
+        "outcome": "correct",
+        "output_tokens": 171144.0,
+        "tool_calls": 84,
+        "total_tokens": 11664362.0,
+        "turns": 66,
+        "wall_seconds": 2748.7
+      },
+      "OpenCode": {
+        "input_tokens": 26253723.0,
+        "outcome": "correct",
+        "output_tokens": 165974.0,
+        "tool_calls": 211,
+        "total_tokens": 26549791.0,
+        "turns": 0,
+        "wall_seconds": 3954.36
+      }
+    },
+    "main/p085_add": {
+      "Claude Code": {
+        "input_tokens": 5804932.0,
+        "outcome": "correct",
+        "output_tokens": 25003.0,
+        "tool_calls": 86,
+        "total_tokens": 5829935.0,
+        "turns": 66,
+        "wall_seconds": 404.6
+      },
+      "Codex CLI": {
+        "input_tokens": 12965751.0,
+        "outcome": "correct",
+        "output_tokens": 138746.0,
+        "tool_calls": 128,
+        "total_tokens": 13104497.0,
+        "turns": 58,
+        "wall_seconds": 1723.89
+      },
+      "OpenCode": {
+        "input_tokens": 6090080.0,
+        "outcome": "correct",
+        "output_tokens": 83678.0,
+        "tool_calls": 66,
+        "total_tokens": 6173758.0,
+        "turns": 0,
+        "wall_seconds": 1109.22
+      }
+    },
+    "main/p109_move_one_ball": {
+      "Claude Code": {
+        "input_tokens": 6825553.0,
+        "outcome": "correct",
+        "output_tokens": 80582.0,
+        "tool_calls": 80,
+        "total_tokens": 6906135.0,
+        "turns": 69,
+        "wall_seconds": 1834.05
+      },
+      "Codex CLI": {
+        "input_tokens": 10298858.0,
+        "outcome": "correct",
+        "output_tokens": 120607.0,
+        "tool_calls": 89,
+        "total_tokens": 10419465.0,
+        "turns": 69,
+        "wall_seconds": 1665.47
+      },
+      "OpenCode": {
+        "input_tokens": 7885803.0,
+        "outcome": "correct",
+        "output_tokens": 98329.0,
+        "tool_calls": 77,
+        "total_tokens": 7984132.0,
+        "turns": 0,
+        "wall_seconds": 1398.59
+      }
+    },
+    "main/p121_solutions": {
+      "Claude Code": {
+        "input_tokens": 11236134.0,
+        "outcome": "correct",
+        "output_tokens": 101127.0,
+        "tool_calls": 115,
+        "total_tokens": 11337261.0,
+        "turns": 97,
+        "wall_seconds": 2225.96
+      },
+      "Codex CLI": {
+        "input_tokens": 13568931.0,
+        "outcome": "correct",
+        "output_tokens": 191594.0,
+        "tool_calls": 136,
+        "total_tokens": 13760525.0,
+        "turns": 106,
+        "wall_seconds": 3059.45
+      },
+      "OpenCode": {
+        "input_tokens": 37921698.0,
+        "outcome": "correct",
+        "output_tokens": 292590.0,
+        "tool_calls": 170,
+        "total_tokens": 38463313.0,
+        "turns": 0,
+        "wall_seconds": 5409.6
+      }
+    },
+    "main/p128_prod_signs": {
+      "Claude Code": {
+        "input_tokens": 27380350.0,
+        "outcome": "correct",
+        "output_tokens": 191589.0,
+        "tool_calls": 182,
+        "total_tokens": 27571939.0,
+        "turns": 163,
+        "wall_seconds": 4102.29
+      },
+      "Codex CLI": {
+        "input_tokens": 21298985.0,
+        "outcome": "correct",
+        "output_tokens": 282274.0,
+        "tool_calls": 204,
+        "total_tokens": 21581259.0,
+        "turns": 105,
+        "wall_seconds": 3475.69
+      },
+      "OpenCode": {
+        "input_tokens": 42146168.0,
+        "outcome": "correct",
+        "output_tokens": 272130.0,
+        "tool_calls": 184,
+        "total_tokens": 42418298.0,
+        "turns": 0,
+        "wall_seconds": 3587.54
+      }
+    },
+    "main/p134_check_if_last_char_is_a_letter": {
+      "Claude Code": {
+        "input_tokens": 7149887.0,
+        "outcome": "correct",
+        "output_tokens": 67665.0,
+        "tool_calls": 83,
+        "total_tokens": 7217552.0,
+        "turns": 69,
+        "wall_seconds": 1024.06
+      },
+      "Codex CLI": {
+        "input_tokens": 6030242.0,
+        "outcome": "correct",
+        "output_tokens": 80818.0,
+        "tool_calls": 72,
+        "total_tokens": 6111060.0,
+        "turns": 42,
+        "wall_seconds": 1150.75
+      },
+      "OpenCode": {
+        "input_tokens": 6937241.0,
+        "outcome": "correct",
+        "output_tokens": 91140.0,
+        "tool_calls": 85,
+        "total_tokens": 7028381.0,
+        "turns": 0,
+        "wall_seconds": 1215.99
+      }
+    },
+    "main/p138_is_equal_to_sum_even": {
+      "Claude Code": {
+        "input_tokens": 3773374.0,
+        "outcome": "correct",
+        "output_tokens": 43064.0,
+        "tool_calls": 75,
+        "total_tokens": 3816438.0,
+        "turns": 59,
+        "wall_seconds": 1212.43
+      },
+      "Codex CLI": {
+        "input_tokens": 5396015.0,
+        "outcome": "correct",
+        "output_tokens": 64667.0,
+        "tool_calls": 93,
+        "total_tokens": 5460682.0,
+        "turns": 40,
+        "wall_seconds": 1170.53
+      },
+      "OpenCode": {
+        "input_tokens": 6142581.0,
+        "outcome": "correct",
+        "output_tokens": 61036.0,
+        "tool_calls": 90,
+        "total_tokens": 6247522.0,
+        "turns": 0,
+        "wall_seconds": 1183.88
+      }
+    },
+    "main/p142_sum_squares": {
+      "Claude Code": {
+        "input_tokens": 8001700.0,
+        "outcome": "correct",
+        "output_tokens": 31211.0,
+        "tool_calls": 94,
+        "total_tokens": 8032911.0,
+        "turns": 76,
+        "wall_seconds": 600.46
+      },
+      "Codex CLI": {
+        "input_tokens": 14005775.0,
+        "outcome": "correct",
+        "output_tokens": 232886.0,
+        "tool_calls": 163,
+        "total_tokens": 14238661.0,
+        "turns": 94,
+        "wall_seconds": 2456.28
+      },
+      "OpenCode": {
+        "input_tokens": 9549174.0,
+        "outcome": "correct",
+        "output_tokens": 121440.0,
+        "tool_calls": 74,
+        "total_tokens": 9670614.0,
+        "turns": 0,
+        "wall_seconds": 1418.17
+      }
+    },
+    "main/p159_eat": {
+      "Claude Code": {
+        "input_tokens": 2818753.0,
+        "outcome": "correct",
+        "output_tokens": 26924.0,
+        "tool_calls": 56,
+        "total_tokens": 2845677.0,
+        "turns": 42,
+        "wall_seconds": 914.25
+      },
+      "Codex CLI": {
+        "input_tokens": 6527162.0,
+        "outcome": "correct",
+        "output_tokens": 88319.0,
+        "tool_calls": 77,
+        "total_tokens": 6615481.0,
+        "turns": 54,
+        "wall_seconds": 1771.99
+      },
+      "OpenCode": {
+        "input_tokens": 5774021.0,
+        "outcome": "correct",
+        "output_tokens": 43570.0,
+        "tool_calls": 81,
+        "total_tokens": 5817591.0,
+        "turns": 0,
+        "wall_seconds": 4791.85
+      }
+    }
+  }
+}

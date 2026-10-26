@@ -1,0 +1,19 @@
+# LaTeX build intermediates
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.bcf
+*.run.xml
+
+# Python caches and local editing/QA artifacts
+__pycache__/
+*.py[cod]
+HANDOFF.md
+figures/*_render.png
+.DS_Store

@@ -1,0 +1,152 @@
+\input{math_commands.tex}
+
+\usepackage[utf8]{inputenc}
+\usepackage{natbib}
+\usepackage[hyphens]{url}
+\urlstyle{rm}
+\def\UrlFont{\rm}
+\usepackage{caption}
+\usepackage{booktabs}
+\usepackage{nicefrac}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{listings}
+\usepackage{array}
+\usepackage{enumitem}
+\usetikzlibrary{arrows.meta,backgrounds,fit,positioning}
+\frenchspacing
+
+\pdfinfo{
+/TemplateVersion (2027.1)
+}
+
+\definecolor{benchmarkhead}{RGB}{241,244,246}
+\definecolor{benchmarkhighlight}{RGB}{223,239,245}
+\definecolor{paperframe}{RGB}{201,210,215}
+\definecolor{paperblueink}{RGB}{47,111,138}
+\definecolor{papergrayink}{RGB}{92,110,122}
+\definecolor{papergraytwo}{RGB}{247,249,250}
+\definecolor{papergraythree}{RGB}{227,232,235}
+\definecolor{gptblack}{RGB}{17,17,17}
+\definecolor{gptfivenavy}{RGB}{27,58,91}
+\definecolor{gptfoursteel}{RGB}{90,140,181}
+\definecolor{gptminiviolet}{RGB}{122,143,160}
+\definecolor{glmgray}{RGB}{100,116,139}
+\definecolor{claudeorange}{RGB}{130,182,202}
+\definecolor{kimiblue}{RGB}{63,142,199}
+\definecolor{deepseekblue}{RGB}{80,111,175}
+\definecolor{figtwosource}{RGB}{47,111,138}
+\definecolor{figtwoannot}{RGB}{91,155,181}
+\definecolor{figtwoproof}{RGB}{130,182,202}
+\definecolor{stagecontractcolor}{RGB}{47,111,138}
+\definecolor{stageannotationcolor}{RGB}{91,155,181}
+\definecolor{stageproofcolor}{RGB}{130,182,202}
+\definecolor{vscodekeyword}{RGB}{35,88,151}
+\definecolor{vscodefunction}{RGB}{91,155,181}
+\definecolor{vscodetype}{RGB}{100,116,139}
+\definecolor{vscodecomment}{RGB}{92,110,130}
+\definecolor{vscodestring}{RGB}{82,106,121}
+\definecolor{vscodegray}{RGB}{96,96,96}
+\colorlet{papergray}{benchmarkhead}
+\colorlet{paperblue}{benchmarkhighlight}
+\colorlet{artifactbg}{papergray}
+\colorlet{artifactframe}{paperframe}
+\colorlet{artifactkw}{paperblueink}
+\colorlet{artifactcomment}{papergrayink}
+\colorlet{taskcontract}{papergraytwo}
+\colorlet{taskannotation}{paperblue}
+\colorlet{taskproof}{papergray}
+\colorlet{taskcontractink}{stagecontractcolor}
+\colorlet{taskannotationink}{stageannotationcolor}
+\colorlet{taskproofink}{stageproofcolor}
+\colorlet{loopgray}{taskannotationink}
+\colorlet{loopblue}{taskproofink}
+\colorlet{loopblack}{taskcontractink}
+\colorlet{modela}{gptfivenavy}
+\colorlet{modelb}{gptfoursteel}
+\colorlet{modelc}{gptminiviolet}
+\colorlet{modeld}{glmgray}
+\colorlet{modele}{deepseekblue}
+\colorlet{modelf}{kimiblue}
+\colorlet{codexxhigh}{modela}
+\colorlet{codexmedium}{modelb}
+\colorlet{codexlegacy}{modelc}
+\colorlet{glmcolor}{modeld}
+\colorlet{deepseekcolor}{modele}
+\colorlet{kimicolor}{modelf}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcommand{\benchyes}{\textcolor{artifactkw}{\ensuremath{\bullet}}}
+\newcommand{\benchno}{\textcolor{artifactframe}{\ensuremath{\circ}}}
+\newcommand{\codebadge}[2]{%
+  \textcolor{#1}{\tiny\textbf{#2}}}
+\newcommand{\stagecodeline}[2]{%
+  \textcolor{#1}{\ttfamily\detokenize{#2}}}
+\newcommand{\nontimeoutcost}[1]{%
+  \begingroup\setlength{\fboxsep}{0.7pt}\colorbox{gray!15}{\strut #1}\endgroup}
+\newcounter{finding}
+\newcommand{\finding}[1]{%
+  \refstepcounter{finding}%
+  \par\smallskip\noindent
+  \begingroup
+  \setlength{\fboxsep}{4pt}%
+  \colorbox{paperblue}{%
+    \parbox{\dimexpr\linewidth-2\fboxsep\relax}{%
+      \small\textcolor{gptfivenavy}{\textbf{Finding~\thefinding.}} #1}}%
+  \endgroup
+  \par\smallskip}
+\newcommand{\algphase}[1]{\textsc{#1}}
+\newcounter{algorithm}
+\renewcommand{\thealgorithm}{\arabic{algorithm}}
+\newcommand{\algtitle}[2]{%
+  \refstepcounter{algorithm}%
+  \noindent\textbf{Algorithm~\thealgorithm. #1}\label{#2}\par}
+\newcommand{\algio}[2]{\noindent\textbf{#1:} #2\par}
+\newcommand{\algstep}[1]{\hspace*{#1em}}
+\setlist[itemize]{leftmargin=1.2em,itemsep=2pt,topsep=3pt,parsep=0pt}
+\setlist[enumerate]{leftmargin=1.4em,itemsep=2pt,topsep=3pt,parsep=0pt}
+\lstdefinestyle{artifact}{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{artifactbg},
+  frame=single,
+  rulecolor=\color{artifactframe},
+  framerule=0.4pt,
+  xleftmargin=0.2em,
+  xrightmargin=0.2em,
+  framexleftmargin=0.5em,
+  framexrightmargin=0.5em,
+  aboveskip=0.55em,
+  belowskip=0.55em,
+  breaklines=true,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  tabsize=2,
+  keywordstyle=\color{artifactkw}\bfseries,
+  commentstyle=\color{artifactcomment}\itshape
+}
+\lstdefinelanguage{QCPAnnotation}{
+  alsoletter={_},
+  sensitive=true,
+  morekeywords={Inv,Assert,exists,IntArray,full},
+  morekeywords=[3]{problem_9_spec,prefix_max_at,sublist}
+}
+\lstdefinelanguage{RocqSnippet}{
+  alsoletter={_},
+  sensitive=true,
+  morekeywords={Proof,Qed,assert,Exists,split_pure_spatial,split_pures,try,exact,cancel,lia,pre_process,IntArray,full},
+  morekeywords=[3]{prefix_max_at,problem_9_spec,sublist}
+}
+\lstdefinestyle{artifactvscode}{
+  style=artifact,
+  basicstyle=\ttfamily\tiny,
+  keywordstyle=\color{vscodekeyword}\bfseries,
+  keywordstyle=[2]\color{vscodetype}\bfseries,
+  keywordstyle=[3]\color{vscodefunction}\bfseries,
+  commentstyle=\color{vscodecomment}\itshape,
+  stringstyle=\color{vscodestring},
+  emphstyle=\color{vscodefunction}\bfseries,
+  literate={...}{{\textcolor{vscodegray}{...}}}3
+}

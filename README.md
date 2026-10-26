@@ -1,106 +1,107 @@
-# CAV Verification Architecture
+# CAV-Bench
 
-这个分支是 C 版本的验证流水线。
+A benchmark for code agents performing multi-stage C program verification with QCP and Rocq.
 
-- 保留 Java 分支里的 `datasets/`
-- 引入 `QualifiedCProgramming/` 子仓库作为上游依赖
-- 顶层工作流只保留 C 任务相关内容
+CAV-Bench combines executable C programs, functional contracts, auxiliary annotations, and reference proofs. Its paper evaluates agents that inspect repository code, revise annotations, generate verification conditions (VCs), and construct Rocq proofs. Acceptance combines verifier replay with checks on source integrity, proof artifacts, and permitted access.
 
-这个目录是一个两阶段验证流水线，目标是把算法题从原始题意转成可回放的形式化验证结果。
+## Paper and resources
 
-## Pipeline
+- [Main paper](paper/main.pdf) · [Supplementary material](paper/appendix.pdf) · [Reproducibility checklist](paper/ReproducibilityChecklist.pdf)
+- [Paper sources and build instructions](paper/README.md)
+- [Author response](paper/rebuttal.md), including clearly marked AI-review and AC-letter drafts
+- [Reference artifacts](ground_truth/) · [Reference layout](ground_truth/README.md)
+- [Execution documentation](doc/run.md) · [Audit policy](doc/check_cheating.md)
 
-### 1) `contract` 阶段
+The paper's consolidated corpus contains **140 tasks**, **5,562 generated VCs**, and **62,812 lines of nongenerated Rocq proof**. Under the audited 90-minute primary-task budget, GPT-5.5 xhigh with Codex succeeds on **78/140 tasks (55.7%)**. The frozen paper statistics specify the selected runs; historical files elsewhere in the repository are not a substitute for that selection.
 
-职责：把 `raw/*.md`（题意+代码）转成 Verify 可直接消费的规格输入。
+## Task settings
 
-输入：
-- `raw/<name>.md`
+| Setting | Supplied artifacts | Agent constructs | Runner |
+| --- | --- | --- | --- |
+| Primary: contract-to-proof | C implementation, fixed contract, required definitions | Auxiliary annotations and Rocq proofs | `scripts/run_verify.py` |
+| End-to-end | Task description and C implementation | Contract, annotations, and proofs | `scripts/run_pipeline.py` |
+| Proof-only | Implementation, contract, and reference annotations | Rocq proofs | `scripts/run_proof.py` |
 
-产物：
-- `input/<name>.c`（必须）
-- `input/<name>.v`（可选，仅当 C 规格依赖额外 Coq 定义）
-- `output/contract_<timestamp>_<name>/...`
+The primary and proof-only settings keep their supplied inputs fixed. End-to-end contract adequacy is assessed separately from downstream verification. A model's completion message alone does not establish success.
 
-关键约束：
-- 只写 contract（`Require/Ensure/With`）
-- 不提前写 `Inv/Assert/which implies`
+## Project structure
 
-### 2) `verify` 阶段
-
-职责：消费 `input`，补中间注释并完成 `symexec + proof + goal_check`。
-
-输入：
-- `input/<name>.c`
-- `input/<name>.v`（若存在）
-
-产物：
-- `annotated/verify_<timestamp>_<name>.c`
-- `output/verify_<timestamp>_<name>/coq/generated/*.v`
-- `output/verify_<timestamp>_<name>/logs/*.md`
-
-关键约束：
-- `proof_auto.v` 视为自动产物，不手改
-- 手工证明只落在 `coq/generated/<name>_proof_manual.v`
-- 最终以 `goal_check.v` 通过为准
-- verify 的工作副本放在顶层 `annotated/`，和 `input/` 同层，避免每个 workspace 再改头文件相对路径
-- workspace 和 annotated 文件名必须一一对应：`output/verify_<timestamp>_<name>/` 对应 `annotated/verify_<timestamp>_<name>.c`
-
-## Data Flow
-
-1. `raw/<name>.md`
-2. `scripts/run_contract.py` 调用 `skills/contract/SKILL.md`
-3. 生成 `input/<name>.c`（+可选 `.v`）
-4. `scripts/run_verify.py` 调用 `skills/verify/SKILL.md`
-5. 生成 `annotated/verify_<timestamp>_<name>.c` 和 `verify_<timestamp>_<name>` workspace
-6. `coq/generated/<name>_goal_check.v` 编译通过，任务完成
-
-## Directory Responsibilities
-
-- `skills/contract/SKILL.md`：contract 主流程
-- `skills/verify/SKILL.md`：verify 主流程
-- `QualifiedCProgramming/README.md` / `QualifiedCProgramming/tutorial/`：QCP 自带文档
-- `QualifiedCProgramming/SeparationLogic/examples/`：QCP 参考例子
-- `scripts/run_contract.py`：contract 自动执行器
-- `scripts/run_verify.py`：verify 自动执行器
-- `scripts/run_pipeline_many.sh`：批量执行 `contract -> verify`
-- `QualifiedCProgramming/`：上游 QCP 子仓库
-
-## Workspace Layout
-
-### Contract workspace
-
-- `output/contract_<timestamp>_<name>/raw/`
-- `output/contract_<timestamp>_<name>/input/`
-- `output/contract_<timestamp>_<name>/logs/`
-
-### Verify work areas
-
-- `annotated/verify_<timestamp>_<name>.c`
-- `output/verify_<timestamp>_<name>/original/`
-- `output/verify_<timestamp>_<name>/coq/generated/`
-- `output/verify_<timestamp>_<name>/coq/deps/`
-- `output/verify_<timestamp>_<name>/logs/`
-
-## Common Commands
-
-```bash
-# Contract
-python3 scripts/run_contract.py raw/<name>.md --function-name <func>
-
-# Verify
-python3 scripts/run_verify.py input/<name>.c --function-name <func>
-
-# Batch
-./scripts/run_pipeline_many.sh <name1> [name2 ...]
+```text
+CAV-bench/
+├── raw/                       # Natural-language task inputs
+├── input/                     # C programs, contracts, and Rocq definitions
+├── annotated_input/           # Pre-annotated inputs for proof-only tasks
+├── ground_truth/              # Reference annotations and proof artifacts
+├── QualifiedCProgramming/     # QCP upstream submodule
+├── scripts/                   # Runners, metrics, and audit tools
+├── skills/                    # Agent workflow instructions
+├── config/                    # Agent configuration
+├── doc/                       # Execution and auditing documentation
+├── results/                   # Recorded primary-task experiment artifacts
+└── paper/                     # TeX, PDFs, figures, audited statistics, rebuttal
 ```
 
-## Logging and Metrics
+Individual experiment branches contain different task cohorts and historical artifacts. The paper consolidates its audited cohort across `main`, `2.0.3`, and `2.0.4`.
 
-两个阶段都要求在各自 `logs/` 下记录：
+## Requirements and setup
 
-- `reasoning`
-- `issues`
-- `metrics`
+- Linux or WSL and Python 3.
+- QCP's C/symbolic-execution toolchain and Rocq/Coq. The local experiments used Coq 8.20.1; follow the upstream build instructions for its dependencies.
+- A supported agent CLI and provider access. The current runners support Codex, Claude Code, OpenCode, and Kimi Code; consult each branch's `--help` for available options.
+- A LaTeX installation with BibTeX to rebuild the paper PDFs.
 
-verify 阶段额外要求记录 proof 推理、symexec 时间和完整编译回放结果。
+```bash
+git clone --recurse-submodules https://github.com/taylor-swift-13/CAV-bench.git
+cd CAV-bench
+git submodule update --init --recursive
+```
+
+Build the dependency according to the [QCP instructions](QualifiedCProgramming/README.md). Agent configuration is handled by `scripts/agent_config.py`; runner options accept `--config`. Keep provider credentials in your local environment or local configuration rather than committing them.
+
+## Running a task
+
+Inspect the CLI options first:
+
+```bash
+python3 scripts/run_verify.py --help
+python3 scripts/run_proof.py --help
+python3 scripts/run_pipeline.py --help
+```
+
+Primary task:
+
+```bash
+python3 scripts/run_verify.py input/humaneval/p052_below_threshold.c \
+  --function-name p052_below_threshold --timeout-seconds 5400
+```
+
+Proof-only task:
+
+```bash
+python3 scripts/run_proof.py input/humaneval/p052_below_threshold.c \
+  --function-name p052_below_threshold \
+  --annotated-input-c annotated_input/humaneval/p052_below_threshold.c \
+  --timeout-seconds 5400
+```
+
+End-to-end task:
+
+```bash
+python3 scripts/run_pipeline.py raw/humaneval/p052_below_threshold.md \
+  --function-name p052_below_threshold
+```
+
+Configure your model, agent CLI, and API access before running these commands. Use runner-specific options to reproduce the configuration and phase budgets of an experiment; the examples above are entry points, not a complete reproduction of every published configuration.
+
+## Outputs and auditing
+
+Runners create task workspaces containing staged inputs, annotated C, generated goals, automatic and manual proof files, and logs. `metrics.md` records status and resource use. Audited results additionally check the replayed verifier outcome and compliance with the task's access and editing rules.
+
+For the paper, success requires an audited completion within **5,400 seconds**. Table 3 reports successful-run means and non-timeout means, the latter including failures. Frozen outcome and cost snapshots are provided under [`paper/figures/`](paper/figures/); see [`paper/README.md`](paper/README.md) before regenerating them.
+
+## Related resources
+
+- [QCP](https://github.com/QinxiangCao/QualifiedCProgramming): separation-logic C verification with automated solving and Rocq proof construction.
+- [Coins](https://github.com/taylor-swift-13/Coins): Rocq specifications and specification-evaluation research used as a source in the benchmark construction. The paper details the adaptation of contracts and required memory/safety conditions.
+
+See [`paper/references.bib`](paper/references.bib) for the cited works and upstream resource attribution. Third-party components retain their upstream licensing.
