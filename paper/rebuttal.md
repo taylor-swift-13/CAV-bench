@@ -2,8 +2,6 @@
 
 Prepared: 2026-10-27
 
-The AI Review response and AC letter remain drafts for approval. Nothing has been submitted or sent.
-
 ## wFZw (Score 3)
 
 We apologize for reporting oversights: Table 4 transcription errors and inconsistent application of Fig. 2(c)'s 5,400s cutoff in early Table 3 results. Correct non-timeout failures: 841, comprising 744 reaching proof and 97 failing at VCG (88.5%/11.5%). GLM-5.2: W/F/T=30/77/33. After consistent truncation, GPT-5.5 xhigh, GPT-5.4 xhigh and high yield 78/31/31, 53/48/39 and 39/96/5 (55.7%, 37.9%, 27.9%). Across 1,400 attempts: 326/841/233. Counts, costs, figures and text are corrected; rankings, substantial verification headroom and predominantly proof-stage failures persist. The strongest result changes by two tasks (57.1%→55.7%); all 140 machine-checked references are unaffected.
@@ -48,7 +46,7 @@ CBMC does not natively accept QCP separation-logic assertions or Rocq inductive 
 
 CWud details repository context/costs. Table 3's caption will define W/F/T and distinguish success means from non-timeout means including failures.
 
-## AI Review — Draft for approval
+## AI Review
 
 Thank you. See wFZw for corrected counts, RQ2's same-harness/effort paired comparisons and all-attempt budgeted time analysis. The strongest result is 78/140 within 90 minutes; all 140 machine-checked references remain unaffected.
 
@@ -60,7 +58,7 @@ See CWud for construction effort, costs and harness selection, and 6RZa for p117
 
 We will clarify task inputs, outputs and acceptance paths, show the omitted i declaration, and use "nongenerated Rocq proof LOC" to distinguish agent-written proofs from generated files.
 
-## Letter to the Area Chair — Draft for approval
+## Letter to the Area Chair
 
 Dear Area Chair,
 

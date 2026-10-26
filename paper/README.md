@@ -10,7 +10,7 @@ This directory contains the AAAI-27 manuscript, supplementary material, reproduc
 | Supplementary material | [appendix.tex](appendix.tex) | [appendix.pdf](appendix.pdf) |
 | Reproducibility checklist | [ReproducibilityChecklist.tex](ReproducibilityChecklist.tex) | [ReproducibilityChecklist.pdf](ReproducibilityChecklist.pdf) |
 
-[rebuttal.md](rebuttal.md) contains the English author responses. AI-review and AC-letter sections remain explicitly marked as drafts for approval. Publication in this repository is not submission to the review system.
+[rebuttal.md](rebuttal.md) contains the English author responses. It also includes the AI-review response and AC letter. Publication in this repository is not submission to the review system.
 
 ## Source layout
 
