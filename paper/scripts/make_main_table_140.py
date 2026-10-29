@@ -36,6 +36,10 @@ DENOMINATOR = 140
 
 
 def main() -> None:
+    if (ROOT / "figures" / "publication_results.json").exists():
+        from make_publication_tables import main as render_publication
+        render_publication()
+        return
     split_tasks = {name: audit.ground_truth_tasks(root) for name, root in SPLITS}
     split_sizes = {name: len(tasks) for name, tasks in split_tasks.items()}
     if split_sizes != {"main": 102, "2.0.3": 30, "2.0.4": 8}:
