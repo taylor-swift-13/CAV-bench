@@ -34,6 +34,10 @@ def artifact_groups(workspace: Path) -> set[str]:
 
 
 def main() -> None:
+    if (ROOT / "figures" / "publication_results.json").exists():
+        from make_publication_tables import main as render_publication
+        render_publication()
+        return
     snapshot_path = ROOT / "figures" / "main_table_140_audit.json"
     snapshot = json.loads(snapshot_path.read_text(encoding="utf-8"))
     output_rows: list[dict[str, object]] = []

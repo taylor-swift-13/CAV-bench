@@ -48,7 +48,12 @@ from make_experiment_figures import (  # noqa: E402
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 TABLES_DIR = PROJECT_ROOT / "tables"
 SNAPSHOT = json.loads((FIGURES_DIR / "stats_snapshot.json").read_text(encoding="utf-8"))
-MAIN_140 = json.loads(
+PUBLICATION_RESULTS_PATH = FIGURES_DIR / "publication_results.json"
+PUBLICATION_RESULTS = (
+    json.loads(PUBLICATION_RESULTS_PATH.read_text(encoding="utf-8"))
+    if PUBLICATION_RESULTS_PATH.exists() else None
+)
+MAIN_140 = PUBLICATION_RESULTS or json.loads(
     (FIGURES_DIR / "main_table_140_audit.json").read_text(encoding="utf-8")
 )
 BRANCH_140_PATH = FIGURES_DIR / "branch_140_audit.json"
@@ -1280,7 +1285,7 @@ def draw_capability_effort_compact() -> None:
         },
     ]
     effort_offsets = [{
-        "GPT-5.5": {"medium": (5, -11), "xhigh": (6, -3)},
+        "GPT-5.5": {"medium": (-28, -11), "xhigh": (6, -3)},
         "GPT-5.4": {"low": (-7, 7), "medium": (5, -12),
                     "high": (6, -4), "xhigh": (6, 7)},
     }, {
@@ -1404,9 +1409,8 @@ def draw_capability_effort_compact() -> None:
 def _budget_yield(harness: str, model: str, effort: str) -> tuple[list[float], int, int]:
     """Cumulative audited yield at fixed elapsed-time checkpoints.
 
-    The selected workspaces and audited outcomes come directly from the frozen
-    statistics snapshot.  A success enters the curve only when its recorded
-    end-to-end wall time is no greater than the checkpoint.
+    Use the publication's explicitly sourced checkpoint aggregates when present.
+    The historical fallback derives checkpoints from the frozen per-task logs.
     """
     lookup_model = "kimi-2.7-code" if model == "Kimi for Coding" else model
     lookup_effort = (
@@ -1417,6 +1421,14 @@ def _budget_yield(harness: str, model: str, effort: str) -> tuple[list[float], i
     row = MAIN_140_ROWS.get((harness, lookup_model, lookup_effort))
     if row is None:
         return [0.0, 0.0, 0.0], 0, 0
+    if PUBLICATION_RESULTS is not None:
+        # Publication checkpoints preserve their explicit source provenance.
+        # Do not infer corrected timings or rewrite historical run logs.
+        point = next(p for p in PUBLICATION_RESULTS["checkpoints"]
+                     if (p["group"], p["model"], p["effort"])
+                     == (harness, lookup_model, lookup_effort))
+        return ([100.0 * n / BENCHMARK_N for n in point["successes"]],
+                BENCHMARK_N, int(row["correct"]))
     thresholds = (30 * 60, 60 * 60, 90 * 60)
     completed = [0, 0, 0]
     for task, outcome in row.get("per_task", {}).items():

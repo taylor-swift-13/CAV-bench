@@ -25,7 +25,7 @@ We introduce \textsc{CAV-Bench}, to our knowledge the first benchmark of formall
 
 Figure~\ref{fig:task-design} summarizes the workflow. The primary task fixes the contract and evaluates the auxiliary annotation and proof stages. We additionally provide an end-to-end task that evaluates all three stages and a proof-only task that supplies the contract and auxiliary annotations to isolate the proof stage. Across all tasks, a deterministic audit checks the submitted artifacts and decides success rather than relying on the agent's own claim.
 
-We conduct extensive experiments across frontier code-agent and model configurations and multiple reasoning-effort levels. Even the strongest evaluated configuration, Codex with GPT-5.5 at xhigh effort, verifies only 55.7\% of the 140 primary-task instances within the 90-minute budget. Accepted runs still require tens of minutes, millions of input tokens, and repeated repository and checker interaction. These results leave substantial room to improve not only verification accuracy, but also trajectory efficiency, stopping behavior, and time and token cost.
+We conduct extensive experiments across frontier code-agent and model configurations and multiple reasoning-effort levels. Even the strongest evaluated configuration, Codex with GPT-5.5 at xhigh effort, verifies only 57.1\% of the 140 primary-task instances within the 90-minute budget. Accepted runs still require tens of minutes, millions of input tokens, and repeated repository and checker interaction. These results leave substantial room to improve not only verification accuracy, but also trajectory efficiency, stopping behavior, and time and token cost.
 
 Our contributions are:
 \begin{itemize}

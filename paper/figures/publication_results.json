@@ -1,0 +1,918 @@
+{
+  "revision_date": "2026-10-30",
+  "denominator": 140,
+  "provenance": {
+    "basis": "Author-confirmed reporting correction and instruction to retain other pre-cutoff publication values.",
+    "author_q1": "Q1 (statistics). We apologize for the reporting inconsistencies. The discrepancies arose from errors in result aggregation and transcription, not different underlying runs. GLM-5.2 has 77 non-timeout failures and 33 timeouts. The correct total is 841 non-timeout failures, of which 744 reached proof (88.5%), consistent with RQ4. Table 3 now matches Fig. 2(c): GPT-5.4 xhigh reaches 37.9% at 90 minutes. Affected costs, plots and text will be synchronized; the paper's core contributions and conclusions remain unchanged.",
+    "retained_rows": [
+      "GPT-5.5 xhigh: 80/31/29",
+      "GPT-5.4 high: 40/96/4"
+    ],
+    "explicit_corrections": [
+      "GLM-5.2: 30/77/33",
+      "GPT-5.4 xhigh: 53/48/39",
+      "Non-timeout failures: 841 = 744 proof + 97 VCG"
+    ],
+    "cost_means": "Retained rows restore the pre-cutoff publication means; GPT-5.4 xhigh retains the corrected 53-success means. Missing cost observations are omitted, not zero-filled.",
+    "checkpoint_basis": [
+      "30/60-minute counts retain the frozen timing observations.",
+      "90-minute counts use author-confirmed publication aggregates. They are not claimed to be regenerated from unchanged historical per-task timing logs."
+    ],
+    "historical_artifacts": [
+      "main_table_140_audit.json",
+      "error_table_140_audit.json",
+      "stats_snapshot.json"
+    ],
+    "historical_artifacts_policy": "Preserved byte-for-byte. Historical log-derived aggregates are superseded by this file for the publication; no per-task status or elapsed time has been rewritten.",
+    "historical_audit_sha256": "42e8fa88cbe34f03e08526da3ab276ce4b0980c9220e106b2e2c01bb76a7c362"
+  },
+  "rows": [
+    {
+      "attempted": 140,
+      "avg_input_tokens_m": 9.864345557692307,
+      "avg_input_tokens_m_non_timeout": 9.864345557692307,
+      "avg_input_tokens_m_solved": 9.098573794871793,
+      "avg_minutes": 54.41005952380953,
+      "avg_minutes_non_timeout": 45.07834234234234,
+      "avg_minutes_solved": 42.771056249999994,
+      "avg_output_tokens_k": 37.85009615384616,
+      "avg_output_tokens_k_non_timeout": 37.85009615384616,
+      "avg_output_tokens_k_solved": 34.69973076923077,
+      "avg_tool_calls": 127.88571428571429,
+      "avg_tool_calls_non_timeout": 125.30630630630631,
+      "avg_tool_calls_solved": 119.7375,
+      "avg_tool_profile": {
+        "coqc": 14.528571428571428,
+        "read": 81.31428571428572,
+        "rounds": 62.41428571428571,
+        "total": 127.88571428571429,
+        "vcg": 3.7285714285714286,
+        "write": 9.978571428571428
+      },
+      "avg_tool_profile_non_timeout": {
+        "coqc": 14.495495495495495,
+        "read": 81.6036036036036,
+        "rounds": 59.67567567567568,
+        "total": 125.30630630630631,
+        "vcg": 3.5675675675675675,
+        "write": 8.963963963963964
+      },
+      "avg_tool_profile_solved": {
+        "coqc": 12.6,
+        "read": 79.9,
+        "rounds": 55.8,
+        "total": 119.7375,
+        "vcg": 3.0125,
+        "write": 7.075
+      },
+      "avg_total_tokens_m": 9.902195653846153,
+      "correct": 80,
+      "effort": "xhigh",
+      "group": "Codex",
+      "missing": 0,
+      "model": "GPT-5.5",
+      "non_timeout_runs": 111,
+      "non_timeout_time_runs": 111,
+      "non_timeout_token_runs": 104,
+      "non_timeout_trace_runs": 111,
+      "solved_time_runs": 80,
+      "solved_token_runs": 78,
+      "solved_trace_runs": 80,
+      "success_rate_140": 0.5714285714285714,
+      "timeout": 29,
+      "wrong": 31,
+      "reported_timeouts": 29
+    },
+    {
+      "attempted": 140,
+      "avg_input_tokens_m": 9.779512698275862,
+      "avg_input_tokens_m_non_timeout": 9.779512698275862,
+      "avg_input_tokens_m_solved": 7.012626355932203,
+      "avg_minutes": 44.26311547619047,
+      "avg_minutes_non_timeout": 36.61555277777778,
+      "avg_minutes_solved": 33.41540960451978,
+      "avg_output_tokens_k": 29.545077586206894,
+      "avg_output_tokens_k_non_timeout": 29.545077586206894,
+      "avg_output_tokens_k_solved": 23.484966101694912,
+      "avg_tool_calls": 117.45714285714286,
+      "avg_tool_calls_non_timeout": 116.55,
+      "avg_tool_calls_solved": 99.01694915254237,
+      "avg_tool_profile": {
+        "coqc": 18.071428571428573,
+        "read": 70.69285714285714,
+        "rounds": 64.44285714285714,
+        "total": 117.45714285714286,
+        "vcg": 4.264285714285714,
+        "write": 14.57857142857143
+      },
+      "avg_tool_profile_non_timeout": {
+        "coqc": 18.366666666666667,
+        "read": 71.04166666666667,
+        "rounds": 63.80833333333333,
+        "total": 116.55,
+        "vcg": 4.016666666666667,
+        "write": 14.616666666666667
+      },
+      "avg_tool_profile_solved": {
+        "coqc": 11.033898305084746,
+        "read": 65.54237288135593,
+        "rounds": 49.33898305084746,
+        "total": 99.01694915254237,
+        "vcg": 3.3220338983050848,
+        "write": 8.11864406779661
+      },
+      "avg_total_tokens_m": 9.80905777586207,
+      "correct": 59,
+      "effort": "medium",
+      "group": "Codex",
+      "missing": 0,
+      "model": "GPT-5.5",
+      "non_timeout_runs": 120,
+      "non_timeout_time_runs": 120,
+      "non_timeout_token_runs": 116,
+      "non_timeout_trace_runs": 120,
+      "solved_time_runs": 59,
+      "solved_token_runs": 59,
+      "solved_trace_runs": 59,
+      "success_rate_140": 0.42142857142857143,
+      "timeout": 20,
+      "wrong": 61,
+      "reported_timeouts": 20
+    },
+    {
+      "attempted": 140,
+      "avg_input_tokens_m": 24.941556689655176,
+      "avg_input_tokens_m_non_timeout": 24.626275904761904,
+      "avg_input_tokens_m_solved": 22.384062384615387,
+      "avg_minutes": 58.821302380952396,
+      "avg_minutes_non_timeout": 45.75716831683169,
+      "avg_minutes_solved": 38.53319182389937,
+      "avg_output_tokens_k": 87.5093908045977,
+      "avg_output_tokens_k_non_timeout": 85.34136904761904,
+      "avg_output_tokens_k_solved": 77.98198076923077,
+      "avg_tool_calls": 228.50714285714287,
+      "avg_tool_calls_non_timeout": 200.46534653465346,
+      "avg_tool_calls_solved": 171.03773584905662,
+      "avg_tool_profile": {
+        "coqc": 55.77142857142857,
+        "read": 122.1,
+        "rounds": 66.42857142857143,
+        "total": 228.50714285714287,
+        "vcg": 5.814285714285714,
+        "write": 40.49285714285714
+      },
+      "avg_tool_profile_non_timeout": {
+        "coqc": 48.772277227722775,
+        "read": 109.24752475247524,
+        "rounds": 58.75247524752475,
+        "total": 200.46534653465346,
+        "vcg": 4.772277227722772,
+        "write": 33.722772277227726
+      },
+      "avg_tool_profile_solved": {
+        "coqc": 43.132075471698116,
+        "read": 94.32075471698113,
+        "rounds": 49.509433962264154,
+        "total": 171.03773584905662,
+        "vcg": 3.0377358490566038,
+        "write": 25.528301886792452
+      },
+      "avg_total_tokens_m": 25.02906608045977,
+      "correct": 53,
+      "effort": "xhigh",
+      "group": "Codex",
+      "missing": 0,
+      "model": "GPT-5.4",
+      "non_timeout_runs": 101,
+      "non_timeout_time_runs": 101,
+      "non_timeout_token_runs": 84,
+      "non_timeout_trace_runs": 101,
+      "solved_time_runs": 53,
+      "solved_token_runs": 52,
+      "solved_trace_runs": 53,
+      "success_rate_140": 0.37857142857142856,
+      "timeout": 39,
+      "wrong": 48,
+      "reported_timeouts": 39
+    },
+    {
+      "attempted": 140,
+      "avg_input_tokens_m": 21.795864456692915,
+      "avg_input_tokens_m_non_timeout": 21.795864456692915,
+      "avg_input_tokens_m_solved": 20.285909725,
+      "avg_minutes": 40.91314761904763,
+      "avg_minutes_non_timeout": 39.45697794117648,
+      "avg_minutes_solved": 43.117245833333335,
+      "avg_output_tokens_k": 66.99445669291337,
+      "avg_output_tokens_k_non_timeout": 66.99445669291337,
+      "avg_output_tokens_k_solved": 59.038349999999994,
+      "avg_tool_calls": 173.37857142857143,
+      "avg_tool_calls_non_timeout": 169.4264705882353,
+      "avg_tool_calls_solved": 156.3,
+      "avg_tool_profile": {
+        "coqc": 33.7,
+        "read": 102.8,
+        "rounds": 48.91428571428571,
+        "total": 173.37857142857143,
+        "vcg": 5.328571428571428,
+        "write": 36.66428571428571
+      },
+      "avg_tool_profile_non_timeout": {
+        "coqc": 32.89705882352941,
+        "read": 101.13970588235294,
+        "rounds": 47.654411764705884,
+        "total": 169.4264705882353,
+        "vcg": 4.911764705882353,
+        "write": 36.154411764705884
+      },
+      "avg_tool_profile_solved": {
+        "coqc": 31.375,
+        "read": 95.775,
+        "rounds": 52.15,
+        "total": 156.3,
+        "vcg": 2.25,
+        "write": 35.8
+      },
+      "avg_total_tokens_m": 21.862858913385825,
+      "correct": 40,
+      "effort": "high",
+      "group": "Codex",
+      "missing": 0,
+      "model": "GPT-5.4",
+      "non_timeout_runs": 136,
+      "non_timeout_time_runs": 136,
+      "non_timeout_token_runs": 127,
+      "non_timeout_trace_runs": 136,
+      "solved_time_runs": 40,
+      "solved_token_runs": 40,
+      "solved_trace_runs": 40,
+      "success_rate_140": 0.2857142857142857,
+      "timeout": 4,
+      "wrong": 96,
+      "reported_timeouts": 4
+    },
+    {
+      "attempted": 140,
+      "avg_input_tokens_m": 15.080453831699346,
+      "avg_input_tokens_m_non_timeout": 15.19449672142857,
+      "avg_input_tokens_m_solved": 15.09950335,
+      "avg_minutes": 23.912791666666664,
+      "avg_minutes_non_timeout": 23.912791666666664,
+      "avg_minutes_solved": 21.238825000000002,
+      "avg_output_tokens_k": 46.38761319073083,
+      "avg_output_tokens_k_non_timeout": 46.58145714285714,
+      "avg_output_tokens_k_solved": 40.828700000000005,
+      "avg_tool_calls": 132.92142857142858,
+      "avg_tool_calls_non_timeout": 132.92142857142858,
+      "avg_tool_calls_solved": 125.1,
+      "avg_tool_profile": {
+        "coqc": 27.75,
+        "read": 77.39285714285714,
+        "rounds": 36.16428571428571,
+        "total": 132.92142857142858,
+        "vcg": 5.414285714285715,
+        "write": 28.985714285714288
+      },
+      "avg_tool_profile_non_timeout": {
+        "coqc": 27.75,
+        "read": 77.39285714285714,
+        "rounds": 36.16428571428571,
+        "total": 132.92142857142858,
+        "vcg": 5.414285714285715,
+        "write": 28.985714285714288
+      },
+      "avg_tool_profile_solved": {
+        "coqc": 33.8,
+        "read": 66.05,
+        "rounds": 31.9,
+        "total": 125.1,
+        "vcg": 2.5,
+        "write": 30.55
+      },
+      "avg_total_tokens_m": 15.470741946969696,
+      "correct": 20,
+      "effort": "medium",
+      "group": "Codex",
+      "missing": 0,
+      "model": "GPT-5.4",
+      "non_timeout_runs": 140,
+      "non_timeout_time_runs": 140,
+      "non_timeout_token_runs": 140,
+      "non_timeout_trace_runs": 140,
+      "solved_time_runs": 20,
+      "solved_token_runs": 20,
+      "solved_trace_runs": 20,
+      "success_rate_140": 0.14285714285714285,
+      "timeout": 0,
+      "wrong": 120,
+      "reported_timeouts": 0
+    },
+    {
+      "attempted": 140,
+      "avg_input_tokens_m": 10.291052798561152,
+      "avg_input_tokens_m_non_timeout": 10.291052798561152,
+      "avg_input_tokens_m_solved": 14.7345060625,
+      "avg_minutes": 16.23214523809524,
+      "avg_minutes_non_timeout": 16.23214523809524,
+      "avg_minutes_solved": 21.66213541666667,
+      "avg_output_tokens_k": 30.789582733812946,
+      "avg_output_tokens_k_non_timeout": 30.789582733812946,
+      "avg_output_tokens_k_solved": 36.141375,
+      "avg_tool_calls": 103.6,
+      "avg_tool_calls_non_timeout": 103.6,
+      "avg_tool_calls_solved": 125.75,
+      "avg_tool_profile": {
+        "coqc": 18.864285714285714,
+        "read": 57.27857142857143,
+        "rounds": 26.571428571428573,
+        "total": 103.6,
+        "vcg": 5.007142857142857,
+        "write": 20.62142857142857
+      },
+      "avg_tool_profile_non_timeout": {
+        "coqc": 18.864285714285714,
+        "read": 57.27857142857143,
+        "rounds": 26.571428571428573,
+        "total": 103.6,
+        "vcg": 5.007142857142857,
+        "write": 20.62142857142857
+      },
+      "avg_tool_profile_solved": {
+        "coqc": 34.5625,
+        "read": 59.3125,
+        "rounds": 29.6875,
+        "total": 125.75,
+        "vcg": 2.8125,
+        "write": 29.4375
+      },
+      "avg_total_tokens_m": 10.321842381294962,
+      "correct": 16,
+      "effort": "low",
+      "group": "Codex",
+      "missing": 0,
+      "model": "GPT-5.4",
+      "non_timeout_runs": 140,
+      "non_timeout_time_runs": 140,
+      "non_timeout_token_runs": 139,
+      "non_timeout_trace_runs": 140,
+      "solved_time_runs": 16,
+      "solved_token_runs": 16,
+      "solved_trace_runs": 16,
+      "success_rate_140": 0.11428571428571428,
+      "timeout": 0,
+      "wrong": 124,
+      "reported_timeouts": 0
+    },
+    {
+      "attempted": 140,
+      "avg_input_tokens_m": 19.18587584615385,
+      "avg_input_tokens_m_non_timeout": 19.164341519379846,
+      "avg_input_tokens_m_solved": 18.729941874999998,
+      "avg_minutes": 40.27834285714285,
+      "avg_minutes_non_timeout": 38.38384541062801,
+      "avg_minutes_solved": 36.35822916666667,
+      "avg_output_tokens_k": 111.30117692307691,
+      "avg_output_tokens_k_non_timeout": 110.86966666666666,
+      "avg_output_tokens_k_solved": 102.57624999999999,
+      "avg_tool_calls": 182.72661870503597,
+      "avg_tool_calls_non_timeout": 181.73722627737226,
+      "avg_tool_calls_solved": 171.25,
+      "avg_tool_profile": {
+        "coqc": 35.58273381294964,
+        "read": 103.10791366906474,
+        "rounds": 96.48920863309353,
+        "total": 182.72661870503597,
+        "vcg": 9.43884892086331,
+        "write": 33.69064748201439
+      },
+      "avg_tool_profile_non_timeout": {
+        "coqc": 35.24087591240876,
+        "read": 102.39416058394161,
+        "rounds": 95.64233576642336,
+        "total": 181.73722627737226,
+        "vcg": 9.547445255474452,
+        "write": 33.62043795620438
+      },
+      "avg_tool_profile_solved": {
+        "coqc": 45.625,
+        "read": 89.375,
+        "rounds": 81.125,
+        "total": 171.25,
+        "vcg": 2.0,
+        "write": 36.0
+      },
+      "avg_total_tokens_m": 19.297177023076923,
+      "correct": 8,
+      "effort": "medium",
+      "group": "Codex",
+      "missing": 0,
+      "model": "GPT-5.4-mini",
+      "non_timeout_runs": 138,
+      "non_timeout_time_runs": 138,
+      "non_timeout_token_runs": 129,
+      "non_timeout_trace_runs": 137,
+      "solved_time_runs": 8,
+      "solved_token_runs": 8,
+      "solved_trace_runs": 8,
+      "success_rate_140": 0.05714285714285714,
+      "timeout": 2,
+      "wrong": 130,
+      "reported_timeouts": 2
+    },
+    {
+      "attempted": 138,
+      "avg_input_tokens_m": 14.630632454545456,
+      "avg_input_tokens_m_non_timeout": 15.432109373493976,
+      "avg_input_tokens_m_solved": 11.493871200000001,
+      "avg_minutes": 57.9896775362319,
+      "avg_minutes_non_timeout": 48.60955919003115,
+      "avg_minutes_solved": 28.256883333333327,
+      "avg_output_tokens_k": 99.34770454545455,
+      "avg_output_tokens_k_non_timeout": 104.6061686746988,
+      "avg_output_tokens_k_solved": 93.01753333333333,
+      "avg_tool_calls": 162.80434782608697,
+      "avg_tool_calls_non_timeout": 151.88785046728972,
+      "avg_tool_calls_solved": 105.83333333333333,
+      "avg_tool_profile": {
+        "coqc": 47.572463768115945,
+        "read": 128.68840579710144,
+        "rounds": 146.36231884057972,
+        "total": 162.80434782608697,
+        "vcg": 7.384057971014493,
+        "write": 42.18840579710145
+      },
+      "avg_tool_profile_non_timeout": {
+        "coqc": 44.205607476635514,
+        "read": 119.83177570093459,
+        "rounds": 136.2803738317757,
+        "total": 151.88785046728972,
+        "vcg": 6.542056074766355,
+        "write": 39.16822429906542
+      },
+      "avg_tool_profile_solved": {
+        "coqc": 30.966666666666665,
+        "read": 79.46666666666667,
+        "rounds": 89.83333333333333,
+        "total": 105.83333333333333,
+        "vcg": 3.2666666666666666,
+        "write": 27.066666666666666
+      },
+      "avg_total_tokens_m": 14.72998015909091,
+      "correct": 30,
+      "effort": "thinking",
+      "group": "Claude Code",
+      "missing": 2,
+      "model": "GLM-5.2",
+      "non_timeout_runs": 107,
+      "non_timeout_time_runs": 107,
+      "non_timeout_token_runs": 83,
+      "non_timeout_trace_runs": 107,
+      "solved_time_runs": 30,
+      "solved_token_runs": 30,
+      "solved_trace_runs": 30,
+      "success_rate_140": 0.21428571428571427,
+      "timeout": 31,
+      "wrong": 77,
+      "reported_timeouts": 33
+    },
+    {
+      "attempted": 84,
+      "avg_input_tokens_m": 33.31933695890412,
+      "avg_input_tokens_m_non_timeout": 27.407140736842102,
+      "avg_input_tokens_m_solved": 14.5298926,
+      "avg_minutes": 75.60145436507939,
+      "avg_minutes_non_timeout": 69.80291388888888,
+      "avg_minutes_solved": 33.23493333333333,
+      "avg_output_tokens_k": 53.706082191780816,
+      "avg_output_tokens_k_non_timeout": 68.52145614035086,
+      "avg_output_tokens_k_solved": 73.401,
+      "avg_tool_calls": 184.29761904761904,
+      "avg_tool_calls_non_timeout": 175.2,
+      "avg_tool_calls_solved": 142.6,
+      "avg_tool_profile": {
+        "coqc": 48.845238095238095,
+        "read": 101.83333333333333,
+        "rounds": 161.02380952380952,
+        "total": 184.29761904761904,
+        "vcg": 12.464285714285714,
+        "write": 60.73809523809524
+      },
+      "avg_tool_profile_non_timeout": {
+        "coqc": 43.61666666666667,
+        "read": 100.38333333333334,
+        "rounds": 149.15,
+        "total": 175.2,
+        "vcg": 14.533333333333333,
+        "write": 54.166666666666664
+      },
+      "avg_tool_profile_solved": {
+        "coqc": 46.4,
+        "read": 81.0,
+        "rounds": 130.0,
+        "total": 142.6,
+        "vcg": 5.0,
+        "write": 50.8
+      },
+      "avg_total_tokens_m": 33.37304304109589,
+      "correct": 5,
+      "effort": "thinking",
+      "group": "Claude Code",
+      "missing": 56,
+      "model": "DeepSeek-V4-Pro",
+      "non_timeout_runs": 60,
+      "non_timeout_time_runs": 60,
+      "non_timeout_token_runs": 57,
+      "non_timeout_trace_runs": 60,
+      "solved_time_runs": 5,
+      "solved_token_runs": 5,
+      "solved_trace_runs": 5,
+      "success_rate_140": 0.03571428571428571,
+      "timeout": 24,
+      "wrong": 55,
+      "reported_timeouts": 80
+    },
+    {
+      "attempted": 140,
+      "avg_input_tokens_m": 29.650410372262776,
+      "avg_input_tokens_m_non_timeout": 30.29189857894737,
+      "avg_input_tokens_m_solved": 17.002063944444444,
+      "avg_minutes": 69.7091988095238,
+      "avg_minutes_non_timeout": 64.84724786324784,
+      "avg_minutes_solved": 38.792490740740746,
+      "avg_output_tokens_k": 145.48322627737227,
+      "avg_output_tokens_k_non_timeout": 147.2162192982456,
+      "avg_output_tokens_k_solved": 85.84666666666668,
+      "avg_tool_calls": 270.48571428571427,
+      "avg_tool_calls_non_timeout": 274.5811965811966,
+      "avg_tool_calls_solved": 166.33333333333334,
+      "avg_tool_profile": {
+        "coqc": 85.77857142857142,
+        "read": 182.13571428571427,
+        "rounds": 260.9428571428571,
+        "total": 270.48571428571427,
+        "vcg": 10.607142857142858,
+        "write": 89.09285714285714
+      },
+      "avg_tool_profile_non_timeout": {
+        "coqc": 86.64957264957265,
+        "read": 185.77777777777777,
+        "rounds": 264.84615384615387,
+        "total": 274.5811965811966,
+        "vcg": 9.931623931623932,
+        "write": 88.47863247863248
+      },
+      "avg_tool_profile_solved": {
+        "coqc": 44.5,
+        "read": 114.05555555555556,
+        "rounds": 157.61111111111111,
+        "total": 166.33333333333334,
+        "vcg": 3.5555555555555554,
+        "write": 42.5
+      },
+      "avg_total_tokens_m": 29.795893598540147,
+      "correct": 18,
+      "effort": "thinking",
+      "group": "Kimi Code",
+      "missing": 0,
+      "model": "kimi-2.7-code",
+      "non_timeout_runs": 117,
+      "non_timeout_time_runs": 117,
+      "non_timeout_token_runs": 114,
+      "non_timeout_trace_runs": 117,
+      "solved_time_runs": 18,
+      "solved_token_runs": 18,
+      "solved_trace_runs": 18,
+      "success_rate_140": 0.12857142857142856,
+      "timeout": 23,
+      "wrong": 99,
+      "reported_timeouts": 23
+    }
+  ],
+  "failure_rows": [
+    {
+      "effort": "xhigh",
+      "failure": 31,
+      "group": "Codex",
+      "input_modification": 13,
+      "invalid_proof": 7,
+      "model": "GPT-5.5",
+      "prohibited_read": 5,
+      "proof": 29,
+      "timeout": 29,
+      "vcg": 2
+    },
+    {
+      "effort": "medium",
+      "failure": 61,
+      "group": "Codex",
+      "input_modification": 19,
+      "invalid_proof": 11,
+      "model": "GPT-5.5",
+      "prohibited_read": 7,
+      "proof": 57,
+      "timeout": 20,
+      "vcg": 4
+    },
+    {
+      "effort": "xhigh",
+      "failure": 48,
+      "group": "Codex",
+      "input_modification": 29,
+      "invalid_proof": 6,
+      "model": "GPT-5.4",
+      "prohibited_read": 16,
+      "proof": 44,
+      "timeout": 39,
+      "vcg": 4
+    },
+    {
+      "effort": "high",
+      "failure": 96,
+      "group": "Codex",
+      "input_modification": 12,
+      "invalid_proof": 6,
+      "model": "GPT-5.4",
+      "prohibited_read": 28,
+      "proof": 91,
+      "timeout": 4,
+      "vcg": 5
+    },
+    {
+      "effort": "medium",
+      "failure": 120,
+      "group": "Codex",
+      "input_modification": 14,
+      "invalid_proof": 9,
+      "model": "GPT-5.4",
+      "prohibited_read": 28,
+      "proof": 110,
+      "timeout": 0,
+      "vcg": 10
+    },
+    {
+      "effort": "low",
+      "failure": 124,
+      "group": "Codex",
+      "input_modification": 18,
+      "invalid_proof": 3,
+      "model": "GPT-5.4",
+      "prohibited_read": 33,
+      "proof": 102,
+      "timeout": 0,
+      "vcg": 22
+    },
+    {
+      "effort": "medium",
+      "failure": 130,
+      "group": "Codex",
+      "input_modification": 33,
+      "invalid_proof": 0,
+      "model": "GPT-5.4-mini",
+      "prohibited_read": 86,
+      "proof": 96,
+      "timeout": 2,
+      "vcg": 34
+    },
+    {
+      "effort": "thinking",
+      "failure": 77,
+      "group": "Claude Code",
+      "input_modification": 9,
+      "invalid_proof": 1,
+      "model": "GLM-5.2",
+      "prohibited_read": 55,
+      "proof": 73,
+      "timeout": 33,
+      "vcg": 4
+    },
+    {
+      "effort": "thinking",
+      "failure": 55,
+      "group": "Claude Code",
+      "input_modification": 17,
+      "invalid_proof": 0,
+      "model": "DeepSeek-V4-Pro",
+      "prohibited_read": 39,
+      "proof": 46,
+      "timeout": 80,
+      "vcg": 9
+    },
+    {
+      "effort": "thinking",
+      "failure": 99,
+      "group": "Kimi Code",
+      "input_modification": 21,
+      "invalid_proof": 5,
+      "model": "kimi-2.7-code",
+      "prohibited_read": 92,
+      "proof": 96,
+      "timeout": 23,
+      "vcg": 3
+    }
+  ],
+  "checkpoints": [
+    {
+      "group": "Codex",
+      "model": "GPT-5.5",
+      "effort": "xhigh",
+      "minutes": [
+        30,
+        60,
+        90
+      ],
+      "successes": [
+        21,
+        65,
+        80
+      ]
+    },
+    {
+      "group": "Codex",
+      "model": "GPT-5.5",
+      "effort": "medium",
+      "minutes": [
+        30,
+        60,
+        90
+      ],
+      "successes": [
+        29,
+        56,
+        59
+      ]
+    },
+    {
+      "group": "Codex",
+      "model": "GPT-5.4",
+      "effort": "xhigh",
+      "minutes": [
+        30,
+        60,
+        90
+      ],
+      "successes": [
+        18,
+        45,
+        53
+      ]
+    },
+    {
+      "group": "Codex",
+      "model": "GPT-5.4",
+      "effort": "high",
+      "minutes": [
+        30,
+        60,
+        90
+      ],
+      "successes": [
+        15,
+        33,
+        40
+      ]
+    },
+    {
+      "group": "Codex",
+      "model": "GPT-5.4",
+      "effort": "medium",
+      "minutes": [
+        30,
+        60,
+        90
+      ],
+      "successes": [
+        16,
+        20,
+        20
+      ]
+    },
+    {
+      "group": "Codex",
+      "model": "GPT-5.4",
+      "effort": "low",
+      "minutes": [
+        30,
+        60,
+        90
+      ],
+      "successes": [
+        13,
+        16,
+        16
+      ]
+    },
+    {
+      "group": "Codex",
+      "model": "GPT-5.4-mini",
+      "effort": "medium",
+      "minutes": [
+        30,
+        60,
+        90
+      ],
+      "successes": [
+        2,
+        8,
+        8
+      ]
+    },
+    {
+      "group": "Claude Code",
+      "model": "GLM-5.2",
+      "effort": "thinking",
+      "minutes": [
+        30,
+        60,
+        90
+      ],
+      "successes": [
+        20,
+        26,
+        30
+      ]
+    },
+    {
+      "group": "Claude Code",
+      "model": "DeepSeek-V4-Pro",
+      "effort": "thinking",
+      "minutes": [
+        30,
+        60,
+        90
+      ],
+      "successes": [
+        2,
+        4,
+        5
+      ]
+    },
+    {
+      "group": "Kimi Code",
+      "model": "kimi-2.7-code",
+      "effort": "thinking",
+      "minutes": [
+        30,
+        60,
+        90
+      ],
+      "successes": [
+        6,
+        16,
+        18
+      ]
+    }
+  ],
+  "totals": {
+    "success": 329,
+    "failure": 841,
+    "timeout": 230,
+    "proof": 744,
+    "vcg": 97
+  },
+  "rq2": {
+    "paired_analysis_note": "The two restored GPT-5.5 successes are not jointly successful with GPT-5.4 xhigh; published model-pair token/tool reductions are unchanged.",
+    "all_attempt_time_basis": "Retain previously computed recorded budgeted total minutes; divide by the author-confirmed success count. This is budget accounting, not a reconstruction of corrected per-run times.",
+    "all_attempts": [
+      {
+        "config": "GPT-5.5 xhigh",
+        "successes": 80,
+        "budgeted_total_minutes": 7611.700666666667,
+        "budgeted_mean_minutes_per_task": 54.36929047619048,
+        "budgeted_minutes_per_success": 95.14625833333334,
+        "observed_wall_total_minutes": 7617.408333333336,
+        "observed_wall_tasks": 140,
+        "unretained_timeouts": 0
+      },
+      {
+        "config": "GPT-5.5 medium",
+        "successes": 59,
+        "budgeted_total_minutes": 6193.795999999996,
+        "budgeted_mean_minutes_per_task": 44.24139999999997,
+        "budgeted_minutes_per_success": 104.97959322033891,
+        "observed_wall_total_minutes": 6196.8361666666615,
+        "observed_wall_tasks": 140,
+        "unretained_timeouts": 0
+      },
+      {
+        "config": "GPT-5.4 xhigh",
+        "successes": 53,
+        "budgeted_total_minutes": 8129.998333333335,
+        "budgeted_mean_minutes_per_task": 58.07141666666668,
+        "budgeted_minutes_per_success": 153.3961949685535,
+        "observed_wall_total_minutes": 8234.982333333337,
+        "observed_wall_tasks": 140,
+        "unretained_timeouts": 0
+      },
+      {
+        "config": "GPT-5.4 medium",
+        "successes": 20,
+        "budgeted_total_minutes": 3315.7465,
+        "budgeted_mean_minutes_per_task": 23.683903571428573,
+        "budgeted_minutes_per_success": 165.787325,
+        "observed_wall_total_minutes": 3347.7908333333335,
+        "observed_wall_tasks": 140,
+        "unretained_timeouts": 0
+      }
+    ]
+  }
+}
