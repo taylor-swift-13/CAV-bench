@@ -86,7 +86,7 @@ Q1. p117 (select_words) returns all words with n consonants in order, preserves 
 
 Q2. GPT-5.5 xhigh/Codex successes average 3.0 VCG calls and 12.6 Rocq checks, showing repeated annotation/proof revision. Their difficulty is coupled: annotations determine VCs; proof failures guide annotation repair and VC regeneration. CBMC/ESBMC could complement QCP on suitable obligations. CBMC does not natively accept specifications expressed in separation logic and Rocq inductive definitions; translation must preserve semantics. Its standard workflow has no direct ITP handoff when automated solving fails. QCP exposes unresolved VCs to Rocq for proof construction and annotation repair.
 
-Q3. QCP/Rocq directly supports C verification: separation logic tracks disjoint ownership; inductive predicates describe arbitrary-size heaps. Its SMT and Rocq backends and explicit specification, annotation and proof stages support evaluating the full workflow and annotation–proof interaction.
+Q3. QCP/Rocq directly supports C verification: separation logic tracks disjoint ownership; inductive predicates describe arbitrary-size heaps. Its SMT and ITP backends and explicit specification, annotation and proof stages support evaluating the full workflow and annotation–proof interaction. Full floating-point proofs add rounding/error challenges; we found no suitable alternative combining both.
 
 ## AI Review
 
