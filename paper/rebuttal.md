@@ -1,90 +1,104 @@
 # AAAI Rebuttal
 
-Prepared: 2026-10-27
+Updated: 2026-10-30
 
 ## wFZw (Score 3)
 
-Q1 (statistics). Thank you; we apologize for the reporting inconsistencies. The discrepancies arose from errors in result aggregation and transcription, not different underlying runs.
+Thank you for checking statistics and RQ2.
+
+Q1 (statistics). The discrepancies arose from errors in result aggregation and transcription, not different underlying runs.
 
 Table 3 (140 tasks each; W/F/T=success/non-timeout failure/timeout):
 
-|Model/effort/harness|W/F/T/SR (%)|
+|Model/effort/harness|W/F/T|
 |---|---|
-|GPT-5.5/xhigh/Codex|80/31/29/57.1|
-|GPT-5.5/medium/Codex|59/61/20/42.1|
-|GPT-5.4/xhigh/Codex|53/48/39/37.9|
-|GPT-5.4/high/Codex|40/96/4/28.6|
-|GPT-5.4/medium/Codex|20/120/0/14.3|
-|GPT-5.4/low/Codex|16/124/0/11.4|
-|GPT-5.4-mini/medium/Codex|8/130/2/5.7|
-|GLM-5.2/thinking/Claude Code|30/77/33/21.4|
-|DeepSeek-V4-Pro/thinking/Claude Code|5/55/80/3.6|
-|kimi-2.7-code/thinking/Kimi Code|18/99/23/12.9|
+|GPT-5.5/xhigh/Codex|80/31/29|
+|GPT-5.5/medium/Codex|59/61/20|
+|GPT-5.4/xhigh/Codex|53/48/39|
+|GPT-5.4/high/Codex|40/96/4|
+|GPT-5.4/medium/Codex|20/120/0|
+|GPT-5.4/low/Codex|16/124/0|
+|GPT-5.4-mini/medium/Codex|8/130/2|
+|GLM-5.2/thinking/Claude Code|30/77/33|
+|DeepSeek-V4-Pro/thinking/Claude Code|5/55/80|
+|kimi-2.7-code/thinking/Kimi Code|18/99/23|
 
-Non-timeout failures total 841: 744 proof-stage (88.5%) and 97 VCG-stage (11.5%), matching RQ4. GPT-5.4 xhigh's 37.9% matches Fig. 2(c) at 90 min. Affected costs, plots and text will be synchronized; other data and the paper's core contributions and conclusions remain unchanged.
+Non-timeout failures total 841: 744 proof-stage (88.5%) and 97 VCG-stage (11.5%), matching RQ4. GPT-5.4 xhigh's 37.9% matches Fig. 2(c) at 90 min. Affected costs, plots and text will be synchronized; other data and our core contributions and conclusions remain unchanged.
 
-Q2 (efficiency). With Codex and effort fixed, GPT-5.5 versus GPT-5.4 reduces paired-success input/output tokens and tool calls by 66.1%/53.6%/33.3% at medium and 62.8%/57.0%/32.4% at xhigh. Across all 140 attempts, budgeted minutes/success fall 165.8→105.0 (medium) and 153.4→95.1 (xhigh). This divides total attempt time by successes, charging timeouts 90 min and capping other durations at 90. These controlled comparisons strengthen RQ2's efficiency evidence. CWud explains harness selection.
+Q2 (efficiency). Efficiency gains are larger on matched tasks, controlling for differences in task composition. Fixing Codex and effort, GPT-5.5 versus GPT-5.4 reduces paired-success input/output tokens and tool calls by 66.1%/53.6%/33.3% at medium and 62.8%/57.0%/32.4% at xhigh. Input falls on 14/15 medium and 35/39 xhigh pairs. Across all 140 attempts, budgeted minutes/success fall 165.8→105.0 (medium) and 153.4→95.1 (xhigh). We divide total attempt time by successes, charging timeouts 90 min and capping other durations at 90. CWud explains harness selection.
 
 ## Cmct (Score 5)
 
-"Long-horizon" denotes sustained agent interaction; we will clarify this. With C code/contracts supplied, GPT-5.5 xhigh/Codex solves 80/140 within 90 min, with 29 timeouts. Successes average 55.8 turns, 119.7 tool calls (3.01 VCG/12.60 Rocq checks), 9.1M input/34.7K output tokens and 42.8 min. CWud details costs/construction.
+Thank you for questions on scope and novelty.
 
-AlgoVeri (arXiv:2602.09464) compares SMT-based Dafny/Verus with Lean ITP. Different memory-modeling granularity and cross-language comparisons cannot isolate annotation-proof coupling within one C workflow. We fix C code/contracts: inadequate auxiliary annotations can yield unprovable VCs discovered during Rocq proof construction, prompting annotation repair and VC regeneration. This couples source annotations with ITP feedback under C memory-validity, aliasing and resource-preservation obligations. Dafny/Verus lack this explicit ITP stage; AlgoVeri's Lean setting lacks source-annotation-to-VC translation and C-style raw-memory operations.
+Q1. Long-horizon interaction extends beyond end-to-end to the fixed-contract primary task. GPT-5.5 xhigh/Codex primary successes average 42.8 min, 55.8 turns, 119.7 tool calls (3.01 VCG/12.60 Rocq checks), and 9.1M/34.7K input/output tokens. See CWud for costs.
 
-"GT Verified" means complete machine-checked references for all tasks. AlgoVeri reports expert-reviewed specs and selected formal checks, not full verified-reference coverage across all three languages. References establish task solvability. It supplies contracts; we additionally evaluate generation. For why end-to-end need not be harder or longer than primary, the reusable contract rubric and kernel-checked proof acceptance, see knrA. The fixed-contract primary task has deterministic acceptance.
+Q2. End-to-end evaluation is automated: an LLM judge applies a fixed rubric to generated contracts, without human adjudication of submissions. We will release the rubric, prompt, judge model and configuration for reuse. Fixed-contract primary acceptance is deterministic. Proof acceptance separately requires VCG, Rocq kernel checks and deterministic auditing. See knrA for the criteria and why end-to-end need not be harder or longer than primary.
+
+Q3. AlgoVeri (arXiv:2602.09464) compares SMT-based Dafny/Verus with Lean ITP across distinct memory abstractions. Its Lean setting has no C annotation-to-VC stage. Dafny's managed heap abstracts away C pointer arithmetic and manual memory management; p117 requires preserving input memory and owning newly allocated output strings. Primary and proof-only fix C code, contracts and toolchain, varying annotations to isolate annotation-proof interaction. Proof failures can trigger annotation repair and VC regeneration; cross-language comparisons cannot isolate this effect.
+
+"GT Verified" means complete machine-checked references for all 140 tasks; AlgoVeri reports expert curation and selected specification checks.
 
 ## knrA (Score 6)
 
-wFZw addresses counts and RQ2's paired/all-attempt analyses; CWud explains harness selection.
+Thank you for examining evaluation rigor.
 
-Inputs: description, C, contract and Rocq definitions. The end-to-end LLM judge checks legal inputs, C safety, results, code consistency, input/output relations, memory effects, branches and full behavior; all eight must pass. It screens for over-restrictive preconditions and weak postconditions. Manual inspection found all clearly weak contracts in the inspected sample were rejected. Experts reviewed reference contracts; generated contracts use the judge without manual adjudication. The rubric/prompt are reusable. Final verification separately requires VCG, Rocq kernel proof checking and deterministic auditing; LLM judgments cannot bypass these checks.
+Q1. See wFZw for count corrections and RQ2's paired/all-attempt analyses; CWud for harness selection.
 
-The settings need not have a strict difficulty ordering. In p050 (decode_shift), the agent-generated invariant explicitly retains input/output character-nonzero facts for direct use at return; the reference invariant requires deriving them at return. This shows annotation choice changes subsequent proof work. End-to-end agents can also choose contract formulations, subject to adequacy checks. High costs (CWud) limited each task/configuration to one trajectory; run-to-run variance is unmeasured.
+Q2. Generated contracts are evaluated automatically, without human adjudication. The GPT-5.5 xhigh judge receives the task description, C code, contract and Rocq definitions. All eight criteria must pass: legal inputs, C safety, results, code consistency, input/output relations, memory effects, branches and full behavior. These checks screen for overly restrictive preconditions and weak postconditions. Manual inspection found all clearly weak contracts in the sample were rejected. We will release the rubric, prompt and judge configuration. Proof acceptance independently requires VCG, Rocq kernel checks and deterministic auditing.
 
-Instructions explicitly forbid reference answers, prior results and other task workspaces; current-task artifacts, supplied definitions, documentation and listed examples are allowed. Transcript auditing enforces this distinction.
+Q3. High evaluation costs (CWud) allowed one trajectory per task/configuration; repeat-run variance was not measured.
+
+Q4. For the eight reversals, consider p050 (decode_shift). Generated invariants retain input/output character-nonzero facts for direct use at return; reference invariants require deriving them. Thus, fixed annotations need not make every task easier. End-to-end also permits easier-to-prove contract formulations, subject to adequacy checks.
+
+Q5. Instructions explicitly prohibit reference answers, prior results and other task workspaces. Current-task artifacts, supplied definitions, documentation and listed examples are allowed. Transcript auditing enforces this access policy.
 
 ## CWud (Score 6)
 
-SWE-bench (arXiv:2310.06770) evaluates issue-driven repository repairs via tests; we require functional/memory proofs. Corpus-wide specs/transitive dependencies span 52K Rocq LOC; permitted references exceed 220K LOC. Agents coordinate cross-file definitions, annotations, VCs and proof libraries; function calls are supported. Coupling also applies to modular verification; long-horizon evidence: Cmct.
+Thank you for scope and harness questions.
 
-Targets average 29.1 C LOC. With GPT-5.5 xhigh/Codex, 80 successes average 42.8 min; recorded API costs average $7.41 after cache discounts. This exceeds $1.93/attempt on SWE-bench Pro with the same model/effort/harness (Journal, June 17; includes failures). P3 (arXiv:2608.09277, Table 7) reports $2.78/13.9 min for plain Codex-GPT-5.5 on AlgoVeri's jointly solved subset, also below ours; effort is unspecified.
+Q1. Our workflow supports modular verification through function contracts and repository interaction. Targets average 29.1 C LOC. Corpus-wide specs/dependencies span 52K Rocq LOC; permitted references exceed 220K LOC. Agents coordinate definitions, annotations, VCs and proofs across files. SWE-bench (arXiv:2310.06770) tests issue repairs; we require functional/memory proofs. GPT-5.5 xhigh/Codex successes average 42.8 min; recorded API costs: $7.41, versus $1.93/attempt on SWE-bench Pro with the same model/effort/harness. P3 reports $2.78/13.9 min on AlgoVeri's shared successes (arXiv:2608.09277; effort unspecified). Cf. Cmct.
 
-We evaluate model/harness jointly, using official integrations, else Claude Code. RQ5 tests a model without official integration on 30 CC successes fixed before alternatives: success retention. High costs precluded full model × harness testing or repeats; variance is unmeasured. Matched RQ2/all-attempt costs: wFZw. Gray means include non-timeout failures.
+Q2. We evaluate model/harness systems, using official integrations when available and Claude Code otherwise. RQ2 fixes harness and effort (wFZw).
 
-Experts guided GPT-5.5 xhigh/Codex; agents wrote annotations/proofs. Spec writing/review took six person-months; construction 30 min-20 h/task. Inclusion required expert consensus, regenerated VCs and Rocq acceptance. We will use vector figures.
+Q3. RQ5 tests retention on 30 Claude Code successes selected before alternative-harness runs. Costs limited the model-by-harness matrix. Whether alternatives solve CC failures requires separate testing.
+
+Q4. Costs limited each task/configuration to one trajectory; repeat-run variability is unmeasured. wFZw reports paired and all-attempt costs; Table 3's gray means include non-timeout failures.
+
+Q5. Experts guided GPT-5.5 xhigh/Codex while agents wrote annotations/proofs. Spec writing/review took six person-months, with 30 min-20 h construction per task. Inclusion required expert consensus, regenerated VCs and Rocq acceptance. We will use vector figures.
 
 ## 6RZa (Score 6)
 
-p117 (select_words) must return all words with exactly n consonants in order, preserve input and own allocated output strings. Its reference has 99 lemmas/1,937 nonblank proof lines, including scan-state induction and recursive heap reasoning. Its inductive proof shows that each newly allocated word can be added to the output while preserving ownership of all previously allocated strings. GPT-5.4 xhigh used 90 min, completing 28 ITP obligations with 18 unfinished; no evaluated configuration achieved audited success. HumanEval tests do not establish these guarantees. Across all 140 references, there are 5,562 VCs and 62,812 nongenerated Rocq proof lines.
+Thank you for questions on proofs and tool choice.
 
-QCP (arXiv:2505.12878) combines SMT automation, Rocq ITP and separation-logic C memory reasoning. Agents revise annotations/regenerate VCs and use lemmas, induction and proof repair when automation fails. This combined workflow motivates our choice.
+Q1. Our tasks require functional and memory proofs. p117 (select_words) must return all and only words with n consonants, in order, preserve the input and own the allocated output strings. Its reference uses 99 lemmas/1,937 nonblank proof lines. Induction establishes that appending a word preserves ownership of earlier strings. GPT-5.4 xhigh completed 28 ITP obligations in 90 min, leaving 18; no configuration achieved audited success. The 140 references contain 5,562 VCs and 62,812 nongenerated proof lines.
 
-CBMC does not natively accept QCP separation-logic assertions or Rocq inductive predicates. Re-encoding requires semantic preservation; otherwise the target changes. When automated solving times out/fails, its standard workflow offers no direct ITP handoff to continue difficult obligations. It cannot directly replace our proof-stage baseline. CBMC could complement QCP by automating suitable simpler obligations.
+Q2. CBMC can complement QCP on suitable obligations. Our p052 pilot verified its encoding for 0<=n<=64 in 0.29 s; loop-contract attempts for 0<=n<INT_MAX timed out at 180 s or encountered conversion errors. CBMC's memory-predicate interface excludes mutual recursion. It does not natively accept QCP assertions/Rocq predicates, so translation must preserve their semantics. Its standard workflow has no direct ITP handoff for unresolved obligations.
 
-CWud details repository context/costs. Table 3's caption will define W/F/T and distinguish success means from non-timeout means including failures.
+Q3. QCP/Rocq (arXiv:2505.12878) combines SMT automation with explicit inductive proofs over separation-logic memory resources. Agents can introduce lemmas, repair proofs, revise annotations and regenerate VCs when automation stalls. This enables the annotation-proof interaction our benchmark measures, with machine-checked references for every task. See CWud for repository context. Table 3 distinguishes successes/failures/timeouts and success means from non-timeout means.
 
 ## AI Review
 
-Thank you. See wFZw for corrected counts, RQ2's same-harness/effort paired comparisons and all-attempt budgeted time analysis. The strongest result is 80/140 within 90 minutes; all 140 machine-checked references remain unaffected.
+Thank you. The reporting corrections and controlled RQ2 analyses are detailed in wFZw. The strongest result remains 80/140; all 140 references are machine-checked. The corrected 744/841 proof-stage failures support the reported verification bottleneck.
 
-See knrA for p050: generated invariants retain character-nonzero facts that the reference invariant requires deriving at return. The settings need not form a strict difficulty ordering. Single trajectories cannot isolate annotation effects from run-to-run variation. The contract rubric, manual inspection and access policy are explained there. Audited success requires proof acceptance and protocol compliance.
+Lemur (arXiv:2310.04870) uses verifier feedback to repair C invariants. We will cite this work. CAV-Bench contributes a verified C corpus and an evaluation setting coupling auxiliary annotations with explicit Rocq proofs: annotations determine VCs, and proof feedback guides annotation repair and VC regeneration.
 
-Lemur (arXiv:2310.04870) studies verifier-guided C invariant generation and repair. CAV-Bench covers broader auxiliary annotations and explicit Rocq proofs: annotations determine VCs, while ITP feedback guides annotation revision and VC regeneration. Lemur does not evaluate this coupled workflow. We will clarify this distinction and cite it.
+The p050 trajectory makes this interaction concrete: generated invariants retain character-nonzero facts for the return proof, whereas the reference invariant requires deriving them. See knrA for this example, the complementary task settings and the cost-constrained single-trajectory design.
 
-See CWud for construction effort, costs and harness selection, and 6RZa for p117's proof complexity and QCP's SMT/ITP design. "Long-horizon" means sustained agent interaction.
+End-to-end contract assessment is automated with a fixed LLM rubric; proof acceptance separately requires VCG/Rocq checks. The same judge protocol can be reused across methods. The rubric screens for vacuous or weak contracts. Audited success combines proof acceptance with compliance with the stated access and input-preservation rules.
 
-We will clarify task inputs, outputs and acceptance paths, show the omitted i declaration, and use "nongenerated Rocq proof LOC" to distinguish agent-written proofs from generated files.
+CWud details repository interaction, construction effort and costs; 6RZa gives p117's proof example and the SMT/ITP rationale. We will clarify task inputs, generated artifacts and acceptance paths, show the omitted i declaration, and label proof size as "nongenerated Rocq proof LOC."
 
 ## Letter to the Area Chair
 
 Dear Area Chair,
 
-We respectfully request reassessment of wFZw's score of 3, which is an outlier against the other scores of 5, 6, 6 and 6. We believe the review places disproportionate weight on reporting discrepancies and potentially overstated claims, while giving insufficient weight to the verified corpus, task design and evaluation methodology.
+Thank you for coordinating the reviews. We respectfully request that the final assessment weigh the corrected evidence and the benchmark's core contributions when reconsidering wFZw's score of 3, alongside the other scores of 5, 6, 6 and 6.
 
-The discrepancies arose from oversights in statistical reporting. The corrections leave the strongest result (80/140, 57.1%), the 140 machine-checked references and the benchmark's core contribution unchanged. The central findings of substantial verification headroom and predominantly proof-stage failures remain unchanged.
+The reporting discrepancies arose from aggregation and transcription errors. The corrected tables preserve the strongest result, 80/140 (57.1%), and the finding that 744/841 non-timeout failures reach the proof stage. All 140 machine-checked references remain valid. These corrections leave the verified corpus, task design and evaluation methodology unchanged.
 
-For RQ2, additional comparisons control task composition, harness and reasoning effort. Token/tool savings persist on matched tasks, and budgeted time per success decreases when all attempts, including timeouts, are included.
+The additional RQ2 analyses address task composition and harness effects directly. With harness and effort fixed, token and tool savings persist on jointly solved tasks. Including all 140 attempts, budgeted minutes per success decrease from 165.8 to 105.0 at medium and from 153.4 to 95.1 at xhigh.
 
-Notably, knrA raises substantially overlapping concerns about counts and efficiency comparisons, yet recommends acceptance and explicitly recognizes the verified corpus and fixed-contract task as valuable contributions. Other reviews also recognize the work's methodological and empirical value.
+knrA raises closely related questions about counts and efficiency, while recommending acceptance and explicitly recognizing the verified corpus and fixed-contract task. The other reviews also recognize the work's methodological and empirical value.
 
-We ask the AC to weigh the corrected evidence and enduring contribution, and assess whether a clear-rejection recommendation remains proportionate to the unresolved concerns.
+We ask that the corrected reporting and additional analyses be considered together with these contributions. The benchmark provides verified targets while exposing substantial headroom for current agents. We appreciate reconsideration of whether the score of 3 reflects the paper in light of this evidence.
